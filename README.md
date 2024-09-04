@@ -14,6 +14,10 @@ We use [semantic versioning](http://semver.org/). Current version is 1.0.0.
 
 - **Rick Wassing**, rick.wassing@woolcock.org.au, Woolcock Institute of Medical Research, Macquarie University, Australia
 
+> ### Your help is more than welcome!
+>
+> I am a neuroscientist, foremost, and not a software developer. I have coded Cicada to the best of my abilities, it may not be the most efficient way the software could have been written. I would be very grateful for anyone who'd like to contribute to Cicada.
+
 ## License
 
 ![Creative Commons License](https://i.creativecommons.org/l/by-sa/4.0/80x15.png) This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
@@ -21,10 +25,6 @@ We use [semantic versioning](http://semver.org/). Current version is 1.0.0.
 ## Disclaimer
 
 The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
-
-> ### Your help is more than welcome!
->
-> I am a neuroscientist, foremost, and not a software developer. I have coded Cicada to the best of my abilities, it may not be the most efficient way the software could have been written. I would be very grateful for anyone who'd like to contribute to Cicada.
 
 ## Acknowledgements
 
