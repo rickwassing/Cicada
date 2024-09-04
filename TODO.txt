@@ -1,0 +1,9 @@
+TODO:
+
+- Classify WASO: exclude tiny epochs? Is there a paper for an lagortihm?
+- Adding reject event that overlaps with another non-wear event, just merge them.
+- Adding reject event that overlaps with other events, move or adjust the other ones?
+- Adding sleep window event that overlaps with existing sleep window, append?
+- Highlight 18:00, 0:00 and 6:00.
+- Implement Diurnal Profiles of Physical Activity and Postures Derived From Wrist-Worn Accelerometry in UK Adults
+

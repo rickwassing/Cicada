@@ -20,8 +20,7 @@ We use [semantic versioning](http://semver.org/). Current version is 1.0.0.
 
 ## License
 
-![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png) Cicada Actigraphy Suite © 2023 by Rick Wassing is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png) Cicada Actigraphy Suite © 2023 by Rick Wassing is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 ## Disclaimer
 
