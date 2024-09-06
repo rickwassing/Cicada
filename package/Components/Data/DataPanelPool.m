@@ -82,6 +82,7 @@ classdef DataPanelPool < matlab.ui.componentcontainer.ComponentContainer
             Singleton.IsHovered = false;
             Singleton.Status = 'idle';
             Singleton.Parent = Obj.Panel;
+            Singleton.update();
             Obj.Pool(end+1) = Singleton;
         end
     end

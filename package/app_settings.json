@@ -4,12 +4,13 @@
     "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/P1S02_MH_actigraphy.mat"
   ],
   "Auth": {
-    "User": "anonymous",
-    "Institute": "n/a",
-    "Email": "john@doe.com",
-    "Subscribe": "yes",
-    "AskAgain": true,
-    "IsRegistered": true,
-    "DateTime": "2024-09-03T16:45:03 (Australia/Sydney)"
+    "name": "Rick Wassing",
+    "institute": "Woolcock",
+    "email": "rick.wassing@woolcock.org.au",
+    "subscribe": "yes",
+    "accept": "yes",
+    "askagain": true,
+    "is_registered": true,
+    "datetime": "2024-09-05T10:24:26 (Australia/Sydney)"
   }
 }

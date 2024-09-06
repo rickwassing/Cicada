@@ -5,7 +5,7 @@
 %   Rick Wassing, Woolcock Institute of Medical Research, Sydney, Australia
 %
 % History:
-%   Created 2023-06-27, Rick Wassing
+%   Created 2024-09-04, Rick Wassing
 
 % Cicada (C) 2023 by Rick Wassing is licensed under
 % Attribution-NonCommercial-ShareAlike 4.0 International
@@ -15,61 +15,80 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef Tooltip < matlab.ui.componentcontainer.ComponentContainer
+classdef Tooltip < handle
     % *********************************************************************
     % PROPERTIES
     properties
-        Id;
-        Text = '';
+        Label;
+        Visible;
+        Position;
         Verbose;
     end
-    properties (Access = private, Transient, NonCopyable)
-        Axis
-        Label
+    properties (Access = public, Transient, NonCopyable)
+        LabelObj;
+        HiddenAxes;
+        HiddenText;
     end
     % *********************************************************************
     % METHODS
-    methods (Access = protected)
+    methods
         % =================================================================
-        function setup(Obj)
-            % -------------------------------------------------------------
-            % Create sub-components
+        function Obj = Tooltip(parent)
             % -------------------------------------------------------------
             Colors = app_colors();
             % -------------------------------------------------------------
-            Obj.Tag = 'Tooltip';
-            Obj.Visible = 'off';
-            Obj.BackgroundColor = Colors.bg_tooltip;
-            Obj.Position = [1, 1, 100, 18];
+            % Create sub-components
             % -------------------------------------------------------------
-            Obj.Axis = axes(Obj, ...
-                'XLim', [0, 1], ...
-                'Units', 'normalized', ...
+            Obj.LabelObj = uilabel(parent, ...
                 'Visible', 'off', ...
-                'Interactions', [], ...
-                'InnerPosition', [0, 0, 1, 1]);
-            Obj.Axis.Toolbar.Visible = 'off';
-            % -------------------------------------------------------------
-            Obj.Label = text(Obj.Axis, 0, 0, 'label', ...
-                'Units', 'pixels', ...
+                'Text', '<p> mylabel </p>',  ...
+                'Interpreter', 'html', ...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'bottom', ...
                 'FontSize', 10, ...
-                'Color', 'w');
+                'BackgroundColor', Colors.bg_tooltip, ...
+                'Position', [100, 100, 10, 16], ...
+                'FontColor', 'w');
+            % -------------------------------------------------------------
+            Obj.HiddenAxes = uiaxes(parent, 'Visible', 'off');
+            % -------------------------------------------------------------
+            Obj.HiddenText = text(Obj.HiddenAxes, 0, 0, ' mylabel ', ...
+                'Units', 'pixels', ...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'bottom', ...
+                'FontSize', 10);
+            Obj.LabelObj.Position(3) = Obj.HiddenText.Extent(3);
         end
         % =================================================================
-        function update(Obj)
+        function hUpdate(Obj, app, varargin)
             try
+                % -------------------------------------------------------------
+                Colors = app_colors();
+                % -------------------------------------------------------------
+                BackgroundColor = Colors.bg_tooltip;
+                Editable = 'off';
+                for i = 1:2:length(varargin)
+                    switch lower(varargin{i})
+                        case 'backgroundcolor'
+                            BackgroundColor = varargin{i+1};
+                        case 'editable'
+                            Editable = varargin{i+1};
+                    end
+                end
                 % ---------------------------------------------------------
-                Obj.Label.Units = 'pixels';
-                Obj.Label.String = sprintf(' %s ', Obj.Text);
-                Obj.Position(3) = Obj.Label.Extent(3);
+                if isempty(Obj.Label)
+                    Obj.LabelObj.Visible = 'off';
+                else
+                    Obj.HiddenText.String = sprintf(' %s ', ifelse(strcmpi(Editable, 'on'), sprintf('✎ %s', Obj.Label), Obj.Label));
+                    Obj.LabelObj.Visible = 'on';
+                    Obj.LabelObj.Text = sprintf('<p> %s </p>', ifelse(strcmpi(Editable, 'on'), sprintf('✎ %s', Obj.Label), Obj.Label));
+                    Obj.LabelObj.Position(3) = Obj.HiddenText.Extent(3);
+                    Obj.LabelObj.Position(1:2) = app.UIFigure.CurrentPoint(1:2) + [-Obj.HiddenText.Extent(3)/2, 6];
+                    Obj.LabelObj.BackgroundColor = BackgroundColor;
+                end
             catch ME
-                printerrormessage(ME, 'The error occurred during ''update'' in Tooltip.m')
+                printerrormessage(ME, 'The error occurred during ''hUpdate'' in Tooltip.m')
             end
-        end
-    end
-    methods (Access = public)
-        function hUpdate(Obj, app, event) %#ok<INUSD>
-            % do something
         end
     end
 end

@@ -28,6 +28,7 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
         Metric = struct('y', [], 'modality', '', 'device', '', 'labels', {}, 'srate', [], 'pnts', [], 'xmin', '', 'xmax', '', 'showSingleMetric', [], 'show', [], 'height', [], 'log', [], 'ylim', [], 'color', [], 'zindex', []);
         Events;
         IsHovered = false;
+        UpdateHoverOnly = false;
         Status;
         Verbose;
     end
@@ -38,8 +39,8 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
         Cursor Cursor
         Selection Selection
         Legend DataLegend
-        MetricGraphics DataTrace
-        EventGraphics EventTrace
+        MetricGraphics
+        EventGraphics
     end
     % *********************************************************************
     % METHODS
@@ -90,8 +91,8 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
             Obj.Axes.Title.FontWeight = 'normal';
             % -------------------------------------------------------------
             % Triggers callback functions when the mouse moves in and out of the axis
-            ButtonMotion.enterFcn = @(~, ~) set(Obj, 'IsHovered', true);
-            ButtonMotion.exitFcn = @(~, ~) set(Obj, 'IsHovered', false);
+            ButtonMotion.enterFcn = @(~, ~) Obj.hToggleIsHovered(true);
+            ButtonMotion.exitFcn = @(~, ~) Obj.hToggleIsHovered(false);
             ButtonMotion.traverseFcn = [];
             iptSetPointerBehavior(Obj.Axes, ButtonMotion)
             % -------------------------------------------------------------
@@ -102,18 +103,23 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
             app_addlisteners([], Obj.Selection, {'eDatasetChanged', 'eDataChanged', 'eMouseDown', 'eMouseUp', 'eMouseMotion', 'eKeyPress'});
         end
         % =================================================================
-        function update(Obj)
+        function update(Obj, varargin)
             try
+                % ---------------------------------------------------------
+                % Don't have to update all other stuff if only the hover
+                % status changed
+                if Obj.UpdateHoverOnly
+                    Obj.UpdateHoverOnly = false;
+                    return
+                end
+                Obj.UpdateHoverOnly = false;
                 % ---------------------------------------------------------
                 % Timer
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
                 % ---------------------------------------------------------
-                % If this component is returned to the pool, its status is
-                % 'idle' and we can reset its properties
+                % If this component is returned to the pool, its status is 'idle'
                 if strcmpi(Obj.Status, 'idle') || isempty(Obj.Metric) || isempty(Obj.Start) || isempty(Obj.End)
-                    Obj.Axes.Title.String = '';
-                    Obj.Axes.XLim = [0, 1];
-                    Obj.Axes.XTick = [];
+                    Obj.hReset();
                     return
                 end
                 % ---------------------------------------------------------
@@ -139,6 +145,12 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
                 % First determine the track for each event
                 track = ones(1, size(Obj.Events, 1));
                 for i = 2:size(Obj.Events, 1)
+                    if ~Obj.Events.show(i)
+                        continue
+                    end
+                    if strcmpi(Obj.Events.label{i}, 'reject')
+                        continue
+                    end
                     trackoptions = [];
                     trackexclusions = [];
                     thisonset = iso2datenum(Obj.Events.onset{i});
@@ -180,22 +192,24 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
                     DoRender = false;
                     if i > length(Obj.EventGraphics)
                         DoRender = true;
-                    elseif ~isvalid(Obj.EventGraphics(i))
+                    elseif ~isvalid(Obj.EventGraphics(i).Obj)
                         DoRender = true;
                     end
                     if DoRender
-                        Obj.EventGraphics(i) = EventTrace(Obj.Axes, 'Verbose', Obj.Verbose);
+                        Obj.EventGraphics(i).Obj = EventTrace(Obj.Axes, 'Verbose', Obj.Verbose);
                     end
-                    Obj.EventGraphics(i).Event = Obj.Events(i, :);
-                    Obj.EventGraphics(i).Track = track(i);
-                    Obj.EventGraphics(i).UnitsPerPixel = UnitsPerPixel;
-                    Obj.EventGraphics(i).update(); % This component does not have an auto-update when properties change
+                    Obj.EventGraphics(i).Obj.Event = Obj.Events(i, :);
+                    Obj.EventGraphics(i).Obj.Track = track(i);
+                    Obj.EventGraphics(i).Obj.MaxTrack = MaxTrack;
+                    Obj.EventGraphics(i).Obj.UnitsPerPixel = UnitsPerPixel;
+                    Obj.EventGraphics(i).Obj.update(); % This component does not have an auto-update when properties change
                 end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 % Delete events that are not needed
                 for i = length(Obj.EventGraphics):-1:size(Obj.Events, 1)+1
-                    Obj.EventGraphics(i)
-                    delete(Obj.EventGraphics(i));
+                    Obj.EventGraphics(i).Obj.Event = [];
+                    Obj.EventGraphics(i).Obj.update();
+                    delete(Obj.EventGraphics(i).Obj);
                     Obj.EventGraphics(i) = [];
                 end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -231,22 +245,24 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
                     DoRender = false;
                     if i > length(Obj.MetricGraphics)
                         DoRender = true;
-                    elseif ~isvalid(Obj.MetricGraphics(i))
+                    elseif ~isvalid(Obj.MetricGraphics(i).Obj)
                         DoRender = true;
                     end
                     if DoRender
-                        Obj.MetricGraphics(i) = DataTrace(Obj.Axes, 'Verbose', Obj.Verbose);
+                        Obj.MetricGraphics(i).Obj = DataTrace(Obj.Axes, 'Verbose', Obj.Verbose);
                     end
-                    Obj.MetricGraphics(i).Metric = Obj.Metric(i);
-                    Obj.MetricGraphics(i).Offset = Offset;
-                    Obj.MetricGraphics(i).Height = Height;
-                    Obj.MetricGraphics(i).update(); % This component does not have an auto-update when properties change
+                    Obj.MetricGraphics(i).Obj.Metric = Obj.Metric(i);
+                    Obj.MetricGraphics(i).Obj.Offset = Offset;
+                    Obj.MetricGraphics(i).Obj.Height = Height;
+                    Obj.MetricGraphics(i).Obj.update(); % This component does not have an auto-update when properties change
                 end
                 % ---------------------------------------------------------
                 % Hide data trace components that are not needed
                 for i = length(Obj.MetricGraphics):-1:length(Obj.Metric)+1
-                    Obj.MetricGraphics(i).Metric = [];                    
-                    Obj.MetricGraphics(i).update(); % This component does not have an auto-update when properties change
+                    Obj.MetricGraphics(i).Obj.Metric = [];
+                    Obj.MetricGraphics(i).Obj.update();
+                    delete(Obj.MetricGraphics(i).Obj);
+                    Obj.MetricGraphics(i) = [];
                 end
                 % ---------------------------------------------------------
                 % Set the Y-axis properties
@@ -254,12 +270,44 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
                 Obj.Axes.YTick = unique(YTick);
                 Obj.Axes.YTickLabel = {};
                 % ---------------------------------------------------------
+                Obj.Axes.Children = [...
+                    findobj(Obj.Axes.Children, 'type', 'patch'); ...
+                    findobj(Obj.Axes.Children, '-not', 'type', 'patch')];
+                % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: DataPanel ''%s'' updated in %.1g s.\n', Obj.Axes.Title.String, (now-Time)*24*60*60); %#ok<TNOW1>
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in DataPanel.m')
             end
+        end
+        % =================================================================
+        function hToggleIsHovered(Obj, bool)
+            Obj.IsHovered = bool;
+            Obj.UpdateHoverOnly = true;
+        end
+        % =================================================================
+        function hReset(Obj)
+            % -------------------------------------------------------------
+            % Reset axes and child plot objects
+            Obj.Axes.Title.String = '';
+            Obj.Axes.XLim = [0, 1];
+            Obj.Axes.XTick = [];
+            idx_rm = [];
+            for i = 1:length(Obj.Axes.Children)
+                if isprop(Obj.Axes.Children(i), 'Tag')
+                    if contains(Obj.Axes.Children(i).Tag, 'Cursor')
+                        continue
+                    end
+                    if contains(Obj.Axes.Children(i).Tag, 'Selection')
+                        continue
+                    end
+                end
+                idx_rm = [idx_rm, i]; %#ok<AGROW>
+            end
+            delete(Obj.Axes.Children(idx_rm));
+            Obj.MetricGraphics = [];
+            Obj.EventGraphics = [];
         end
         % =================================================================
         function cfg = config(Obj, ACT)
@@ -323,7 +371,6 @@ classdef DataPanel < matlab.ui.componentcontainer.ComponentContainer
                 Obj.Metric = Obj.Metric(idx);
                 [~, idx] = sort(cellfun(@(m) find(strcmpi(app.ACT.info.modalities, m)), {Obj.Metric.modality}));
                 Obj.Metric = Obj.Metric(idx);
-                % TODO: blank out any rejected segments
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in DataPanel.m')
             end

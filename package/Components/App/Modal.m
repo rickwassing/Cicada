@@ -19,7 +19,8 @@ classdef Modal < handle
     % *********************************************************************
     % PROPERTIES
     properties
-        disableBackdropClose;
+        DisableBackdropClose;
+        ComponentProps;
         Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
@@ -31,8 +32,6 @@ classdef Modal < handle
     methods
         % =================================================================
         function Obj = Modal(parent)
-            % -------------------------------------------------------------
-            Colors = app_colors();
             % -------------------------------------------------------------
             % Create sub-components
             % -------------------------------------------------------------
@@ -47,19 +46,22 @@ classdef Modal < handle
             try
                 % ---------------------------------------------------------
                 % Parse varagin
-                Obj.disableBackdropClose = false;
+                Obj.DisableBackdropClose = false;
+                Obj.ComponentProps = struct([]);
                 for i = 1:2:length(varargin)
                     switch lower(varargin{i})
                         case 'disablebackdropclose'
-                            Obj.disableBackdropClose = varargin{i+1};
+                            Obj.DisableBackdropClose = varargin{i+1};
+                        case 'componentprops'
+                            Obj.ComponentProps = varargin{i+1};
                     end
                 end
                 % ---------------------------------------------------------
                 % Set the image clicked function so clicking on the
                 % background toggles the modal off
-                if ~Obj.disableBackdropClose && isempty(Obj.BgModalImage.ImageClickedFcn)
+                if ~Obj.DisableBackdropClose && isempty(Obj.BgModalImage.ImageClickedFcn)
                     Obj.BgModalImage.ImageClickedFcn = @(source, event) app.hModal(event, []);
-                elseif Obj.disableBackdropClose
+                elseif Obj.DisableBackdropClose
                     Obj.BgModalImage.ImageClickedFcn = [];
                 end
                 % ---------------------------------------------------------
@@ -76,7 +78,8 @@ classdef Modal < handle
                             Obj.Content = EventExcerpt(app.UIFigure, 'Verbose', app.Props.Verbose);
                             app_addlisteners(app, Obj.Content, {'eKeyPress'});
                         case 'RegisterUser'
-                            Obj.Content = RegisterUser(app.UIFigure, 'Verbose', app.Props.Verbose);
+                            Obj.ComponentProps
+                            Obj.Content = RegisterUser(app.UIFigure, 'Auth', Obj.ComponentProps, 'Verbose', app.Props.Verbose);
                         otherwise
                             app.Props.ToggleModal = false;
                             return

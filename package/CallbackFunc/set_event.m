@@ -36,6 +36,8 @@ try
     EventType = [];
     SelectedSegment = [];
     Color = [];
+    Prop = [];
+    Value = [];
     for i = 1:2:length(event.UserData.Payload)
         switch lower(event.UserData.Payload{i})
             case 'obj'
@@ -52,6 +54,10 @@ try
                 SelectedSegment = event.UserData.Payload{i+1};
             case 'color'
                 Color = event.UserData.Payload{i+1};
+            case 'prop'
+                Prop = event.UserData.Payload{i+1};
+            case 'value'
+                Value = event.UserData.Payload{i+1};
         end
     end
     % =====================================================================
@@ -68,29 +74,59 @@ try
             % If it does exist, extract the color
             if any(doesexist)
                 color = ACT.analysis.events.color{find(doesexist, 1, 'first')};
+                % check if it overlaps with an existing event of the same
+                % label and type
+                cfg.Start = datenum2iso(SelectedSegment(1));
+                cfg.End = datenum2iso(SelectedSegment(2));
+                events = cropevents(ACT.analysis.events, cfg);
+                has_overlap = ...
+                    strcmpi(events.label, EventGroup) & ...
+                    strcmpi(events.type, 'manual');
+                events = events(has_overlap, :);
+                if ~isempty(events)
+                    onsets = cellfun(@(dstr) iso2datenum(dstr), events.onset);
+                    durations = cellfun(@(dstr) iso2duration(dstr), events.duration);
+                    offsets = onsets + durations;
+                    SelectedSegment(1) = min([SelectedSegment(1); onsets]);
+                    SelectedSegment(2) = max([SelectedSegment(2); offsets]);
+                    idx_rm = find(ismember(ACT.analysis.events.id, events.id));
+                else
+                    idx_rm = [];
+                end
             else
                 % Does not exist yet, get color
                 ncolors = length(unique(cellfun(@(l, t) strcat(l, t), ACT.analysis.events.label, ACT.analysis.events.type, 'UniformOutput', false)));
                 color = app_colors('nth', ncolors+1);
+                idx_rm = [];
             end
             % -------------------------------------------------------------
             % Create new table row entry
             tmp = table();
-            tmp.id = max(ACT.analysis.events.id)+1;
-            tmp.onset = datenum2iso(SelectedSegment(1), 'omitmilliseconds');
-            tmp.duration = duration2iso(SelectedSegment(2) - SelectedSegment(1));
+            if isempty(ACT.analysis.events)
+                tmp.id = 1;
+            else
+                tmp.id = max(ACT.analysis.events.id)+1;
+            end
+            tmp.onset = {datenum2iso(SelectedSegment(1), 'omitmilliseconds')};
+            tmp.duration = {duration2iso(SelectedSegment(2) - SelectedSegment(1))};
             tmp.label = {EventGroup};
             tmp.type = {'manual'};
-            tmp.color = color;
+            tmp.color = {color};
             tmp.show = true;
             % -------------------------------------------------------------
             % Append the event
-            ACT.analysis.events = [ACT.analysis.events; tmp];
+            if isempty(ACT.analysis.events)
+                ACT.analysis.events = tmp;
+            else
+                ACT.analysis.events = [ACT.analysis.events; tmp];
+            end
+            % remove any overlapping events
+            ACT.analysis.events(idx_rm, :) = [];
             % sort by onset
             [~, idx] = sort(ACT.analysis.events.onset);
             ACT.analysis.events = ACT.analysis.events(idx, :);
-        case 'update'
-            % =============================================================
+        case 'updateone'
+            % -------------------------------------------------------------
             % UPDATE EXISTING EVENT
             % -------------------------------------------------------------
             % Get the index of the event we're updating
@@ -116,13 +152,34 @@ try
                     ACT.analysis.events.color{idx} = app_colors('nth', ncolors+1);
                 end
             end
-        case 'remove'
-            % =============================================================
+        case 'updatemany'
+            % -------------------------------------------------------------
+            % UPDATE EXISTING EVENT GROUP
+            % -------------------------------------------------------------
+            idx = find(strcmpi(ACT.analysis.events.label, EventGroup) & strcmpi(ACT.analysis.events.type, EventType));
+            for i = 1:length(idx)
+                if iscell(ACT.analysis.events.(Prop))
+                    ACT.analysis.events.(Prop){idx(i)} = Value;
+                else
+                    ACT.analysis.events.(Prop)(idx(i)) = Value;
+                end
+            end
+        case 'deleteone'
+            % -------------------------------------------------------------
             % DELETE EXISTING EVENT
             % -------------------------------------------------------------
             idx = ACT.analysis.events.id == EventId;
             ACT.analysis.events(idx, :) = [];
+        case 'deletemany'
+            % -------------------------------------------------------------
+            % DELETE EXISTING EVENT GROUP
+            % -------------------------------------------------------------
+            idx = find(strcmpi(ACT.analysis.events.label, EventGroup) & strcmpi(ACT.analysis.events.type, EventType));
+            ACT.analysis.events(idx, :) = [];
         case 'setcolor'
+            % -------------------------------------------------------------
+            % SET THE COLOR OF A EVENT GROUP
+            % -------------------------------------------------------------
             idx = find(strcmpi(ACT.analysis.events.label, EventGroup) & strcmpi(ACT.analysis.events.type, EventType));
             for i = 1:length(idx)
                 ACT.analysis.events.color{idx(i)} = Color;

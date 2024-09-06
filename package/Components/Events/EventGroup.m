@@ -99,7 +99,7 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
             Obj.Badge = uilabel(Obj.GridLayout, ...
                 'Text', 'n', ...
                 'HorizontalAlignment', 'center', ...
-                'FontSize', 8);
+                'FontSize', 10);
             Obj.Badge.Layout.Column = 4;
             Obj.Badge.Layout.Row = 1;
             % -------------------------------------------------------------
@@ -108,17 +108,17 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                 'Text', '', ...
                 'Tag', 'show', ...
                 'Value', 1, ...
-                'Tooltip', 'Show', ...
-                'ValueChangedFcn', @(~, event) disp('show'));
+                'Tooltip', 'Show/Hide', ...
+                'ValueChangedFcn', @(source, event) Obj.hUpdateEvent(source, event));
             Obj.ShowCheckbox.Layout.Column = 5;
             Obj.ShowCheckbox.Layout.Row = 1;
             % -------------------------------------------------------------
             Obj.EditSaveButton = uibutton(Obj.GridLayout, ...
                 'Text', '', ...
                 'BackgroundColor', Colors.body_secondary, ...
-                'Tooltip', 'Edit', ...
+                'Tooltip', 'Edit label', ...
                 'Icon', 'icon-edit.png', ...
-                'ButtonPushedFcn', @(~, event) Obj.ToggleEditStatus());
+                'ButtonPushedFcn', @(source, event) Obj.ToggleEditStatus(source, event));
             Obj.EditSaveButton.Layout.Column = 6;
             Obj.EditSaveButton.Layout.Row = 1;
             % -------------------------------------------------------------
@@ -128,7 +128,7 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                 'BackgroundColor', Colors.bs_danger, ...
                 'Tooltip', 'Delete event group', ...
                 'Icon', 'icon-trash.png', ...
-                'ButtonPushedFcn', @(~, event) disp('delete group'));
+                'ButtonPushedFcn', @(source, event) Obj.ToggleEditStatus(source, event));
             Obj.DeleteUndoButton.Layout.Column = 7;
             Obj.DeleteUndoButton.Layout.Row = 1;
         end
@@ -157,7 +157,9 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                     Obj.EditSaveButton.Icon = 'icon-save.png';
                     Obj.DeleteUndoButton.Icon = 'icon-undo.png';
                     Obj.EditSaveButton.Tooltip = 'Save';
+                    Obj.EditSaveButton.Tag = 'save';
                     Obj.DeleteUndoButton.Tooltip = 'Undo';
+                    Obj.DeleteUndoButton.Tag = 'undo';
                     Obj.EditSaveButton.BackgroundColor = Colors.bs_success;
                     Obj.DeleteUndoButton.BackgroundColor = Colors.body_secondary;
                 else
@@ -165,8 +167,10 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                     Obj.Input.Visible = 'off';
                     Obj.EditSaveButton.Icon = 'icon-edit.png';
                     Obj.DeleteUndoButton.Icon = 'icon-trash.png';
-                    Obj.EditSaveButton.Tooltip = 'Edit';
+                    Obj.EditSaveButton.Tooltip = 'Edit label';
+                    Obj.EditSaveButton.Tag = 'edit';
                     Obj.DeleteUndoButton.Tooltip = 'Delete event group';
+                    Obj.DeleteUndoButton.Tag = 'delete';
                     Obj.EditSaveButton.BackgroundColor = Colors.body_secondary;
                     Obj.DeleteUndoButton.BackgroundColor = Colors.bs_danger;
                 end
@@ -179,8 +183,31 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
             end
         end
         % =================================================================
-        function ToggleEditStatus(Obj)
+        function ToggleEditStatus(Obj, source, event)
+            % -------------------------------------------------------------
+            % Disable source to prevent double clicking
+            source.Enable = 'off';
+            drawnow();
+            % -------------------------------------------------------------
+            switch lower(source.Tag)
+                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                case 'save' % The user clicked save
+                    src = struct();
+                    src.Tag = 'label';
+                    src.Value = Obj.Input.Value;
+                    Obj.LabelObj.Text = Obj.Input.Value;
+                    Obj.hUpdateEvent(src, event);
+                    % - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                case 'delete'
+                    Obj.hDeleteEvent(event);
+                    return
+                    % - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                otherwise
+                    % do nothing, just revert the edit status
+            end
+            % -------------------------------------------------------------
             Obj.EditStatus = ~Obj.EditStatus;
+            source.Enable = 'on';
         end
         % =================================================================
         function OpenColorPicker(Obj, event)
@@ -206,6 +233,34 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
             app.Cmps.ColorPicker.EventName = {'eDataChanged'};
             app.Cmps.ColorPicker.UserData = {'Obj', Obj, 'Method', 'setcolor', 'EventGroup', Obj.LabelText, 'EventType', Obj.TypeText};
             app.Cmps.ColorPicker.Position = [app.UIFigure.CurrentPoint, 131, 68] - [85, 86, 0, 0];
+        end
+        % =================================================================
+        function hUpdateEvent(Obj, source, event)
+            % Construct payload
+            Payload = {...
+                'Obj', Obj, ...
+                'Method', 'updatemany', ...
+                'EventGroup', Obj.LabelText, ...
+                'EventType', Obj.TypeText, ...
+                'Prop', source.Tag, ...
+                'Value', source.Value ...
+                };
+            % Execute callback function
+            event = AppEventData(event, Payload);
+            app_callback(event, 'set_event', {'eDataChanged'})
+        end
+        % =================================================================
+        function hDeleteEvent(Obj, event)
+            % Construct payload
+            Payload = {...
+                'Obj', Obj, ...
+                'Method', 'deletemany', ...
+                'EventGroup', Obj.LabelText, ...
+                'EventType', Obj.TypeText, ...
+                };
+            % Execute callback function
+            event = AppEventData(event, Payload);
+            app_callback(event, 'set_event', {'eDataChanged'})
         end
     end
 end

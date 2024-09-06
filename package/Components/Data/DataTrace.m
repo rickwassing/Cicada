@@ -59,8 +59,7 @@ classdef DataTrace < handle
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
                 % -------------------------------------------------------------
                 if isempty(Obj.Metric)
-                    Obj.Line.XData = NaN;
-                    Obj.Line.YData = NaN;
+                    delete(Obj.Line);
                     return
                 end
                 % -------------------------------------------------------------
