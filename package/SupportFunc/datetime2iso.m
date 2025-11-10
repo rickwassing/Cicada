@@ -17,6 +17,10 @@
 % identical terms.
 
 function dstr = datetime2iso(dtime, varargin)
+% Use 'now' if dtime is empty
+if isempty(dtime)
+    dtime = datetime('now', 'TimeZone', 'utc');
+end
 % -------------------------------------------------------------------------
 % Default format
 format = 'uuuu-MM-dd''T''HH:mm:ss.SSS';
@@ -29,6 +33,8 @@ if nargin > 1
             format = 'uuuu-MM-dd''T''HH:mm:ss';
         case 'omitseconds'
             format = 'uuuu-MM-dd''T''HH:mm';
+        otherwise
+            format = varargin{1};
     end
 end
 % -------------------------------------------------------------------------

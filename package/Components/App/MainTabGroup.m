@@ -20,7 +20,7 @@ classdef MainTabGroup < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
-        TabTitles = {'Data'};
+        TabTitles = {'Data', 'Report'};
         IsVisible;
         Verbose;
     end
@@ -112,6 +112,11 @@ classdef MainTabGroup < matlab.ui.componentcontainer.ComponentContainer
                     'Verbose', Obj.Verbose);
                 app_addlisteners([], Obj.TabGroup.Children(i).UserData.DataTab, ...
                     {'eDatasetChanged', 'eDataChanged', 'eActogramSettingsChanged'});
+            elseif i == 999
+                Obj.TabGroup.Children(i).UserData.ReportTab = DataTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
+                    'ActogramLength', 1, ...
+                    'NumPanels', 0, ...
+                    'Verbose', Obj.Verbose);
             end
         end
     end

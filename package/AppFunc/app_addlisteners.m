@@ -30,11 +30,21 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-function app_addlisteners(app, component, eventlabels)
+function app_addlisteners(app, component, eventlabels, varargin)
+% -------------------------------------------------------------------------
+Tag = 'Cicada';
+if nargin > 3
+    for i = 1:2:numel(varargin)
+        switch lower(varargin{i})
+            case 'tag'
+                Tag = varargin{i+1};
+        end
+    end
+end
 % -------------------------------------------------------------------------
 % Get the app-handle
 if isempty(app)
-    app = app_gethandle();
+    app = app_gethandle(Tag);
 end
 if isempty(app)
     return;

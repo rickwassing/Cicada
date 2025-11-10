@@ -29,8 +29,14 @@ if nargin > 1
             format = 'yyyy-mm-ddTHH:MM:SS';
         case 'omitseconds'
             format = 'yyyy-mm-ddTHH:MM';
+        otherwise
+            format = varargin{1};
     end
 end
 % -------------------------------------------------------------------------
+if ~isscalar(dnum)
+    dstr = arrayfun(@(s) datenum2iso(s, varargin{:}), dnum, 'UniformOutput', false);
+    return
+end
 dstr = datestr(dnum, format); %#ok<DATST>
 end

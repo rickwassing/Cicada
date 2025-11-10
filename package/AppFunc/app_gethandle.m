@@ -24,10 +24,16 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-function app = app_gethandle()
+function app = app_gethandle(varargin)
+% -------------------------------------------------------------------------
+if nargin < 1
+    Tag = 'Cicada';
+else
+    Tag = varargin{1};
+end
 % -------------------------------------------------------------------------
 % Get the app-handle
-app = findall(groot, 'Tag', 'Cicada');
+app = findall(groot, 'Tag', Tag);
 if isvalid(app)
     app = app.RunningAppInstance;
 else

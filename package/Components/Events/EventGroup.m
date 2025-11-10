@@ -29,7 +29,6 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
         Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
-        Panel matlab.ui.container.Panel
         GridLayout matlab.ui.container.GridLayout
         LabelObj matlab.ui.control.Label
         TypeObj matlab.ui.control.Label
@@ -50,15 +49,7 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
             % -------------------------------------------------------------
             Colors = app_colors();
             % -------------------------------------------------------------
-            Obj.Panel = uipanel(Obj, ...
-                'Tag', 'EventGroup_Panel', ...
-                'ForegroundColor', Colors.body_primary, ...
-                'BackgroundColor', [1, 1, 1], ...
-                'HighLightColor', [0.8, 0.8, 0.8], ...
-                'Units', 'normalized', ...
-                'Position', [0, 0, 1, 1]);
-            % -------------------------------------------------------------
-            Obj.GridLayout = uigridlayout(Obj.Panel, ...
+            Obj.GridLayout = uigridlayout(Obj, ...
                 'Tag', 'EventGroup_GridLayout', ...
                 'ColumnWidth', {18, '1x', '1x', 18, 18, 18, 18}, ...
                 'RowHeight', {18}, ...
@@ -122,7 +113,7 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
             Obj.EditSaveButton.Layout.Column = 6;
             Obj.EditSaveButton.Layout.Row = 1;
             % -------------------------------------------------------------
-            % TODO: this button does not do anything yet...
+            % Delete event group
             Obj.DeleteUndoButton = uibutton(Obj.GridLayout, ...
                 'Text', '', ...
                 'BackgroundColor', Colors.bs_danger, ...
@@ -141,7 +132,6 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                 % ---------------------------------------------------------
                 Colors = app_colors();
                 Obj.Tag = ['EventGroup_label-', Obj.LabelText, '_type-', Obj.TypeText];
-                % TODO: think about the enable/disable rules
                 Obj.EditSaveButton.Enable = ifelse(strcmpi(Obj.TypeText, 'custom'), 'on', 'off');
                 Obj.ColorPicker.UserData = {'Obj', Obj, 'Method', 'color', 'Label', Obj.LabelText, 'Type', Obj.TypeText};
                 Obj.ColorPicker.BackgroundColor = Obj.Color;
@@ -149,7 +139,6 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                 Obj.Input.Value = Obj.LabelText;
                 Obj.TypeObj.Text = Obj.TypeText;
                 Obj.Badge.Text = ['(', num2str(Obj.NumEvents), ')'];
-                % TODO: this checkbox does not do anything yet...
                 Obj.ShowCheckbox.Value = Obj.DoShow;
                 if Obj.EditStatus
                     Obj.LabelObj.Visible = 'off';
@@ -200,6 +189,9 @@ classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
                     % - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 case 'delete'
                     Obj.hDeleteEvent(event);
+                    if isvalid(source)
+                        source.Enable = 'on';
+                    end
                     return
                     % - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 otherwise

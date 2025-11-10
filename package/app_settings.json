@@ -1,16 +1,23 @@
 {
-  "recent": [
-    "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/demo_actigraphy_v1.mat",
-    "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/P1S02_MH_actigraphy.mat"
-  ],
+  "App": {
+    "Id": "46f234dc-427b-4ec9-92b3-33de0f993096",
+    "SessionId": "1a556e0b-8dbf-442c-9578-153df51f5e01",
+    "CicadaVersion": "1.0.0 (build 25 July 2023)",
+    "SystemOS": "macos",
+    "SystemVersion": "26.0.1",
+    "MatlabVersion": "24.2.0.2806996 (R2024b) Update 3"
+  },
   "Auth": {
     "name": "Rick Wassing",
     "institute": "Woolcock",
-    "email": "rick.wassing@woolcock.org.au",
+    "email": "rickwassing@gmail.com",
     "subscribe": "yes",
     "accept": "yes",
-    "askagain": true,
     "is_registered": true,
-    "datetime": "2024-09-05T10:24:26 (Australia/Sydney)"
-  }
+    "shareusagedata": "no",
+    "datetime": "2025-11-07T14:30:37 (Australia/Sydney)"
+  },
+  "Recent": [
+    "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/demo_actigraphy_v1.mat"
+  ]
 }

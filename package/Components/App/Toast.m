@@ -2,18 +2,18 @@
 % Displays messages to the user when certain events have completed, and
 % shows the status of that event ('success', 'warning', or 'error')
 
-% Authors: 
+% Authors:
 %   Rick Wassing, Woolcock Institute of Medical Research, Sydney, Australia
 %
-% History: 
+% History:
 %   Created 2023-06-27, Rick Wassing
 
-% Cicada (C) 2023 by Rick Wassing is licensed under 
+% Cicada (C) 2023 by Rick Wassing is licensed under
 % Attribution-NonCommercial-ShareAlike 4.0 International
 % This license requires that reusers give credit to the creator. It allows
-% reusers to distribute, remix, adapt, and build upon the material in any 
-% medium or format, for noncommercial purposes only. If others modify or 
-% adapt the material, they must license the modified material under 
+% reusers to distribute, remix, adapt, and build upon the material in any
+% medium or format, for noncommercial purposes only. If others modify or
+% adapt the material, they must license the modified material under
 % identical terms.
 
 classdef Toast < matlab.ui.componentcontainer.ComponentContainer
@@ -28,7 +28,6 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
         Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
-        ToastPanel matlab.ui.container.Panel
         ToastGridLayout matlab.ui.container.GridLayout
         ToastTitlePanel matlab.ui.container.Panel
         ToastTitleGridLayout matlab.ui.container.GridLayout
@@ -46,16 +45,11 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
             % -------------------------------------------------------------
             % Create sub-components
             % -------------------------------------------------------------
-            Obj.Id = datestr(now, 'HHMMSSFFF');
+            Obj.Id = datestr(now, 'HHMMSSFFF'); %#ok<TNOW1,DATST>
             Obj.Tag = ['Toast_id-', Obj.Id];
             Obj.Timeout = 5;
             % -------------------------------------------------------------
-            Obj.ToastPanel = uipanel(Obj, ...
-                'Tag', ['Toast_Panel_id-', Obj.Id], ...
-                'Units', 'normalized', ...
-                'Position', [0, 0, 1, 1]);
-            % -------------------------------------------------------------
-            Obj.ToastGridLayout = uigridlayout(Obj.ToastPanel, ...
+            Obj.ToastGridLayout = uigridlayout(Obj, ...
                 'Tag', ['Toast_GridLayout_id-', Obj.Id], ...
                 'ColumnWidth', {'1x'}, ...
                 'RowHeight', {24, 24}, ...
@@ -124,45 +118,45 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
         % =================================================================
         function update(Obj)
             try
-            % -------------------------------------------------------------
-            % Timer
-            if Obj.Verbose; Time = now; end
-            % -------------------------------------------------------------
-            Obj.ToastTitleLabel.Text = Obj.Title;
-            Obj.ToastMessageLabel.Text = Obj.Message;
-            % -------------------------------------------------------------
-            if isempty(Obj.Message)
-                Obj.Position(4) = 26;
-            end
-            % -------------------------------------------------------------
-            Colors = app_colors();
-            switch lower(Obj.Color)
-                case 'success'
-                    Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_success;
-                    Obj.ToastTitleButton.BackgroundColor = Colors.bs_success;
-                    Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_success_subtle;
-                case 'warning'
-                    Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_warning;
-                    Obj.ToastTitleButton.BackgroundColor = Colors.bs_warning;
-                    Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_warning_subtle;
-                case 'danger'
-                    Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_danger;
-                    Obj.ToastTitleButton.BackgroundColor = Colors.bs_danger;
-                    Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_danger_subtle;
-                case 'info'
-                    Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_info;
-                    Obj.ToastTitleButton.BackgroundColor = Colors.bs_info;
-                    Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_info_subtle;
-            end
-            % -------------------------------------------------------------
-            Timing = timer(...
-                'StartDelay', Obj.Timeout, ...
-                'TimerFcn', {@deletetoast, Obj});
-            start(Timing);
-            % -------------------------------------------------------------
-            if Obj.Verbose
-                fprintf('>> CIC: Toast ''%s'' updated in %.1g s.\n', Obj.Id, (now-Time)*24*60*60)
-            end
+                % -------------------------------------------------------------
+                % Timer
+                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % -------------------------------------------------------------
+                Obj.ToastTitleLabel.Text = Obj.Title;
+                Obj.ToastMessageLabel.Text = Obj.Message;
+                % -------------------------------------------------------------
+                if isempty(Obj.Message)
+                    Obj.Position(4) = 26;
+                end
+                % -------------------------------------------------------------
+                Colors = app_colors();
+                switch lower(Obj.Color)
+                    case 'success'
+                        Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_success;
+                        Obj.ToastTitleButton.BackgroundColor = Colors.bs_success;
+                        Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_success_subtle;
+                    case 'warning'
+                        Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_warning;
+                        Obj.ToastTitleButton.BackgroundColor = Colors.bs_warning;
+                        Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_warning_subtle;
+                    case 'danger'
+                        Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_danger;
+                        Obj.ToastTitleButton.BackgroundColor = Colors.bs_danger;
+                        Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_danger_subtle;
+                    case 'info'
+                        Obj.ToastTitleGridLayout.BackgroundColor = Colors.bs_info;
+                        Obj.ToastTitleButton.BackgroundColor = Colors.bs_info;
+                        Obj.ToastMessageGridLayout.BackgroundColor = Colors.bs_info_subtle;
+                end
+                % -------------------------------------------------------------
+                Timing = timer(...
+                    'StartDelay', Obj.Timeout, ...
+                    'TimerFcn', {@deletetoast, Obj});
+                start(Timing);
+                % -------------------------------------------------------------
+                if Obj.Verbose
+                    fprintf('>> CIC: Toast ''%s'' updated in %.1g s.\n', Obj.Id, (now-Time)*24*60*60) %#ok<TNOW1>
+                end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in Toast.m')
             end

@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef DataTab < matlab.ui.componentcontainer.ComponentContainer
+classdef DataTab < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
@@ -26,7 +26,6 @@ classdef DataTab < matlab.ui.componentcontainer.ComponentContainer
         NumPanels;
         PanelHeight;
         Pool;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -46,15 +45,12 @@ classdef DataTab < matlab.ui.componentcontainer.ComponentContainer
             % -------------------------------------------------------------
             Colors = app_colors();
             Obj.Tag = 'DataTab';
-            Obj.Units = 'normalized';
-            Obj.Position = [0, 0, 1, 1];
             Obj.Panel = uipanel(Obj, ...
                 'Tag', 'DataTab_Panel', ...
-                'BorderType', 'none', ...
-                'BackgroundColor', Colors.bg_secondary, ...
                 'Units', 'normalized', ...
                 'Position', [0, 0, 1, 1]);
-            Obj.GridLayout = uigridlayout(Obj.Panel, ...
+            % -------------------------------------------------------------
+            Obj.GridLayout = uigridlayout(Obj, ...
                 'Tag', 'DataTab_GridLayout', ...
                 'ColumnWidth', {'1x', 0}, ...
                 'RowHeight', {'1x'}, ...
@@ -63,6 +59,7 @@ classdef DataTab < matlab.ui.componentcontainer.ComponentContainer
                 'Padding', 0, ...
                 'Scrollable', 'on', ...
                 'BackgroundColor', Colors.bg_secondary);
+            % -------------------------------------------------------------
             Obj.Pool = DataPanelPool(Obj.GridLayout);
             Obj.Pool.Layout.Column = 2;
         end

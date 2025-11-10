@@ -20,6 +20,7 @@
 function deletetoast(Timer, ~, Obj)
 % -------------------------------------------------------------------------
 % Delete the toast object
+fprintf('>> CIC: Deleting Toast\n')
 if ~isempty(Obj)
     if isvalid(Obj)
         delete(Obj)

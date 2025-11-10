@@ -78,8 +78,9 @@ classdef Modal < handle
                             Obj.Content = EventExcerpt(app.UIFigure, 'Verbose', app.Props.Verbose);
                             app_addlisteners(app, Obj.Content, {'eKeyPress'});
                         case 'RegisterUser'
-                            Obj.ComponentProps
                             Obj.Content = RegisterUser(app.UIFigure, 'Auth', Obj.ComponentProps, 'Verbose', app.Props.Verbose);
+                        case 'ImportEvents_SleepDiary'
+                            Obj.Content = ImportEvents_SleepDiary(app.UIFigure, 'Settings', app.Props.Settings, 'Verbose', app.Props.Verbose);
                         otherwise
                             app.Props.ToggleModal = false;
                             return

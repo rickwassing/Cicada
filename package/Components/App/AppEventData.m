@@ -27,7 +27,9 @@ classdef (ConstructOnLoad) AppEventData < event.EventData
         function data = AppEventData(event, varargin)
             data.UserData.Source = event.Source;
             data.UserData.EventName = event.EventName;
-            data.UserData.Payload = varargin{1};
+            if nargin > 1
+                data.UserData.Payload = varargin{1};
+            end
         end
     end
 end

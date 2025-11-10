@@ -65,9 +65,11 @@ classdef Selection < handle
                 % ---------------------------------------------------------
                 % Check if this panel is hovered
                 try
-                    DPanel = Obj.Patch.Parent.Parent.Parent.Parent;
+                    DPanel = Obj.Patch.Parent.Parent.Parent;
                 catch
-                    % The panel has been removed
+                    return
+                end
+                if ~isprop(DPanel, 'IsHovered')
                     return
                 end
                 % If it is, then get the curret point

@@ -28,11 +28,21 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-function app_notify(app, eventlabels, event)
+function app_notify(app, eventlabels, event, varargin)
+% -------------------------------------------------------------------------
+Tag = 'Cicada';
+if nargin > 3
+    for i = 1:2:numel(varargin)
+        switch lower(varargin{i})
+            case 'tag'
+                Tag = varargin{i+1};
+        end
+    end
+end
 % -------------------------------------------------------------------------
 % Get the app-handle
 if isempty(app)
-    app = app_gethandle();
+    app = app_gethandle(Tag);
 end
 if isempty(app) || ~isvalid(app)
     return;
@@ -47,6 +57,11 @@ for i = 1:length(eventlabels)
     end
     if nargin == 2
         notify(app, eventlabels{i});
+    elseif isempty(event)
+        notify(app, eventlabels{i});
+    elseif iscell(event)
+        event = AppEventData(event{1}, event(2:end));
+        notify(app, eventlabels{i}, event);
     else
         notify(app, eventlabels{i}, event);
     end

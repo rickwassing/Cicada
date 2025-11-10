@@ -19,6 +19,10 @@
 % identical terms.
 
 function dstr = duration2iso(D)
+if ~isscalar(D)
+    dstr = arrayfun(@(s) duration2iso(s), D, 'UniformOutput', false);
+    return
+end
 H = floor(D*24);
 RH = D*24 - H;
 M = floor(RH*60);

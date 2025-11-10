@@ -64,12 +64,12 @@ classdef InfoPanel < matlab.ui.componentcontainer.ComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % -------------------------------------------------------------
+                % ---------------------------------------------------------
                 % Timer
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
+                % ---------------------------------------------------------
                 Colors = app_colors();
-                % -------------------------------------------------------------
+                % ---------------------------------------------------------
                 Obj.Layout.Row = Obj.Row;
                 Obj.Panel.Title = Obj.Title;
                 Obj.Panel.Enable = Obj.Enable;
@@ -88,7 +88,7 @@ classdef InfoPanel < matlab.ui.componentcontainer.ComponentContainer
                     delete(Obj.KeyLabels(i));
                     delete(Obj.ValueLabels(i));
                 end
-                % -------------------------------------------------------------
+                % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: InfoPanel ''%s'' updated in %.1g s.\n', Obj.Title, (now-Time)*24*60*60) %#ok<TNOW1>
                 end
@@ -118,14 +118,14 @@ classdef InfoPanel < matlab.ui.componentcontainer.ComponentContainer
         % =================================================================
         function hUpdate(Obj, app, event) %#ok<INUSD>
             try
-                % -------------------------------------------------------------
+                % ---------------------------------------------------------
                 % If the dataset is empty, then disable the panel and initiate the KeyVals to empty
                 if isempty(app.ACT)
                     Obj.Enable = 'off';
                     Obj.KeyValues = {};
                     return
                 else
-                    % ---------------------------------------------------------
+                    % -----------------------------------------------------
                     % Otherwise, the dataset is not empty, enable panels and generate key-value pairs
                     Obj.Enable = 'on';
                     Obj.KeyValues = {};

@@ -1,4 +1,4 @@
-% SET_DISPLAY
+% SET_EVENT
 % Patches a single event
 %
 % Usage:

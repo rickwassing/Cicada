@@ -26,6 +26,7 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
+% TODO: save history as a structure, or even a JSON sidecar file?
 function ACT = cic_history(ACT, FuncName, cfg)
 % ---------------------------------------------------------------------
 if nargin < 3

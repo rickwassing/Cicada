@@ -5,7 +5,7 @@
 %   >> app_savesettings(settings);
 %
 % Inputs:
-%   'settings' - [struct] cicada app settings
+%   's' - [struct] cicada app settings, or any other structure
 %
 % Outputs: 
 %   none
@@ -24,11 +24,24 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-function app_savesettings(settings)
-
+% TODO: rename this function to reflect its generalizad
+function app_savesettings(s, varargin)
+% -------------------------------------------------------------------------
+% Assume we want to save the main app settings
 fullfilepath = [fileparts(which('cicada')), filesep, 'package', filesep, 'app_settings.json'];
-jsonchar = jsonencode(settings, PrettyPrint=true);
-fid = fopen(fullfilepath, 'w');
+% -------------------------------------------------------------------------
+% Check the varargin 
+for i = 1:2:length(varargin)
+    switch lower(varargin{i})
+        case 'fullfilepath'
+            fullfilepath = varargin{i+1};
+    end
+end
+% -------------------------------------------------------------------------
+jsonchar = jsonencode(s, PrettyPrint=true); % convert to JSON
+% -------------------------------------------------------------------------
+% Save to file
+fid = fopen(fullfilepath, 'w'); 
 fprintf(fid, '%s', jsonchar);
 fclose(fid);
 

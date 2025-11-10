@@ -17,12 +17,18 @@
 % identical terms.
 
 function dtime = iso2datenum(dstr)
+if iscell(dstr)
+    dtime = cellfun(@(s) iso2datenum(s), dstr);
+    return
+end
 if length(dstr) == 5
     dtime = datenum(dstr, 'HH:MM'); %#ok<*DATNM>
 elseif length(dstr) == 8
     dtime = datenum(dstr, 'HH:MM:SS');
 elseif length(dstr) == 10
     dtime = datenum(dstr, 'yyyy-mm-dd');
+elseif length(dstr) == 16
+    dtime = datenum(dstr, 'yyyy-mm-ddTHH:MM');
 elseif length(dstr) == 19
     dtime = datenum(dstr, 'yyyy-mm-ddTHH:MM:SS');
 else

@@ -19,7 +19,7 @@ classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
-        TabTitles = {'Display', 'Events', 'Annotation'};
+        TabTitles = {'Data', 'Report'};
         IsVisible;
         Verbose;
     end
@@ -95,16 +95,16 @@ classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
                 % ---------------------------------------------------------
                 % DISPLAY SETTINGS
                 % ---------------------------------------------------------
-                Obj.TabGroup.Children(i).UserData.DisplaySettingsTab = DisplaySettingsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
+                Obj.TabGroup.Children(i).UserData.DataSettingsTab = DataSettingsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
                     'Verbose', Obj.Verbose);
-                app_addlisteners([], Obj.TabGroup.Children(i).UserData.DisplaySettingsTab, ...
-                    {'eDatasetChanged'});
+                app_addlisteners([], Obj.TabGroup.Children(i).UserData.DataSettingsTab, ...
+                    {'eDatasetChanged', 'eDataChanged'});
             elseif i == 2
                 % ---------------------------------------------------------
-                % EVENTS
+                % REPORT
                 % ---------------------------------------------------------
-                Obj.TabGroup.Children(i).UserData.EventsTab = EventsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
-                    'Verbose', Obj.Verbose);
+                % Obj.TabGroup.Children(i).UserData.EventsTab = EventsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
+                %     'Verbose', Obj.Verbose);
             end
         end
     end

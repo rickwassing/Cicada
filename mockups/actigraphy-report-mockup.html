@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actigraphy Clinical Report Generator</title>
+    <style>
+        :root {
+            /* Default template variables */
+            --primary-color: #2c5aa0;
+            --secondary-color: #6c757d;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dee2e6;
+            --header-bg: #f8f9fa;
+            --font-family: 'Arial', sans-serif;
+            --font-size-base: 12px;
+            --font-size-header: 16px;
+            --font-size-title: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            color: var(--text-color);
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        /* Template Customization Sidebar */
+        .template-sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .template-sidebar h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .control-group select,
+        .control-group input[type="color"],
+        .control-group input[type="number"],
+        .control-group input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* Report Container */
+        .report-container {
+            margin-left: 320px;
+            padding: 20px;
+            background: #f0f0f0;
+            min-height: 100vh;
+        }
+
+        /* A4 Page Styling */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--background-color);
+            margin: 0 auto 20px;
+            padding: 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            page-break-after: always;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 60px;
+            background: var(--header-bg);
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 10px;
+            color: var(--secondary-color);
+        }
+
+        .clinic-info h1 {
+            color: var(--primary-color);
+            font-size: var(--font-size-header);
+            margin-bottom: 5px;
+        }
+
+        .clinic-info p {
+            font-size: 10px;
+            color: var(--secondary-color);
+            line-height: 1.3;
+        }
+
+        .report-title {
+            text-align: right;
+        }
+
+        .report-title h2 {
+            color: var(--primary-color);
+            font-size: var(--font-size-title);
+            margin-bottom: 5px;
+        }
+
+        .report-title p {
+            font-size: 10px;
+            color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .page-footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 20mm;
+            right: 20mm;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--secondary-color);
+        }
+
+        /* Content Sections */
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            font-size: var(--font-size-title);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .info-table th,
+        .info-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+            font-size: var(--font-size-base);
+        }
+
+        .info-table th {
+            background: var(--header-bg);
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .info-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* Editable patient info cells */
+        .patient-info-table td.editable {
+            cursor: text;
+            position: relative;
+        }
+
+        .patient-info-table td.editable:hover {
+            background-color: #e8f4fd;
+        }
+
+        .patient-info-table td.editable:focus {
+            outline: 2px solid var(--primary-color);
+            background-color: white;
+        }
+
+        /* Clinical Notes */
+        .clinical-notes {
+            height: 200px;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            background: white;
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            resize: none;
+            width: 100%;
+        }
+
+        /* Graph Placeholders */
+        .graph-placeholder {
+            width: 100%;
+            height: 120px;
+            background: var(--header-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+            font-size: 11px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .template-sidebar {
+                display: none;
+            }
+            
+            .report-container {
+                margin-left: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            
+            .page:last-child {
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Template Customization Sidebar -->
+    <div class="template-sidebar">
+        <h2>Template Settings</h2>
+        
+        <div class="control-group">
+            <label for="font-family">Font Family</label>
+            <select id="font-family" onchange="updateTemplate()">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Helvetica, sans-serif">Helvetica</option>
+                <option value="Times New Roman, serif">Times New Roman</option>
+                <option value="Calibri, sans-serif">Calibri</option>
+                <option value="Georgia, serif">Georgia</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="font-size">Base Font Size (px)</label>
+            <input type="number" id="font-size" value="12" min="10" max="16" onchange="updateTemplate()">
+        </div>
+
+        <div class="control-group">
+            <label for="primary-color">Primary Color</label>
+            <input type="color" id="primary-color" value="#2c5aa0" onchange="updateTemplate()">
+            <div class="color-preview" id="primary-preview"></div>
+        </div>
+
+        <div class="control-group">
+            <label for="secondary-color">Secondary Color</label>
+            <input type="color" id="secondary-color" value="#6c757d" onchange="updateTemplate()">
+            <div class="color-preview" id="secondary-preview"></div>
+        </div>
+
+        <div class="control-group">
+            <label for="background-color">Background Color</label>
+            <input type="color" id="background-color" value="#ffffff" onchange="updateTemplate()">
+            <div class="color-preview" id="background-preview"></div>
+        </div>
+
+        <div class="control-group">
+            <label for="border-color">Border Color</label>
+            <input type="color" id="border-color" value="#dee2e6" onchange="updateTemplate()">
+            <div class="color-preview" id="border-preview"></div>
+        </div>
+
+        <div class="control-group">
+            <label for="logo-upload">Clinic Logo</label>
+            <input type="file" id="logo-upload" accept="image/*" onchange="updateLogo()">
+        </div>
+
+
+        <div class="control-group">
+            <button onclick="window.print()" style="width: 100%; padding: 10px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">Print Preview</button>
+        </div>
+    </div>
+
+    <!-- Report Container -->
+    <div class="report-container">
+        <!-- Page 1: Patient Info, Recording Info, Summary Stats, Clinical Notes -->
+        <div class="page">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="logo-section">
+                    <div class="logo-placeholder" id="logo-display">LOGO</div>
+                    <div class="clinic-info">
+                        <h1>Sleep & Circadian Research Centre</h1>
+                        <p>123 Medical Drive, Suite 456<br>
+                        Sydney, NSW 2000<br>
+                        Phone: (02) 1234-5678<br>
+                        Email: info@sleepcentre.com.au</p>
+                    </div>
+                </div>
+                <div class="report-title">
+                    <h2>Actigraphy Clinical Report</h2>
+                    <p>Generated: 19 September 2025</p>
+                </div>
+            </div>
+
+            <!-- Patient Information -->
+            <div class="section">
+                <div class="section-title">Patient Information</div>
+                <table class="info-table patient-info-table">
+                    <tr>
+                        <th>Name</th>
+                        <td class="editable" contenteditable="true" data-field="name">Sarah Johnson</td>
+                        <th>Date of Birth</th>
+                        <td class="editable" contenteditable="true" data-field="dob">15/03/1985</td>
+                    </tr>
+                    <tr>
+                        <th>Patient ID</th>
+                        <td class="editable" contenteditable="true" data-field="id">ACT-2025-001</td>
+                        <th>Sex</th>
+                        <td class="editable" contenteditable="true" data-field="sex">Female</td>
+                    </tr>
+                    <tr>
+                        <th>Referring Physician</th>
+                        <td class="editable" contenteditable="true" data-field="physician">Dr. Michael Chen</td>
+                        <th>Study Date</th>
+                        <td class="editable" contenteditable="true" data-field="study-date">01/09/2025 - 08/09/2025</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Recording Information -->
+            <div class="section">
+                <div class="section-title">Recording Information</div>
+                <table class="info-table">
+                    <tr>
+                        <th>Device</th>
+                        <td>ActiGraph GT3X+</td>
+                        <th>Serial Number</th>
+                        <td>NEO1F41170123</td>
+                    </tr>
+                    <tr>
+                        <th>Start Date/Time</th>
+                        <td>01/09/2025 09:00:00</td>
+                        <th>End Date/Time</th>
+                        <td>08/09/2025 09:00:00</td>
+                    </tr>
+                    <tr>
+                        <th>Duration</th>
+                        <td>7 days, 0 hours</td>
+                        <th>Sampling Rate</th>
+                        <td>30 Hz</td>
+                    </tr>
+                    <tr>
+                        <th>Epoch Length</th>
+                        <td>60 seconds</td>
+                        <th>Total Epochs</th>
+                        <td>10,080</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Summary Statistics - Entire Recording -->
+            <div class="section">
+                <div class="section-title">Summary Statistics - Entire Recording</div>
+                <table class="info-table">
+                    <tr>
+                        <th>Number of Days</th>
+                        <td>7</td>
+                        <th>Time Rejected (%)</th>
+                        <td>2.3%</td>
+                    </tr>
+                    <tr>
+                        <th>Inter-daily Stability (IS)</th>
+                        <td>0.68</td>
+                        <th>Intra-daily Variability (IV)</th>
+                        <td>0.42</td>
+                    </tr>
+                    <tr>
+                        <th>Time in MVA (hours)</th>
+                        <td>1.2 ± 0.3</td>
+                        <th>Mean EN in MVA</th>
+                        <td>245.6 ± 45.2</td>
+                    </tr>
+                    <tr>
+                        <th>Most Active 10h Start</th>
+                        <td>08:30 ± 0:45</td>
+                        <th>Most Active 10h Amplitude</th>
+                        <td>156.8 ± 23.4</td>
+                    </tr>
+                    <tr>
+                        <th>Least Active 5h Start</th>
+                        <td>23:15 ± 1:20</td>
+                        <th>Least Active 5h Amplitude</th>
+                        <td>12.3 ± 4.1</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Summary Statistics - Sleep Windows Average -->
+            <div class="section">
+                <div class="section-title">Summary Statistics - Sleep Windows (Average)</div>
+                <table class="info-table">
+                    <tr>
+                        <th>Number of Sleep Windows</th>
+                        <td>7</td>
+                        <th>Lights Out Time</th>
+                        <td>22:45 ± 0:35</td>
+                    </tr>
+                    <tr>
+                        <th>Sleep Onset Latency (min)</th>
+                        <td>18.5 ± 8.2</td>
+                        <th>WASO (min)</th>
+                        <td>45.2 ± 12.8</td>
+                    </tr>
+                    <tr>
+                        <th>Final Awakening Time</th>
+                        <td>06:30 ± 0:25</td>
+                        <th>Lights On Time</th>
+                        <td>07:15 ± 0:40</td>
+                    </tr>
+                    <tr>
+                        <th>Sleep Window Duration (hours)</th>
+                        <td>8.5 ± 0.5</td>
+                        <th>Total Time in Sustained Inactivity (hours)</th>
+                        <td>7.2 ± 0.4</td>
+                    </tr>
+                    <tr>
+                        <th>Sleep Efficiency (%)</th>
+                        <td>84.7 ± 4.2</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Clinical Notes -->
+            <div class="section">
+                <div class="section-title">Clinical Notes</div>
+                <textarea class="clinical-notes" placeholder="Enter clinical observations, recommendations, and notes here...">Patient shows good sleep regularity with consistent bedtimes and wake times. Sleep efficiency is within normal range. Some fragmentation noted on nights 3 and 5, possibly related to reported stress at work. Recommend sleep hygiene counseling and follow-up in 3 months.</textarea>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <div>Sleep & Circadian Research Centre | Page 1 of 4</div>
+                <div>Report ID: ACT-2025-001 | Generated: 19/09/2025</div>
+            </div>
+        </div>
+
+        <!-- Page 2: Actogram Graphs (7 days) -->
+        <div class="page">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="logo-section">
+                    <div class="logo-placeholder" id="logo-display-2">LOGO</div>
+                    <div class="clinic-info">
+                        <h1>Sleep & Circadian Research Centre</h1>
+                        <p>Actigraphy Clinical Report - Patient: Sarah Johnson</p>
+                    </div>
+                </div>
+                <div class="report-title">
+                    <h2>Daily Activity Patterns</h2>
+                    <p>Actogram Visualization</p>
+                </div>
+            </div>
+
+            <!-- Actogram Graphs -->
+            <div class="section">
+                <div class="section-title">7-Day Actogram</div>
+                
+                <div class="graph-placeholder">
+                    Day 1 (01/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 2 (02/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 3 (03/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 4 (04/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 5 (05/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 6 (06/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+                
+                <div class="graph-placeholder">
+                    Day 7 (07/09/2025) - Activity Pattern with Sleep Window Annotations
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <div>Sleep & Circadian Research Centre | Page 2 of 4</div>
+                <div>Report ID: ACT-2025-001 | Generated: 19/09/2025</div>
+            </div>
+        </div>
+
+        <!-- Page 3: Daily Statistics -->
+        <div class="page">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="logo-section">
+                    <div class="logo-placeholder" id="logo-display-3">LOGO</div>
+                    <div class="clinic-info">
+                        <h1>Sleep & Circadian Research Centre</h1>
+                        <p>Actigraphy Clinical Report - Patient: Sarah Johnson</p>
+                    </div>
+                </div>
+                <div class="report-title">
+                    <h2>Daily Statistics</h2>
+                    <p>24-Hour Period Analysis</p>
+                </div>
+            </div>
+
+            <!-- Daily Statistics Table -->
+            <div class="section">
+                <div class="section-title">Statistics for Each 24-Hour Period</div>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>M10 Start</th>
+                            <th>M10 Amplitude</th>
+                            <th>L5 Start</th>
+                            <th>L5 Amplitude</th>
+                            <th>IS</th>
+                            <th>IV</th>
+                            <th>MVA Time (h)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01/09/2025</td>
+                            <td>08:15</td>
+                            <td>168.2</td>
+                            <td>23:30</td>
+                            <td>8.4</td>
+                            <td>0.72</td>
+                            <td>0.38</td>
+                            <td>1.4</td>
+                        </tr>
+                        <tr>
+                            <td>02/09/2025</td>
+                            <td>08:45</td>
+                            <td>145.6</td>
+                            <td>23:00</td>
+                            <td>12.1</td>
+                            <td>0.69</td>
+                            <td>0.41</td>
+                            <td>1.1</td>
+                        </tr>
+                        <tr>
+                            <td>03/09/2025</td>
+                            <td>09:00</td>
+                            <td>172.8</td>
+                            <td>22:45</td>
+                            <td>15.2</td>
+                            <td>0.65</td>
+                            <td>0.45</td>
+                            <td>1.3</td>
+                        </tr>
+                        <tr>
+                            <td>04/09/2025</td>
+                            <td>08:30</td>
+                            <td>159.4</td>
+                            <td>23:15</td>
+                            <td>9.8</td>
+                            <td>0.71</td>
+                            <td>0.39</td>
+                            <td>1.2</td>
+                        </tr>
+                        <tr>
+                            <td>05/09/2025</td>
+                            <td>08:00</td>
+                            <td>163.1</td>
+                            <td>23:45</td>
+                            <td>11.6</td>
+                            <td>0.67</td>
+                            <td>0.43</td>
+                            <td>1.0</td>
+                        </tr>
+                        <tr>
+                            <td>06/09/2025</td>
+                            <td>08:20</td>
+                            <td>148.9</td>
+                            <td>23:20</td>
+                            <td>13.4</td>
+                            <td>0.70</td>
+                            <td>0.40</td>
+                            <td>1.3</td>
+                        </tr>
+                        <tr>
+                            <td>07/09/2025</td>
+                            <td>09:15</td>
+                            <td>139.7</td>
+                            <td>22:30</td>
+                            <td>16.8</td>
+                            <td>0.64</td>
+                            <td>0.47</td>
+                            <td>0.9</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <div>Sleep & Circadian Research Centre | Page 3 of 4</div>
+                <div>Report ID: ACT-2025-001 | Generated: 19/09/2025</div>
+            </div>
+        </div>
+
+        <!-- Page 4: Sleep Statistics -->
+        <div class="page">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="logo-section">
+                    <div class="logo-placeholder" id="logo-display-4">LOGO</div>
+                    <div class="clinic-info">
+                        <h1>Sleep & Circadian Research Centre</h1>
+                        <p>Actigraphy Clinical Report - Patient: Sarah Johnson</p>
+                    </div>
+                </div>
+                <div class="report-title">
+                    <h2>Sleep Statistics</h2>
+                    <p>Nightly Sleep Analysis</p>
+                </div>
+            </div>
+
+            <!-- Sleep Statistics Table -->
+            <div class="section">
+                <div class="section-title">Sleep Statistics for Each Night</div>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>Night</th>
+                            <th>Lights Out</th>
+                            <th>Sleep Onset</th>
+                            <th>SOL (min)</th>
+                            <th>WASO (min)</th>
+                            <th>Final Wake</th>
+                            <th>Lights On</th>
+                            <th>TST (h)</th>
+                            <th>SE (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01-02/09</td>
+                            <td>22:30</td>
+                            <td>22:45</td>
+                            <td>15</td>
+                            <td>38</td>
+                            <td>06:15</td>
+                            <td>07:00</td>
+                            <td>7.2</td>
+                            <td>87.8</td>
+                        </tr>
+                        <tr>
+                            <td>02-03/09</td>
+                            <td>23:15</td>
+                            <td>23:35</td>
+                            <td>20</td>
+                            <td>42</td>
+                            <td>06:45</td>
+                            <td>07:30</td>
+                            <td>6.8</td>
+                            <td>85.2</td>
+                        </tr>
+                        <tr>
+                            <td>03-04/09</td>
+                            <td>22:45</td>
+                            <td>23:15</td>
+                            <td>30</td>
+                            <td>58</td>
+                            <td>06:30</td>
+                            <td>07:15</td>
+                            <td>6.9</td>
+                            <td>79.3</td>
+                        </tr>
+                        <tr>
+                            <td>04-05/09</td>
+                            <td>22:20</td>
+                            <td>22:35</td>
+                            <td>15</td>
+                            <td>35</td>
+                            <td>06:20</td>
+                            <td>07:00</td>
+                            <td>7.3</td>
+                            <td>88.9</td>
+                        </tr>
+                        <tr>
+                            <td>05-06/09</td>
+                            <td>23:00</td>
+                            <td>23:25</td>
+                            <td>25</td>
+                            <td>52</td>
+                            <td>06:40</td>
+                            <td>07:20</td>
+                            <td>6.9</td>
+                            <td>81.7</td>
+                        </tr>
+                        <tr>
+                            <td>06-07/09</td>
+                            <td>22:40</td>
+                            <td>22:50</td>
+                            <td>10</td>
+                            <td>28</td>
+                            <td>06:25</td>
+                            <td>07:10</td>
+                            <td>7.4</td>
+                            <td>91.2</td>
+                        </tr>
+                        <tr>
+                            <td>07-08/09</td>
+                            <td>23:10</td>
+                            <td>23:25</td>
+                            <td>15</td>
+                            <td>43</td>
+                            <td>06:35</td>
+                            <td>07:25</td>
+                            <td>7.0</td>
+                            <td>86.4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Abbreviations -->
+            <div class="section">
+                <div class="section-title">Abbreviations</div>
+                <table class="info-table">
+                    <tr>
+                        <td><strong>SOL</strong> - Sleep Onset Latency</td>
+                        <td><strong>WASO</strong> - Wake After Sleep Onset</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TST</strong> - Total Sleep Time</td>
+                        <td><strong>SE</strong> - Sleep Efficiency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IS</strong> - Inter-daily Stability</td>
+                        <td><strong>IV</strong> - Intra-daily Variability</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M10</strong> - Most Active 10 Hours</td>
+                        <td><strong>L5</strong> - Least Active 5 Hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MVA</strong> - Moderate to Vigorous Activity</td>
+                        <td><strong>EN</strong> - Euclidean Norm</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <div>Sleep & Circadian Research Centre | Page 4 of 4</div>
+                <div>Report ID: ACT-2025-001 | Generated: 19/09/2025</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateTemplate() {
+            const root = document.documentElement;
+            
+            // Update CSS variables
+            root.style.setProperty('--font-family', document.getElementById('font-family').value);
+            root.style.setProperty('--font-size-base', document.getElementById('font-size').value + 'px');
+            root.style.setProperty('--primary-color', document.getElementById('primary-color').value);
+            root.style.setProperty('--secondary-color', document.getElementById('secondary-color').value);
+            root.style.setProperty('--background-color', document.getElementById('background-color').value);
+            root.style.setProperty('--border-color', document.getElementById('border-color').value);
+            
+            // Update color previews
+            document.getElementById('primary-preview').style.backgroundColor = document.getElementById('primary-color').value;
+            document.getElementById('secondary-preview').style.backgroundColor = document.getElementById('secondary-color').value;
+            document.getElementById('background-preview').style.backgroundColor = document.getElementById('background-color').value;
+            document.getElementById('border-preview').style.backgroundColor = document.getElementById('border-color').value;
+        }
+
+        function updateLogo() {
+            const fileInput = document.getElementById('logo-upload');
+            const logoDisplays = document.querySelectorAll('[id^="logo-display"]');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoDisplays.forEach(logo => {
+                        logo.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Clinic Logo">`;
+                    });
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function updatePatientInfo() {
+            // Get values from sidebar inputs
+            const patientName = document.getElementById('patient-name').value;
+            const patientDob = document.getElementById('patient-dob').value;
+            const patientId = document.getElementById('patient-id').value;
+            const patientSex = document.getElementById('patient-sex').value;
+            const referringPhysician = document.getElementById('referring-physician').value;
+            const studyDate = document.getElementById('study-date').value;
+            
+            // Update patient information table on page 1
+            const patientTable = document.querySelector('.info-table');
+            if (patientTable) {
+                const rows = patientTable.querySelectorAll('tr');
+                if (rows.length >= 3) {
+                    // Update Name and DOB row
+                    rows[0].children[1].textContent = patientName;
+                    rows[0].children[3].textContent = patientDob;
+                    
+                    // Update Patient ID and Sex row
+                    rows[1].children[1].textContent = patientId;
+                    rows[1].children[3].textContent = patientSex;
+                    
+                    // Update Referring Physician and Study Date row
+                    rows[2].children[1].textContent = referringPhysician;
+                    rows[2].children[3].textContent = studyDate;
+                }
+            }
+            
+            // Update patient name in all page headers
+            const patientNameElements = document.querySelectorAll('.clinic-info p');
+            patientNameElements.forEach((element, index) => {
+                if (index > 0 && element.textContent.includes('Patient:')) {
+                    element.textContent = `Actigraphy Clinical Report - Patient: ${patientName}`;
+                }
+            });
+            
+            // Update Report ID in footers (using Patient ID)
+            const footers = document.querySelectorAll('.page-footer div:last-child');
+            footers.forEach(footer => {
+                if (footer.textContent.includes('Report ID:')) {
+                    footer.textContent = `Report ID: ${patientId} | Generated: 19/09/2025`;
+                }
+            });
+        }
+
+        function updatePatientInfoFromTable() {
+            // Get values from editable table cells
+            const nameCell = document.querySelector('[data-field="name"]');
+            const dobCell = document.querySelector('[data-field="dob"]');
+            const idCell = document.querySelector('[data-field="id"]');
+            const sexCell = document.querySelector('[data-field="sex"]');
+            const physicianCell = document.querySelector('[data-field="physician"]');
+            const studyDateCell = document.querySelector('[data-field="study-date"]');
+            
+            if (!nameCell || !dobCell || !idCell || !sexCell || !physicianCell || !studyDateCell) return;
+            
+            const patientName = nameCell.textContent.trim();
+            const patientId = idCell.textContent.trim();
+            
+            // Update patient name in all page headers
+            const patientNameElements = document.querySelectorAll('.clinic-info p');
+            patientNameElements.forEach((element, index) => {
+                if (index > 0 && element.textContent.includes('Patient:')) {
+                    element.textContent = `Actigraphy Clinical Report - Patient: ${patientName}`;
+                }
+            });
+            
+            // Update Report ID in footers (using Patient ID)
+            const footers = document.querySelectorAll('.page-footer div:last-child');
+            footers.forEach(footer => {
+                if (footer.textContent.includes('Report ID:')) {
+                    footer.textContent = `Report ID: ${patientId} | Generated: 19/09/2025`;
+                }
+            });
+        }
+
+        // Initialize color previews and patient info on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTemplate();
+            
+            // Add event listeners to editable cells
+            const editableCells = document.querySelectorAll('.patient-info-table td.editable');
+            editableCells.forEach(cell => {
+                cell.addEventListener('input', updatePatientInfoFromTable);
+                cell.addEventListener('blur', updatePatientInfoFromTable);
+            });
+        });
+    </script>

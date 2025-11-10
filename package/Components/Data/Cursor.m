@@ -58,8 +58,11 @@ classdef Cursor < handle
             % -------------------------------------------------------------
             % Check if this panel is hovered
             try
-                DPanel = Obj.Line.Parent.Parent.Parent.Parent;
+                DPanel = Obj.Line.Parent.Parent.Parent;
             catch
+                return
+            end
+            if ~isprop(DPanel, 'IsHovered')
                 return
             end
             if ~DPanel.IsHovered

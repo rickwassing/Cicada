@@ -19,12 +19,11 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
-        Size = [450, 394];
+        Size = [450, 415];
         Auth;
         Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
-        Panel matlab.ui.container.Panel
         GridLayout matlab.ui.container.GridLayout
         Text
         Labels
@@ -38,7 +37,7 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
         TitleText = 'Thank you for using Cicada';
         LicenseText = 'Cicada Actigraphy Suite © 2023 by Rick Wassing is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International.';
         DisclaimerText = 'The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.'; 
-        FormText = 'By providing this app open-source and free of charge, Cicada aims to enable science for all. It would benefit me if you could please register the use of this app. This information may be used in presentations, publications, grant applications, etc.';
+        FormText = 'By providing this app open-source and free of charge, Cicada aims to enable science for all. It would help tremendously if you could please register the use of this app. This information may be used in presentations, publications, grant applications, etc.';
     end
     % *********************************************************************
     % METHODS
@@ -51,18 +50,8 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             Colors = app_colors();
             % -------------------------------------------------------------
             Obj.Tag = 'RegisterUser';
-            Obj.Panel = uipanel(Obj, ...
-                'Title', '', ...
-                'FontSize', 8, ...
-                'FontWeight', 'bold', ...
-                'Tag', 'Register_Panel', ...
-                'ForegroundColor', Colors.body_primary, ...
-                'BackgroundColor', Colors.bg_secondary, ...
-                'HighLightColor', [0.8, 0.8, 0.8], ...
-                'Units', 'normalized', ...
-                'Position', [0, 0, 1, 1]);
             % -------------------------------------------------------------
-            Obj.GridLayout = uigridlayout(Obj.Panel, ...
+            Obj.GridLayout = uigridlayout(Obj, ...
                 'Tag', 'RegisterUser_GridLayout', ...
                 'ColumnWidth', {'1x', '1x'}, ...
                 'RowHeight', {'1x', 24}, ...
@@ -137,7 +126,7 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             Obj.FormGridLayout = uigridlayout(Obj.FormPanel, ...
                 'Tag', 'RegisterUser_FormGridLayout', ...
                 'ColumnWidth', {'1x'}, ...
-                'RowHeight', {24, 120, 18, 24, 18, 24, 18, 24, 18, 18}, ...
+                'RowHeight', {24, 120, 18, 24, 18, 24, 18, 24, 18, 18, 18}, ...
                 'ColumnSpacing', 0, ...
                 'RowSpacing', 3, ...
                 'Padding', 0, ...
@@ -212,8 +201,8 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             Obj.Inputs(3).Obj.Layout.Column = 1;
             % -------------------------------------------------------------
             Obj.Inputs(4).Obj = uicheckbox(Obj.FormGridLayout, ...
-                'Tag', 'subscribe', ...
-                'Text', 'Subscribe to updates', ...
+                'Tag', 'shareusagedata', ...
+                'Text', 'Share anonymous usage data', ...
                 'Value', true, ...
                 'FontColor', Colors.body_secondary, ...
                 'FontSize', 11, ...
@@ -222,13 +211,23 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             Obj.Inputs(4).Obj.Layout.Column = 1;
             % -------------------------------------------------------------
             Obj.Inputs(5).Obj = uicheckbox(Obj.FormGridLayout, ...
-                'Tag', 'accept', ...
-                'Text', 'I accept the license terms', ...
+                'Tag', 'subscribe', ...
+                'Text', 'Subscribe to updates', ...
+                'Value', true, ...
                 'FontColor', Colors.body_secondary, ...
                 'FontSize', 11, ...
                 'ValueChangedFcn', @(~, event) Obj.setregistration(event));
             Obj.Inputs(5).Obj.Layout.Row = 10;
             Obj.Inputs(5).Obj.Layout.Column = 1;
+            % -------------------------------------------------------------
+            Obj.Inputs(6).Obj = uicheckbox(Obj.FormGridLayout, ...
+                'Tag', 'accept', ...
+                'Text', 'I accept the license terms', ...
+                'FontColor', Colors.body_secondary, ...
+                'FontSize', 11, ...
+                'ValueChangedFcn', @(~, event) Obj.setregistration(event));
+            Obj.Inputs(6).Obj.Layout.Row = 11;
+            Obj.Inputs(6).Obj.Layout.Column = 1;
             % -------------------------------------------------------------
             Obj.Buttons.Cancel = uibutton(Obj.GridLayout, ...
                 'Text', 'USE ANONYMOUSLY', ...
@@ -259,16 +258,15 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
                 % ---------------------------------------------------------
                 % Timer
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                Obj.Auth
                 % ---------------------------------------------------------
                 if isempty(Obj.Auth)
                     Obj.Auth = struct(...
                         'name', '', ...
                         'institute', '', ...
                         'email', '', ...
+                        'shareusagedata', 'yes', ...
                         'subscribe', 'yes', ...
                         'accept', 'no', ...
-                        'askagain', 'no', ...
                         'is_registered', false, ...
                         'datetime', '');
                 end
@@ -276,8 +274,11 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
                 Obj.Inputs(1).Obj.Value = Obj.Auth.name;
                 Obj.Inputs(2).Obj.Value = Obj.Auth.institute;
                 Obj.Inputs(3).Obj.Value = Obj.Auth.email;
-                Obj.Inputs(4).Obj.Value = ifelse(strcmpi(Obj.Auth.subscribe, 'yes'), true, false);
-                Obj.Inputs(5).Obj.Value = ifelse(strcmpi(Obj.Auth.accept, 'yes'), true, false);
+                Obj.Inputs(4).Obj.Value = ifelse(strcmpi(Obj.Auth.shareusagedata, 'yes'), true, false);
+                Obj.Inputs(5).Obj.Value = ifelse(strcmpi(Obj.Auth.subscribe, 'yes'), true, false);
+                Obj.Inputs(6).Obj.Value = ifelse(strcmpi(Obj.Auth.accept, 'yes'), true, false);
+                % ---------------------------------------------------------
+                Obj.validate();
                 % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: RegisterUser updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
@@ -290,17 +291,8 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     methods (Access = public)
         % =================================================================
-        % Cancel 
-        function setregistration(Obj, event)
-            % -------------------------------------------------------------
-            % Convert bool to 'yes' or 'no'
-            if islogical(event.Value)
-                val = ifelse(event.Value, 'yes', 'no');
-            else
-                val = event.Value;
-            end
-            % Set value
-            Obj.Auth.(event.Source.Tag) = val;
+        % Validate
+        function validate(Obj)
             % -------------------------------------------------------------
             % Check if the buttons can be enabled
             if strcmpi(Obj.Auth.accept, 'yes')
@@ -319,8 +311,22 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             end
         end
         % =================================================================
+        % Cancel 
+        function setregistration(Obj, event)
+            % -------------------------------------------------------------
+            % Convert bool to 'yes' or 'no'
+            if islogical(event.Value)
+                val = ifelse(event.Value, 'yes', 'no');
+            else
+                val = event.Value;
+            end
+            % Set value
+            Obj.Auth.(event.Source.Tag) = val;
+        end
+        % =================================================================
         % Create or update event
         function submit(Obj, event)
+            % -------------------------------------------------------------
             % Disable the imput and buttons right away to prevent double clicks
             for i = 1:length(Obj.Inputs)
                 Obj.Inputs(i).Obj.Enable = 'off';
@@ -328,28 +334,20 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             Obj.Buttons.Submit.Enable = 'off';
             Obj.Buttons.Cancel.Enable = 'off';
             drawnow();
+            % -------------------------------------------------------------
             % Get app handle so we have access to the MS Flow URL
             app = app_gethandle();
+            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             % Set date-time
             dt = datetime('now', 'TimeZone', 'local');
             dt = sprintf('%s (%s)', char(dt, 'uuuu-MM-dd''T''HH:mm:ss'), dt.TimeZone);
+            % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             % Check if we should anonymize the user details
-            if ~strcmpi(event.Source.Text, 'register')
+            if ~strcmpi(event.Source.Text, 'register') % then the 'cancel' button was pressed
                 Obj.Auth.name = 'anonymous';
                 Obj.Auth.institute = 'n/a';
                 Obj.Auth.email = 'john@doe.com';
                 Obj.Auth.subscribe = 'no';
-            end
-            % Construct payload
-            try
-                httpreq(app.URL.MSFlow, ...
-                    'user', Obj.PayLoad.name, ...
-                    'institute', Obj.PayLoad.institute, ...
-                    'email', lower(Obj.PayLoad.email), ...
-                    'subscribe', Obj.PayLoad.subscribe, ...
-                    'datetime', dt);
-            catch
-                % API request failed for some reason, don't mind, keep going
             end
             % -------------------------------------------------------------
             % Store app settings that we have registered (no need to ask again)
@@ -359,11 +357,14 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             app.Props.Settings.Auth.email = lower(Obj.Auth.email);
             app.Props.Settings.Auth.subscribe = Obj.Auth.subscribe;
             app.Props.Settings.Auth.accept = Obj.Auth.accept;
-            app.Props.Settings.Auth.askagain = true;
             app.Props.Settings.Auth.is_registered = true;
+            app.Props.Settings.Auth.shareusagedata = Obj.Auth.shareusagedata;
             app.Props.Settings.Auth.datetime = dt;
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             app_savesettings(app.Props.Settings);
+            % -------------------------------------------------------------
+            % Send HTTP request to register the user
+            Telemetry.post('auth', app.Props.Settings.Auth)
             % -------------------------------------------------------------
             % Close modal
             app.hModal(event, '');

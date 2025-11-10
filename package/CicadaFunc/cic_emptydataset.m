@@ -125,7 +125,7 @@ ACT.stats = struct();
 ACT.status = 'unsaved'; % 'saved', 'unsaved', 'neversaved', 'error'
 % -------------------------------------------------------------------------
 ACT.etc = struct();
-ACT.etc.errors = [];
+ACT.etc.error = [];
 ACT.etc.warnings = struct([]);
 % ---------------------------------------------------------------------
 % Command window output

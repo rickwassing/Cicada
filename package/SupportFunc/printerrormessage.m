@@ -30,6 +30,16 @@ if nargin > 1
         fprintf(2, '%s\n', varargin{i})
     end
 end
+fprintf(2, '\n');
 fprintf(2, '* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n');
 fprintf('\n');
+
+% Send telemetry data
+p = struct();
+p.severity = 'error';
+p.message = ME.message;
+p.stack = getReport(ME);
+
+Telemetry.post('error', p)
+
 end

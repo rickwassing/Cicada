@@ -53,7 +53,7 @@ classdef DataPanelPool < matlab.ui.componentcontainer.ComponentContainer
         % =================================================================
         % Pull an object from the pool, or create new if pool is empty
         function Singleton = pull(Obj, Parent)
-            if length(Obj.Pool) == 1
+            if isscalar(Obj.Pool)
                 if Obj.Verbose
                     fprintf('>> CIC: Copying a DataPanel from the Pool.\n')
                 end

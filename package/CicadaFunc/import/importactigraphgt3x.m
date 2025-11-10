@@ -213,7 +213,7 @@ axesFloatData = (-bitand(bindata, 2048) + bitand(bindata, 2047)) * encodingEPS;
 % -------------------------------------------------------------------------
 % Save header information
 Info.accel.range = [str2double(header.Acceleration_Min), str2double(header.Acceleration_Max)];
-Info.accel.resolution = range(Info.accel.range) / str2double(header.Acceleration_Scale);
+Info.accel.resolution =  (Info.accel.range(2) - Info.accel.range(1)) / str2double(header.Acceleration_Scale);
 Info.accel.unit = 'g';
 ACT.info.modalities = {'accel'};
 ACT.info.devices(1).name = 'actigraph';
