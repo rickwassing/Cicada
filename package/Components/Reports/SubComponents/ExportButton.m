@@ -67,7 +67,7 @@ classdef ExportButton < handle
         % -----------------------------------------------------------------
         % Creates a new UIFigure with the same dimensions as a A4 paper
         function fig = createA4Figure(~)
-            fig = uifigure('Visible', 'on', ...
+            fig = uifigure('Visible', 'off', ...
                 'Units', 'centimeters', ...
                 'Position', [0.5, 0.5, 21, 29.7]);
             drawnow; pause(0.1);
@@ -131,16 +131,10 @@ classdef ExportButton < handle
                 if isa(srcChild, 'DataPanelPool')
                     continue
                 end
-srcChild
                 if isa(srcChild, 'CicadaComponentContainer')
                     % Custom component: use its deepCopy(parent) contract
                     try
                         newChild = srcChild.deepCopy(dstParent);
-
-fprintf('Hellow!!!!\n\n')
-fprintf('Hellow!!!!\n\n')
-fprintf('Hellow!!!!\n\n')
-fprintf('Hellow!!!!\n\n')
                     catch ME
                         printwarningmessage(ME)
                         % fallback: create an instance and copy public props
@@ -191,37 +185,68 @@ fprintf('Hellow!!!!\n\n')
 
         % -----------------------------------------------------------------
         % Method to export the panel (and its contents) to PDF
-        function ExportToPdf(Obj, app, fullfilepath)
+        function ExportToPdf(Obj, app, fullfilepath) %#ok<INUSD>
 
             % Get a handle to the target panel to print
-            %page = 1;
-            %srcPanel = Obj.ParentApp.(sprintf('Panel_Page%i', page));
             switch Obj.TargetTag
                 case 'DataTab'
                     srcPanel = app.Cmps.MainTabGroup.TabGroup.Children(1).UserData.DataTab;
             end
-clc
-srcPanel
-srcPanel.GridLayout.Children
-isa(srcPanel, 'CicadaComponentContainer')
+
             % Create a new A4-sized figure
             TmpFig = Obj.createA4Figure();
 
             % Create a fresh top-level container of the same class in TmpFig
-            newPanel = feval(class(srcPanel), 'Parent', TmpFig);
-            Obj.copyProps(srcPanel, newPanel); % copy panel-level props
+            newPanel = srcPanel.deepCopy(TmpFig);
             newPanel.Units = 'normalized';
-            newPanel.Position = [0 0 1 1];
+            newPanel.Position = [0, 0, 1, 1];
 
-            % Recursively copy children using robust logic (no duplicates)
-            Obj.syncUIProperties(srcPanel, newPanel);
+%             Obj.copyProps(srcPanel, newPanel); % copy panel-level props
+% 
+%             newPanel.Units = 'normalized';
+%             newPanel.Position = [0 0 1 1];
+% 
+%             % Recursively copy children using robust logic (no duplicates)
+%             Obj.syncUIProperties(srcPanel, newPanel);
+% 
+            drawnow(); pause(0.1);
 
-            drawnow; pause(0.1);
-            %fname = sprintf('%s_page%i.pdf', datenum2iso(now, 'yyyymmddTHHMMSS'), page); %#ok<TNOW1>
-            exportapp(TmpFig, fullfilepath);
+            % Create temporary output for each page in the PDF and we merge
+            % them later
+            TmpFile = getuuid();
+            TmpPath = fullfile(app.Props.Path, 'Temp');
+            if exist(TmpPath, 'dir') ~= 7
+                mkdir(TmpPath);
+            end
 
-            TmpFig.Children.DataPanel(2)
-            % delete(TmpFig);
+            switch Obj.TargetTag
+                case 'DataTab'
+                    N = floor(newPanel.ActogramLength);
+                    AddEmpty = N - mod(newPanel.NumPanels, N);
+                    newPanel.PanelHeight = ((TmpFig.Position(4) - (N-1)*18 - 36) / N);
+                    drawnow();
+                    newPanel.GridLayout.RowHeight = [newPanel.GridLayout.RowHeight, repmat(newPanel.GridLayout.RowHeight(1), 1, AddEmpty)];
+                    TmpPanel = uipanel(newPanel.GridLayout); 
+                    TmpPanel.Layout.Row = length(newPanel.GridLayout.RowHeight);
+                    newPanel.GridLayout.Padding = [18, 18, 18, 18];
+                    newPanel.GridLayout.RowSpacing = 18;
+                    for page = 1:N:length(newPanel.GridLayout.RowHeight)
+                        scroll(newPanel.GridLayout, [0, -(page-1)*(newPanel.PanelHeight+18)])
+                        drawnow(); pause(0.2);
+                        exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, page)));
+                    end
+            end
+
+            % Get the list of temp files
+            TmpFiles = dir(fullfile(TmpPath, sprintf('%s-*.pdf', TmpFile)));
+            TmpFiles = arrayfun(@(d) fullfile(d.folder, d.name), TmpFiles, 'UniformOutput', false);
+            % Merge them together
+            mergepdfs(TmpFiles, fullfilepath)
+            % Delete temp files.
+            delete(fullfile(TmpPath, sprintf('%s-*.pdf', TmpFile)))
+
+            % Delete temp figure
+            delete(TmpFig);
         end
 
         % -----------------------------------------------------------------
@@ -251,7 +276,7 @@ isa(srcPanel, 'CicadaComponentContainer')
                 %     src.Enable = 'on';
                 %     return % user pressed cancel
                 % end
-                Path = '~/';
+                Path = '/Users/rickwassing';
                 Filename = 'cicadatest.pdf';
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 % Show waitbar

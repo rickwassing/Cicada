@@ -337,6 +337,11 @@ classdef DataPanel < CicadaComponentContainer
                     return
                 end
                 % ---------------------------------------------------------
+                % Sometimes this object gets deleted, check validity
+                if ~isvalid(Obj)
+                    return
+                end
+                % ---------------------------------------------------------
                 if strcmpi(Obj.Status, 'idle')
                     return
                 end
