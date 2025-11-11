@@ -42,6 +42,7 @@ classdef ReportPage < CicadaComponentContainer
     methods (Access = protected)
         % =================================================================
         function setup(Obj)
+            
             % -------------------------------------------------------------
             % Create the main panel (represents the page)
             Obj.Tag = 'ReportPage';
