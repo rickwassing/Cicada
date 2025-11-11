@@ -18,7 +18,7 @@
 classdef PageHeaderRightPanel < CicadaComponentContainer
     
     properties (Access = public)
-        TitleLabel
+        TitleLabel = '';
         TitleStyle
         SmallStyle
         Components
@@ -53,6 +53,11 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
         end
         
         function update(Obj)
+            % ---------------------------------------------------------
+            if isempty(Obj.TitleLabel) || isempty(Obj.TitleStyle) || isempty(Obj.SmallStyle)
+                return
+            end
+            % ---------------------------------------------------------
             Style = Obj.TitleStyle;
             Style.textAlign = 'right';
             Obj.Components.TitleLabel.Text = Obj.TitleLabel;
@@ -70,35 +75,43 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
 
     methods (Access = public)
         function hUpdate(Obj, app, event)
+            % ---------------------------------------------------------
+            % Check if app is valid
+            % ---------------------------------------------------------
+            if isempty(app)
+                return
+            end
+            if ~isfield(app.Props, 'Settings')
+                return
+            end
+            if ~isfield(app.Props.Settings, 'Report')
+                return
+            end
+            % ---------------------------------------------------------
+            % Handle events
+            % ---------------------------------------------------------
             switch event.EventName
-                case 'eStyleChanged'
-                    tStyle = app.State.style.title;
+                case {'eDatasetChanged'}
+                    % Update styles from app state
+                    tStyle = app.Props.Settings.Report.style.title;
                     tStyle.textAlign = 'right';
-                    sStyle = app.State.style.small;
+                    sStyle = app.Props.Settings.Report.style.small;
                     sStyle.textAlign = 'right';
                     Obj.TitleStyle = tStyle;
                     Obj.SmallStyle = sStyle;
-                case 'eContentChanged'
-                    try
-                        srcId = event.UserData.Payload{1}.Id;
-                        if strcmpi(Obj.Components.TitleLabel.Id, srcId)
-                            Obj.TitleLabel = event.UserData.Payload{1}.Text;
-                        end
-                    catch
-                        % fallback
-                    end
+                    Obj.TitleLabel = app.Props.Settings.Report.content.header.ReportTitle;
+                case {'eStyleChanged'}
+                    % Update styles from app state
+                    tStyle = app.Props.Settings.Report.style.title;
+                    tStyle.textAlign = 'right';
+                    sStyle = app.Props.Settings.Report.style.small;
+                    sStyle.textAlign = 'right';
+                    Obj.TitleStyle = tStyle;
+                    Obj.SmallStyle = sStyle;
+                case {'eContentChanged'}
+                    % Update content from app state
+                    Obj.TitleLabel = app.Props.Settings.Report.content.header.ReportTitle;
             end
-        end
-
-        function newObj = deepCopy(obj, parent)
-            % Create a new instance of this component in the target UIFigure
-            newObj = PageHeaderRightPanel(parent);
-            % Copy relevant public properties
-            newObj.TitleLabel = obj.TitleLabel;
-            newObj.TitleStyle = obj.TitleStyle;
-            newObj.SmallStyle = obj.SmallStyle;
-            % Ensure visual update
-            newObj.update();
         end
     end
 end

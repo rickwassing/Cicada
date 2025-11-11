@@ -31,10 +31,11 @@ classdef ReportPage < CicadaComponentContainer
         HeaderGridLayout matlab.ui.container.GridLayout
         BodyPanel matlab.ui.container.Panel
         BodyGridLayout matlab.ui.container.GridLayout
-        FooterPanel matlab.ui.container.Panel
+        FooterPanel
         FooterGridLayout matlab.ui.container.GridLayout
         % Sub-components
-        Components = struct();
+        HeaderLeftPanel PageHeaderLeftPanel
+        HeaderRightPanel PageHeaderRightPanel
     end
     % *********************************************************************
     % METHODS
@@ -43,7 +44,6 @@ classdef ReportPage < CicadaComponentContainer
         function setup(Obj)
             % -------------------------------------------------------------
             % Create the main panel (represents the page)
-            % -------------------------------------------------------------
             Obj.Tag = 'ReportPage';
             Obj.Panel = uipanel(Obj, ...
                 'Units', 'normalized', ...
@@ -54,7 +54,6 @@ classdef ReportPage < CicadaComponentContainer
                 'Position', [0, 0, 1, 1]);
             % -------------------------------------------------------------
             % Create the main grid layout (3 rows: header/body/footer)
-            % -------------------------------------------------------------
             Obj.GridLayout = uigridlayout(Obj.Panel, ...
                 'ColumnWidth', {'1x'}, ...
                 'RowHeight', {Obj.HeaderHeight, '1x', Obj.FooterHeight}, ...
@@ -64,7 +63,6 @@ classdef ReportPage < CicadaComponentContainer
                 'BackgroundColor', [1, 1, 1]);
             % -------------------------------------------------------------
             % Create the header panel
-            % -------------------------------------------------------------
             Obj.HeaderPanel = uipanel(Obj.GridLayout, ...
                 'BorderColor', [1, 1, 1], ...
                 'HighlightColor', [1, 1, 1], ...
@@ -77,6 +75,23 @@ classdef ReportPage < CicadaComponentContainer
                 'RowHeight', {'1x'}, ...
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
+            % -------------------------------------------------------------
+            % Create left header panel
+            Obj.HeaderLeftPanel = PageHeaderLeftPanel(Obj.HeaderGridLayout);
+            Obj.HeaderLeftPanel.Layout.Row = 1;
+            Obj.HeaderLeftPanel.Layout.Column = 1;
+            % Add event listeners
+            app_addlisteners([], Obj.HeaderLeftPanel, {'eStyleChanged', 'eLogoChanged', 'eContentChanged', 'eDatasetChanged'});
+            % ---------------------------------------------------------
+            % Create right header panel
+            Obj.HeaderRightPanel = PageHeaderRightPanel(Obj.HeaderGridLayout);
+            Obj.HeaderRightPanel.Layout.Row = 1;
+            Obj.HeaderRightPanel.Layout.Column = 2;
+            % Add event listeners
+            app_addlisteners([], Obj.HeaderRightPanel, {'eStyleChanged', 'eContentChanged', 'eDatasetChanged'});
+            % -------------------------------------------------------------
+            % Note: Header components will be created in update() method
+            % after the state is loaded from app.Props.Settings.Report
             % -------------------------------------------------------------
             % Create the body panel
             % -------------------------------------------------------------
@@ -110,12 +125,12 @@ classdef ReportPage < CicadaComponentContainer
             % -------------------------------------------------------------
             % Create placeholder label in footer
             % -------------------------------------------------------------
-            Obj.Components.FooterPlaceholder = uilabel(Obj.FooterGridLayout, ...
+            Obj.FooterPanel = uilabel(Obj.FooterGridLayout, ...
                 'BackgroundColor', [0.9412, 0.9412, 0.9412], ...
                 'HorizontalAlignment', 'center', ...
                 'Text', 'Drop content here');
-            Obj.Components.FooterPlaceholder.Layout.Row = 1;
-            Obj.Components.FooterPlaceholder.Layout.Column = 1;
+            Obj.FooterPanel.Layout.Row = 1;
+            Obj.FooterPanel.Layout.Column = 1;
         end
         % =================================================================
         function update(Obj)
@@ -147,9 +162,7 @@ classdef ReportPage < CicadaComponentContainer
         function hUpdate(Obj, app, event) %#ok<INUSD>
             try
                 % ---------------------------------------------------------
-                % This method will be called when events are broadcast
-                % Can be extended to handle eStyleChanged, eLogoChanged, etc.
-                % ---------------------------------------------------------
+                % Do nothing
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportPage.m')
             end

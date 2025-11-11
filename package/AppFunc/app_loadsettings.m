@@ -30,14 +30,17 @@ try
     settings = jsondecode(fileread('app_settings.json'));
     % Make sure the App ID is set
     if ~isfield(settings, 'App')
-        settings = initsettings(settings);
+        settings = initappsettings(settings);
+    end
+    if ~isfield(settings, 'Reports')
+        settings = initreportsettings(settings);
     end
 catch ME
     % There was an unexpected error when reading the settings file
     fprintf('>> CIC: Could not load app settings, using default values.\n');
-    printerrormessage(ME)
     % Return new initialized settings
-    settings = initsettings();
+    settings = initappsettings();
+    settings = initreportsettings(settings);
 end
 % Add session id
 settings.App.SessionId = char(java.util.UUID.randomUUID);
@@ -50,7 +53,7 @@ settings = requiredappsettings(settings);
 
 % -------------------------------------------------------------------------
 % Local support function to initialize new settings structure
-    function s = initsettings(varargin)
+    function s = initappsettings(varargin)
         % Check if we can append the existing structure or initialize a new one.
         if nargin == 1
             % Extract existing settings structure
@@ -60,7 +63,21 @@ settings = requiredappsettings(settings);
             s = struct();
         end
         % Create random unique identifier
-        s.App.Id = char(java.util.UUID.randomUUID);
+        s.App.Id = getuuid('full');
+        % Save to settings file
+        app_savesettings(s);
+    end
+% -------------------------------------------------------------------------
+    function s = initreportsettings(s)
+        s.Report = defaultreportstate();
+        % Get logo source
+        resourcesPath = fileparts(which('app_settings.json'));
+        resourcesLogo = dir(fullfile(resourcesPath, 'resources', 'report_logo_*'));
+        if ~isempty(resourcesLogo)
+            s.Report.LogoSource = fullfile(resourcesLogo(1).folder, resourcesLogo(1).name);
+        else
+            s.Report.LogoSource = '';
+        end
         % Save to settings file
         app_savesettings(s);
     end

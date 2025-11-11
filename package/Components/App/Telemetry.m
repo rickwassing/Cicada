@@ -5,6 +5,15 @@ classdef Telemetry
             % -------------------------------------------------------------
             % Get handle to app
             app = app_gethandle();
+            if ~isfield(app, 'Props')
+                return
+            end
+            if ~isfield(app.Props, 'Settings')
+                return
+            end
+            if ~isfield(app.Props.Settings, 'Auth')
+                return
+            end
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             % Check if user gave permission to send data
             if ~strcmpi(eventType, 'auth') && ~strcmpi(app.Props.Settings.Auth.shareusagedata, 'yes')

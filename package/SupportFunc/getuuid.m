@@ -1,7 +1,7 @@
 % Create unique identifier
 function id = getuuid(varargin)
 
-if nargin > 1
+if nargin > 0
     if strcmpi(varargin{1}, 'full')
         id = char(matlab.lang.internal.uuid());
         return

@@ -18,11 +18,11 @@
 classdef PageHeaderLeftPanel < CicadaComponentContainer
     
     properties (Access = public)
-        TitleLabel
+        TitleLabel = '';
         TitleStyle
-        AddressLabel
+        AddressLabel = '';
         AddressStyle
-        LogoSource
+        LogoSource = '';
         LogoWidth = 72*3
         Components
         DoCopy = true;
@@ -63,6 +63,11 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
         end
         
         function update(Obj)
+            % ---------------------------------------------------------
+            if isempty(Obj.TitleLabel) || isempty(Obj.TitleStyle) || isempty(Obj.AddressStyle)
+                return
+            end
+            % ---------------------------------------------------------
             Obj.Components.InstituteNameLabel.Text = Obj.TitleLabel;
             Obj.Components.InstituteNameLabel.Style = Obj.TitleStyle;
             Obj.Components.InstituteAddressLabel.Text = Obj.AddressLabel;
@@ -75,38 +80,41 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
     methods (Access = public)
         
         function hUpdate(Obj, app, event)
-            switch event.EventName
-                case 'eStyleChanged'
-                    Obj.TitleStyle = app.State.style.title;
-                    Obj.AddressStyle = app.State.style.small;
-                case 'eLogoChanged'
-                    Obj.LogoSource = app.LogoImage.ImageSource;
-                case 'eContentChanged'
-                    try
-                        srcId = event.UserData.Payload{1}.Id;
-                        if strcmpi(Obj.Components.InstituteNameLabel.Id, srcId)
-                            Obj.TitleLabel = event.UserData.Payload{1}.Text;
-                        end
-                        if strcmpi(Obj.Components.InstituteAddressLabel.Id, srcId)
-                            Obj.AddressLabel = event.UserData.Payload{1}.Text;
-                        end
-                    catch
-                        % fallback
-                    end
+            Obj.Parent
+            % ---------------------------------------------------------
+            % Check if app is valid
+            % ---------------------------------------------------------
+            if isempty(app)
+                return
             end
-        end
-
-        function newObj = deepCopy(obj, parent)
-            % Create a new instance of this component in the target UIFigure
-            newObj = PageHeaderLeftPanel(parent);
-            % Copy relevant public properties
-            newObj.TitleLabel = obj.TitleLabel;
-            newObj.TitleStyle = obj.TitleStyle;
-            newObj.AddressLabel = obj.AddressLabel;
-            newObj.AddressStyle = obj.AddressStyle;
-            newObj.LogoSource = obj.LogoSource;
-            % Ensure visual update
-            newObj.update();
+            if ~isfield(app.Props, 'Settings')
+                return
+            end
+            if ~isfield(app.Props.Settings, 'Report')
+                return
+            end
+            % ---------------------------------------------------------
+            % Handle events
+            % ---------------------------------------------------------
+            switch event.EventName
+                case {'eDatasetChanged'}
+                    Obj.TitleStyle = app.Props.Settings.Report.style.title;
+                    Obj.AddressStyle = app.Props.Settings.Report.style.small;
+                    Obj.LogoSource = app.Props.Settings.Report.LogoSource;
+                    Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
+                    Obj.AddressLabel = app.Props.Settings.Report.content.header.InstituteAddress;
+                case {'eStyleChanged'}
+                    % Update styles from app state
+                    Obj.TitleStyle = app.Props.Settings.Report.style.title;
+                    Obj.AddressStyle = app.Props.Settings.Report.style.small;
+                case {'eLogoChanged'}
+                    % Update logo from app state
+                    Obj.LogoSource = app.Props.Settings.Report.LogoSource;
+                case {'eContentChanged'}
+                    % Update content from app state
+                    Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
+                    Obj.AddressLabel = app.Props.Settings.Report.content.header.InstituteAddress;
+            end
         end
     end
 end

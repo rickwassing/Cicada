@@ -117,10 +117,9 @@ classdef MainTabGroup < matlab.ui.componentcontainer.ComponentContainer
                 % REPORT CONTAINER
                 % ---------------------------------------------------------
                 Obj.TabGroup.Children(i).UserData.ReportTab = ReportTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
-                    'NumPages', 1, ...
                     'Verbose', Obj.Verbose);
                 app_addlisteners([], Obj.TabGroup.Children(i).UserData.ReportTab, ...
-                    {'eStyleChanged', 'eLogoChanged', 'eContentChanged'});
+                    {'eDatasetChanged', 'eDataChanged'});
             end
         end
     end

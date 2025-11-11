@@ -1,21 +1,81 @@
 {
   "App": {
-    "Id": "46f234dc-427b-4ec9-92b3-33de0f993096",
-    "SessionId": "7222a8cd-2dd6-4643-b882-0278c3316a21",
+    "Id": "98688487-eecb-4ee1-8be0-bb3b21904c04",
+    "SessionId": "c5aaa11b-b6ac-4dbd-8a8e-511fb315c044",
     "CicadaVersion": "1.0.0 (build 25 July 2023)",
     "SystemOS": "macos",
     "SystemVersion": "26.0.1",
     "MatlabVersion": "24.2.0.2806996 (R2024b) Update 3"
   },
+  "Report": {
+    "Id": "6fb5a834-84ee-4d2c-9cc6-2ddef1a1f3f8",
+    "style": {
+      "page": {
+        "margin": {
+          "top": 1.27,
+          "right": 2.54,
+          "bottom": 1.27,
+          "left": 2.54
+        }
+      },
+      "logo": {
+        "width": 3
+      },
+      "title": {
+        "fontFamily": "Georgia",
+        "fontSize": 14,
+        "fontColor": "#337380",
+        "fontWeight": "bold",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "h1": {
+        "fontFamily": "Georgia",
+        "fontSize": 11,
+        "fontColor": "#337380",
+        "fontWeight": "bold",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "paragraph": {
+        "fontFamily": "Helvetica",
+        "fontSize": 11,
+        "fontColor": "#262626",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "small": {
+        "fontFamily": "Helvetica",
+        "fontSize": 9,
+        "fontColor": "#808080",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      }
+    },
+    "content": {
+      "header": {
+        "ReportTitle": "Cicada Report",
+        "InstituteName": "Buzzington University",
+        "InstituteAddress": "24 Sleep Circuit\\nBuzzington, REM, 2000\\nP: (01) 1234 5678\\nE: info@company.org"
+      }
+    },
+    "LogoSource": "/Users/rickwassing/Documents/Projects/2019_Cicada/cicada-git/package/Resources/report_logo_e5dc1777-fa0f-46db-b522-7c09f117ed3720251106T140859562.jpg"
+  },
   "Auth": {
-    "name": "Rick Wassing",
-    "institute": "Woolcock",
-    "email": "rickwassing@gmail.com",
-    "subscribe": "yes",
+    "name": "anonymous",
+    "institute": "n/a",
+    "email": "john@doe.com",
+    "subscribe": "no",
     "accept": "yes",
     "is_registered": true,
-    "shareusagedata": "no",
-    "datetime": "2025-11-07T14:30:37 (Australia/Sydney)"
+    "shareusagedata": "yes",
+    "datetime": "2025-11-11T16:40:36 (Australia/Sydney)"
   },
   "Recent": [
     "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/demo_actigraphy_v1.mat"

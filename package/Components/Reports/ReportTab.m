@@ -19,7 +19,7 @@ classdef ReportTab < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
-        NumPages = 1;
+        NumPages = 2;
         PageHeight = 842;  % A4 height at 72 DPI
         PageWidth = 595;   % A4 width at 72 DPI
     end
@@ -71,6 +71,8 @@ classdef ReportTab < CicadaComponentContainer
                     end
                     if DoRender
                         Obj.Pages(i) = ReportPage(Obj.GridLayout);
+                        % Add event listeners for each new page
+                        app_addlisteners([], Obj.Pages(i), {'eDataChanged', 'eDatasetChanged'});
                     else
                         Obj.Pages(i).Parent = Obj.GridLayout;
                     end
@@ -97,19 +99,7 @@ classdef ReportTab < CicadaComponentContainer
         function hUpdate(Obj, app, event) %#ok<INUSD>
             try
                 % ---------------------------------------------------------
-                if isempty(app.ACT)
-                    % Set to default values
-                    Obj.NumPages = 0;
-                else
-                    % Get number of pages from settings or default to 1
-                    if isfield(app.Props, 'Settings') && ...
-                       isfield(app.Props.Settings, 'Reports') && ...
-                       isfield(app.Props.Settings.Reports, 'NumPages')
-                        Obj.NumPages = app.Props.Settings.Reports.NumPages;
-                    else
-                        Obj.NumPages = 1;
-                    end
-                end
+                % Do nothing
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportTab.m')
             end

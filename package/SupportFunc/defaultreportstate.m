@@ -1,7 +1,8 @@
 function s = defaultreportstate()
 
 s = struct();
-s.Verbose = true;
+
+s.Id = getuuid('full');
 
 s.style = struct();
 s.style.page = struct();
