@@ -34,7 +34,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % METHODS
     methods
-        function OnClick(Obj, event)
+        function OnClick(Obj, ~)
             Obj.Input.Visible = 'on';
             drawnow()
             focus(Obj.Input)
@@ -43,7 +43,8 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Input.Visible = 'off';
             Obj.Text = strjoin(Obj.Input.Value, '\\n');
             if ~isempty(Obj.Event)
-                app_notify([], {Obj.Event}, {event, Obj}, 'Tag', 'Cicada_Report')
+                app_callback({event, Obj}, 'set_reportcontent', {'eContentChanged'})
+                app_notify([], {Obj.Event}, {event, Obj})
             end
         end
         function hUpdate(Obj, app, ~)
@@ -57,7 +58,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
     methods (Access = protected)
         function setup(Obj)
             
-            Obj.Tag = 'hoverable';
+            Obj.Tag = 'editable';
             Obj.Id = getuuid('full');
 
             % Create the main grid layout

@@ -145,7 +145,8 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
             % Logo width spinner
             Obj.LogoWidthSpinner = uispinner(Obj.LogoGridLayout);
             Obj.LogoWidthSpinner.Limits = [1 10];
-            Obj.LogoWidthSpinner.Value = 3;
+            Obj.LogoWidthSpinner.Value = 1;
+            Obj.LogoWidthSpinner.Step = 0.2;
             Obj.LogoWidthSpinner.FontSize = 10;
             Obj.LogoWidthSpinner.Layout.Row = 4;
             Obj.LogoWidthSpinner.Layout.Column = 2;

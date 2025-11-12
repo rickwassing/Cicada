@@ -24,7 +24,6 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-% TODO: rename this function to reflect its generalizad
 function app_savesettings(s, varargin)
 % -------------------------------------------------------------------------
 % Assume we want to save the main app settings

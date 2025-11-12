@@ -119,7 +119,7 @@ classdef cicada_exported < matlab.apps.AppBase
                 app.Props.Settings.Auth.shareusagedata = 'yes';
                 app.Props.Settings.Auth.subscribe = 'yes';
                 app.Props.Settings.Auth.accept = 'no';
-                app.Props.Settings.Auth.is_registered = 'no'
+                app.Props.Settings.Auth.is_registered = 'no';
                 app.Props.Settings.Auth.datetime = sprintf('%s (%s)', char(dt, 'uuuu-MM-dd''T''HH:mm:ss'), dt.TimeZone);
             end
             if ~force && strcmpi(app.Props.Settings.Auth.is_registered, 'yes')
@@ -305,7 +305,7 @@ classdef cicada_exported < matlab.apps.AppBase
                     % Set the status
                     app.Status.Label = 'loading';
                     % Command window log if requested
-                    if isempty(event)
+                    if isempty(event) || iscell(event)
                         app.Status.EventName = 'no-event-name';
                     else
                         app.Status.EventName = event.EventName;
@@ -530,6 +530,8 @@ classdef cicada_exported < matlab.apps.AppBase
                 end
                 parent = parent.Parent; % Move up one level
             end
+            % Adjustment
+            pos = pos + [-12, -12];
         end
     end
 
@@ -986,25 +988,39 @@ classdef cicada_exported < matlab.apps.AppBase
         end
 
         % Menu selected function: EditregistrationMenu
-        function Menu_Help_EditRegistration(app, event)
+        function Menu_Help_EditRegistration(app, ~)
             app.hRegisterUser(true); % 'true' to force re-registration
         end
 
         % Menu selected function: Menu_Help_Bugs
-        function Menu_Help_BugsSelected(app, event)
+        function Menu_Help_BugsSelected(app, ~)
             web(app.URL.GoogleFormBugs, '-browser');
         end
 
         % Menu selected function: Menu_Help_Documentation
-        function Menu_Help_DocumentationSelected(app, event)
+        function Menu_Help_DocumentationSelected(app, ~)
             web(app.URL.Documentation, '-browser');
         end
 
         % Window button down function: UIFigure
         function UIFigureWindowButtonDown(app, event)
             % =========================================================
+            % CHECKS
+            if isempty(app.UIFigure.CurrentObject)
+                return
+            end
+            if ~isvalid(app.UIFigure.CurrentObject)
+                return
+            end
+            % =========================================================
             % SET STATE
             app.Props.IsMouseDown = true;
+            if isfield(app.Props, 'SelectedInputRef')
+                if ~isempty(app.Props.SelectedInputRef)
+                    app.Props.SelectedInputRef.OnBlur(event);
+                    app.Props.SelectedInputRef = [];
+                end
+            end
             % ---------------------------------------------------------
             if contains(event.Source.CurrentObject.Tag, 'EditableEventTrace')
                 % Extract the event id and its onset and offset
@@ -1012,6 +1028,13 @@ classdef cicada_exported < matlab.apps.AppBase
                 app.Props.SelectedSegment = event.Source.CurrentObject.XData(1:2);
                 app.Props.SelectedEventId = str2double(id{2});
                 app.Props.SelectionMade = true;
+            elseif strcmpi(event.Source.CurrentObject.Tag, 'clickable')
+                lbl = event.Source.CurrentObject;
+                parentComp = ancestor(lbl, 'matlab.ui.componentcontainer.ComponentContainer');
+                if isa(parentComp, 'InlineEditField')
+                    app.Props.SelectedInputRef = parentComp;
+                    parentComp.OnClick(event);
+                end
             else
                 % Initialize new selection boolean
                 app.Props.SelectionMade = false;
@@ -1047,7 +1070,7 @@ classdef cicada_exported < matlab.apps.AppBase
         end
 
         % Window button motion function: UIFigure
-        function UIFigureWindowButtonMotion(app, event)
+        function UIFigureWindowButtonMotion(app, ~)
             % =========================================================
             % USE THE DRAWNOW FCN TO ENABLE INTERUPTIONS
             drawnow();
@@ -1093,7 +1116,7 @@ classdef cicada_exported < matlab.apps.AppBase
         end
 
         % Close request function: UIFigure
-        function UIFigureCloseRequest(app, event)
+        function UIFigureCloseRequest(app, ~)
             % -------------------------------------------------------------
             % Send telemetry data
             p = struct();

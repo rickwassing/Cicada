@@ -1,8 +1,8 @@
-% SET_REPORTSTYLE
-% Update the report settings i.e., font, font-size, color etc.
+% SET_REPORTCONTENT
+% Update the report template content i.e., header info etc.
 %
 % Usage:
-%   >> set_reportstyle(state, event);
+%   >> set_reportcontent(state, event);
 %
 % Inputs:
 %   'state' - [struct] app state
@@ -25,17 +25,13 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-function state = set_reportstyle(state, event)
+function state = set_reportcontent(state, event)
 try
     % =========================================================================
-    % 
-    fnames = strsplit(event.Source.Tag, '-');
-    if contains(event.Source.Tag, 'fontColor')
-        val = rgb2hex(event.Value); 
-    else
-        val = event.Value;
-    end
-    state.style = setnestedfield(state.style, fnames, val);
+    src = event{2};
+    fnames = strsplit(src.Keys, '-');
+    val = src.Text;
+    state = setnestedfield(state, fnames, val);
 catch ME
     % ---------------------------------------------------------------------
     % Something went wrong, set status and error message

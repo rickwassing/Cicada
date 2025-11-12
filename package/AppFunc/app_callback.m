@@ -57,6 +57,10 @@ try
         case 'set_reportstyle'
             % set the application state
             app.Props.Settings.Report = set_reportstyle(app.Props.Settings.Report, event);
+            app_savesettings(app.Props.Settings);
+        case 'set_reportcontent'
+            app.Props.Settings.Report = set_reportcontent(app.Props.Settings.Report, event);
+            app_savesettings(app.Props.Settings);
         otherwise
             % set the actogram state
             app.ACT = eval(sprintf('%s(app.ACT, event);', fcn));

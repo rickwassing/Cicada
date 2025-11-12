@@ -44,6 +44,7 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
                 'Event', 'eContentChanged');
             Obj.Components.TitleLabel.Layout.Row = 1;
             Obj.Components.TitleLabel.Layout.Column = 1;
+            app_addlisteners([], Obj.Components.TitleLabel, {'eMouseMotion'});
 
             Obj.Components.DateLabel = uilabel(Obj.Grid);
             Obj.Components.DateLabel.VerticalAlignment = 'top';
