@@ -18,7 +18,7 @@ s.style.page.margin.right = 2.54;
 s.style.page.margin.bottom = 1.27;
 s.style.page.margin.left = 2.54;
 
-s.style.logo.width = 3; % cm
+s.style.logo.width = 1; % cm
 
 s.style.title.fontFamily = 'Georgia';
 s.style.title.fontSize = 14;
