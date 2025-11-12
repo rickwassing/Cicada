@@ -20,7 +20,7 @@ classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
     % PROPERTIES
     properties
         TabTitles = {'Data', 'Report'};
-        IsVisible;
+        IsVisible = 'off';
         Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
@@ -40,6 +40,7 @@ classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
             Obj.TabGroup = uitabgroup(Obj, ...
                 'Tag', 'SideTabGroup_TabGroup', ...
                 'Units', 'normalized', ...
+                'Visible', 'off', ...
                 'Position', [0, 0, 1, 1]);
         end
         % =================================================================
@@ -103,8 +104,10 @@ classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
                 % ---------------------------------------------------------
                 % REPORT
                 % ---------------------------------------------------------
-                % Obj.TabGroup.Children(i).UserData.EventsTab = EventsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
-                %     'Verbose', Obj.Verbose);
+                Obj.TabGroup.Children(i).UserData.ReportSettingsTab = ReportSettingsTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
+                    'Verbose', Obj.Verbose);
+                app_addlisteners([], Obj.TabGroup.Children(i).UserData.ReportSettingsTab, ...
+                    {'eDatasetChanged'});
             end
         end
     end

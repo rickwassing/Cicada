@@ -119,10 +119,10 @@ classdef cicada_exported < matlab.apps.AppBase
                 app.Props.Settings.Auth.shareusagedata = 'yes';
                 app.Props.Settings.Auth.subscribe = 'yes';
                 app.Props.Settings.Auth.accept = 'no';
-                app.Props.Settings.Auth.is_registered = false;
+                app.Props.Settings.Auth.is_registered = 'no'
                 app.Props.Settings.Auth.datetime = sprintf('%s (%s)', char(dt, 'uuuu-MM-dd''T''HH:mm:ss'), dt.TimeZone);
             end
-            if ~force && app.Props.Settings.Auth.is_registered
+            if ~force && strcmpi(app.Props.Settings.Auth.is_registered, 'yes')
                return 
             end
             % TODO: add a 'cancel' button in case the user wants to re-register

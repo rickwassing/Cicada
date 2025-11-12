@@ -72,11 +72,9 @@ settings = requiredappsettings(settings);
         s.Report = defaultreportstate();
         % Get logo source
         resourcesPath = fileparts(which('app_settings.json'));
-        resourcesLogo = dir(fullfile(resourcesPath, 'resources', 'report_logo_*'));
-        if ~isempty(resourcesLogo)
-            s.Report.LogoSource = fullfile(resourcesLogo(1).folder, resourcesLogo(1).name);
-        else
-            s.Report.LogoSource = '';
+        resourcesLogo = dir(fullfile(resourcesPath, 'resources', sprintf('report_logo_%s.*', s.App.Id)));
+        if isempty(resourcesLogo)
+            copyfile(which('cicadalogo.png'), fullfile(resourcesPath, 'resources', sprintf('report_logo_%s.png', s.App.Id)))
         end
         % Save to settings file
         app_savesettings(s);

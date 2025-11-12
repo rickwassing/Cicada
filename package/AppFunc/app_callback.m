@@ -51,7 +51,16 @@ try
     end
     % -------------------------------------------------------------------------
     % Run the function
-    app.ACT = eval(sprintf('%s(app.ACT, event);', fcn));
+    switch fcn
+        case 'nan'
+            % do nothing
+        case 'set_reportstyle'
+            % set the application state
+            app.Props.Settings.Report = set_reportstyle(app.Props.Settings.Report, event);
+        otherwise
+            % set the actogram state
+            app.ACT = eval(sprintf('%s(app.ACT, event);', fcn));
+    end
     % -------------------------------------------------------------------------
     % Notify
     app_notify(app, EventName);

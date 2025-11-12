@@ -56,7 +56,11 @@ for i = 1:numel(fields)
     if ExistingOnly && ~isfield(s, fields{i})
         continue
     else
-        s.(fields{i}) = x.(fields{i});
+        if ischar(x.(fields{i})) && length(x.(fields{i})) > 255
+            s.(fields{i}) = x.(fields{i})(1:255);
+        else
+            s.(fields{i}) = x.(fields{i});
+        end
     end
 end
 end

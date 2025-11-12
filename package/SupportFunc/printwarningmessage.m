@@ -36,7 +36,7 @@ fprintf('\n');
 p = struct();
 p.severity = 'warning';
 p.message = ME.message;
-p.stack = getReport(ME);
+p.stack = cleanErrorReport(getReport(ME, 'extended', 'hyperlinks', 'off'));
 
 Telemetry.post('error', p)
 

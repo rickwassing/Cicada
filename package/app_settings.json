@@ -1,14 +1,14 @@
 {
   "App": {
-    "Id": "98688487-eecb-4ee1-8be0-bb3b21904c04",
-    "SessionId": "c5aaa11b-b6ac-4dbd-8a8e-511fb315c044",
+    "Id": "87db98b9-8a51-435e-ac4e-4c62a4383910",
+    "SessionId": "63494e31-a701-49f2-aaaf-1f1705fd8e13",
     "CicadaVersion": "1.0.0 (build 25 July 2023)",
     "SystemOS": "macos",
     "SystemVersion": "26.0.1",
     "MatlabVersion": "24.2.0.2806996 (R2024b) Update 3"
   },
   "Report": {
-    "Id": "6fb5a834-84ee-4d2c-9cc6-2ddef1a1f3f8",
+    "Id": "9ba514a4-6219-41ec-a394-e83971107fd4",
     "style": {
       "page": {
         "margin": {
@@ -64,8 +64,7 @@
         "InstituteName": "Buzzington University",
         "InstituteAddress": "24 Sleep Circuit\\nBuzzington, REM, 2000\\nP: (01) 1234 5678\\nE: info@company.org"
       }
-    },
-    "LogoSource": "/Users/rickwassing/Documents/Projects/2019_Cicada/cicada-git/package/Resources/report_logo_e5dc1777-fa0f-46db-b522-7c09f117ed3720251106T140859562.jpg"
+    }
   },
   "Auth": {
     "name": "anonymous",
@@ -73,9 +72,9 @@
     "email": "john@doe.com",
     "subscribe": "no",
     "accept": "yes",
-    "is_registered": true,
-    "shareusagedata": "yes",
-    "datetime": "2025-11-11T16:40:36 (Australia/Sydney)"
+    "is_registered": "yes",
+    "shareusagedata": "no",
+    "datetime": "2025-11-12T13:49:01 (Australia/Sydney)"
   },
   "Recent": [
     "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/demo_actigraphy_v1.mat"

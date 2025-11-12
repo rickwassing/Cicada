@@ -267,7 +267,7 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
                         'shareusagedata', 'yes', ...
                         'subscribe', 'yes', ...
                         'accept', 'no', ...
-                        'is_registered', false, ...
+                        'is_registered', 'no', ...
                         'datetime', '');
                 end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -357,7 +357,7 @@ classdef RegisterUser < matlab.ui.componentcontainer.ComponentContainer
             app.Props.Settings.Auth.email = lower(Obj.Auth.email);
             app.Props.Settings.Auth.subscribe = Obj.Auth.subscribe;
             app.Props.Settings.Auth.accept = Obj.Auth.accept;
-            app.Props.Settings.Auth.is_registered = true;
+            app.Props.Settings.Auth.is_registered = 'yes';
             app.Props.Settings.Auth.shareusagedata = Obj.Auth.shareusagedata;
             app.Props.Settings.Auth.datetime = dt;
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -129,7 +129,8 @@ classdef FontStyleSettingsPanel < matlab.ui.componentcontainer.ComponentContaine
                 val = 11;
             end
             Obj.FontSizeInput.Items = arrayfun(@(i) sprintf('%i', i), unique([8:24, val]), 'UniformOutput', false);
-            Obj.FontSizeInput.Value = sprintf('%i', val);
+            Obj.FontSizeInput.ItemsData = unique([8:24, val]);
+            Obj.FontSizeInput.Value = val;
         end
 
     end

@@ -5,7 +5,7 @@ classdef Telemetry
             % -------------------------------------------------------------
             % Get handle to app
             app = app_gethandle();
-            if ~isfield(app, 'Props')
+            if ~isprop(app, 'Props')
                 return
             end
             if ~isfield(app.Props, 'Settings')
@@ -74,9 +74,18 @@ classdef Telemetry
             % Send
             try
                 fprintf('>> CIC: Sending telemetry data.\n');
-                webwrite(endpoint, jsonData, weboptions('MediaType', 'application/json'));
-            catch
+                webwrite(endpoint, jsonData, weboptions('ContentType', 'json', 'MediaType', 'application/json', 'Timeout', 30));
+            catch ME
                 % Silently fail (never crash user’s workflow)
+                fprintf('\n');
+                fprintf(2, '* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n');
+                fprintf(2, 'Oh no! Could not send telemetry data.\n');
+                fprintf(2, '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n');
+                fprintf(2, 'Error message:\n');
+                fprintf(2, getReport(ME));
+                fprintf(2, '\n');
+                fprintf(2, '* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n');
+                fprintf('\n');
             end
         end
     end

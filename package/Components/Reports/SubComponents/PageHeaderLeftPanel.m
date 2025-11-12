@@ -68,6 +68,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 return
             end
             % ---------------------------------------------------------
+            Obj.Grid.ColumnWidth = {Obj.LogoWidth, '1x'};
             Obj.Components.InstituteNameLabel.Text = Obj.TitleLabel;
             Obj.Components.InstituteNameLabel.Style = Obj.TitleStyle;
             Obj.Components.InstituteAddressLabel.Text = Obj.AddressLabel;
@@ -80,7 +81,6 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
     methods (Access = public)
         
         function hUpdate(Obj, app, event)
-            Obj.Parent
             % ---------------------------------------------------------
             % Check if app is valid
             % ---------------------------------------------------------
@@ -100,16 +100,30 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 case {'eDatasetChanged'}
                     Obj.TitleStyle = app.Props.Settings.Report.style.title;
                     Obj.AddressStyle = app.Props.Settings.Report.style.small;
-                    Obj.LogoSource = app.Props.Settings.Report.LogoSource;
                     Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
                     Obj.AddressLabel = app.Props.Settings.Report.content.header.InstituteAddress;
+                    % Set the logo source file
+                    resourcesPath = fileparts(which('app_settings.json'));
+                    resourcesLogo = dir(fullfile(resourcesPath, 'resources', sprintf('report_logo_%s*', app.Props.Settings.App.Id)));
+                    if ~isempty(resourcesLogo)
+                        Obj.LogoSource = fullfile(resourcesLogo(1).folder, resourcesLogo(1).name);
+                    end
+                    Obj.LogoWidth = app.Props.Settings.Report.style.logo.width * 72;
+
                 case {'eStyleChanged'}
                     % Update styles from app state
                     Obj.TitleStyle = app.Props.Settings.Report.style.title;
                     Obj.AddressStyle = app.Props.Settings.Report.style.small;
+
                 case {'eLogoChanged'}
-                    % Update logo from app state
-                    Obj.LogoSource = app.Props.Settings.Report.LogoSource;
+                    % Set the logo source file
+                    resourcesPath = fileparts(which('app_settings.json'));
+                    resourcesLogo = dir(fullfile(resourcesPath, 'resources', sprintf('report_logo_%s*', app.Props.Settings.App.Id)));
+                    if ~isempty(resourcesLogo)
+                        Obj.LogoSource = fullfile(resourcesLogo(1).folder, resourcesLogo(1).name);
+                    end
+                    Obj.LogoWidth = app.Props.Settings.Report.style.logo.width * 72;
+
                 case {'eContentChanged'}
                     % Update content from app state
                     Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
