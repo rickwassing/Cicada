@@ -1,4 +1,4 @@
-% DISPLAYSETTINGS_MODALITY
+% DATASETTINGS_MODALITY
 % Shows visualization settings for a single modality.
 
 % Authors:
@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef DisplaySettings_Modality < matlab.ui.componentcontainer.ComponentContainer
+classdef DataSettings_Modality < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
@@ -312,7 +312,7 @@ classdef DisplaySettings_Modality < matlab.ui.componentcontainer.ComponentContai
                     fprintf('>> CIC: DisplaySettingsModality ''%s'' updated in %.1g s.\n', Obj.Modality, (now-Time)*24*60*60) %#ok<TNOW1>
                 end
             catch ME
-                printerrormessage(ME, 'The error occurred during ''update'' in DisplaySettings_Modality.m')
+                printerrormessage(ME, 'The error occurred during ''update'' in DataSettings_Modality.m')
             end
         end
         % =================================================================

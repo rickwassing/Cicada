@@ -33,8 +33,8 @@ classdef DataSettingsTab < matlab.ui.componentcontainer.ComponentContainer
         ValueLabels matlab.ui.control.Label
         Input matlab.ui.control.EditField
         ExportButton ExportButton
-        ActogramSettings DisplaySettings_Actogram
-        ModalitySettings DisplaySettings_Modality
+        ActogramSettings DataSettings_Actogram
+        ModalitySettings DataSettings_Modality
         EventSettings EventGroupPanel
     end
     % *********************************************************************
@@ -94,7 +94,7 @@ classdef DataSettingsTab < matlab.ui.componentcontainer.ComponentContainer
                 % -------------------------------------------------------------
                 % Display settings for the actogram
                 if isempty(Obj.ActogramSettings)
-                    Obj.ActogramSettings = DisplaySettings_Actogram(Obj.GridLayout, 'Verbose', Obj.Verbose, 'Settings', Obj.Settings);
+                    Obj.ActogramSettings = DataSettings_Actogram(Obj.GridLayout, 'Verbose', Obj.Verbose, 'Settings', Obj.Settings);
                     Obj.ActogramSettings.Layout.Column = 1;
                     Obj.ActogramSettings.Layout.Row = 2;
                 else
@@ -117,7 +117,7 @@ classdef DataSettingsTab < matlab.ui.componentcontainer.ComponentContainer
                     end
                     % ---------------------------------------------------------
                     if DoRender % Render the panel
-                        Obj.ModalitySettings(i) = DisplaySettings_Modality(Obj.GridLayout, 'Verbose', Obj.Verbose);
+                        Obj.ModalitySettings(i) = DataSettings_Modality(Obj.GridLayout, 'Verbose', Obj.Verbose);
                         Obj.ModalitySettings(i).Layout.Column = 1;
                         Obj.ModalitySettings(i).Layout.Row = i+2;
                     end

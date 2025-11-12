@@ -1,4 +1,4 @@
-% DISPLAYSETTINGS_ACTOGRAM
+% DATASETTINGS_ACTOGRAM
 % Shows visualization settings for the actogram 'ACT.etc.display'.
 
 % Authors:
@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef DisplaySettings_Actogram < matlab.ui.componentcontainer.ComponentContainer
+classdef DataSettings_Actogram < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
@@ -169,7 +169,7 @@ classdef DisplaySettings_Actogram < matlab.ui.componentcontainer.ComponentContai
                     fprintf('>> CIC: DisplaySettingsActogram updated in %.1g s.\n', (now-Time)*24*60*60) %#ok<TNOW1>
                 end
             catch ME
-                printerrormessage(ME, 'The error occurred during ''update'' in DisplaySettings_Actogram.m')
+                printerrormessage(ME, 'The error occurred during ''update'' in DataSettings_Actogram.m')
             end
         end
     end
