@@ -1,0 +1,82 @@
+{
+  "App": {
+    "Id": "87db98b9-8a51-435e-ac4e-4c62a4383910",
+    "SessionId": "63494e31-a701-49f2-aaaf-1f1705fd8e13",
+    "CicadaVersion": "1.0.0 (build 25 July 2023)",
+    "SystemOS": "macos",
+    "SystemVersion": "26.0.1",
+    "MatlabVersion": "24.2.0.2806996 (R2024b) Update 3"
+  },
+  "Report": {
+    "Id": "9ba514a4-6219-41ec-a394-e83971107fd4",
+    "style": {
+      "page": {
+        "margin": {
+          "top": 1.27,
+          "right": 2.54,
+          "bottom": 1.27,
+          "left": 2.54
+        }
+      },
+      "logo": {
+        "width": 3
+      },
+      "title": {
+        "fontFamily": "Georgia",
+        "fontSize": 14,
+        "fontColor": "#337380",
+        "fontWeight": "bold",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "h1": {
+        "fontFamily": "Georgia",
+        "fontSize": 11,
+        "fontColor": "#337380",
+        "fontWeight": "bold",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "paragraph": {
+        "fontFamily": "Helvetica",
+        "fontSize": 11,
+        "fontColor": "#262626",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      },
+      "small": {
+        "fontFamily": "Helvetica",
+        "fontSize": 9,
+        "fontColor": "#808080",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "textAlign": "left",
+        "lineHeight": 1
+      }
+    },
+    "content": {
+      "header": {
+        "ReportTitle": "Cicada Report",
+        "InstituteName": "Buzzington University",
+        "InstituteAddress": "24 Sleep Circuit\\nBuzzington, REM, 2000\\nP: (01) 1234 5678\\nE: info@company.org"
+      }
+    }
+  },
+  "Auth": {
+    "name": "anonymous",
+    "institute": "n/a",
+    "email": "john@doe.com",
+    "subscribe": "no",
+    "accept": "yes",
+    "is_registered": "yes",
+    "shareusagedata": "no",
+    "datetime": "2025-11-12T13:49:01 (Australia/Sydney)"
+  },
+  "Recent": [
+    "/Users/rickwassing/Documents/Projects/2019_Cicada/demo-data/demo_actigraphy_v1.mat"
+  ]
+}
