@@ -53,13 +53,14 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 'Event', 'eContentChanged');
             Obj.Components.InstituteNameLabel.Layout.Row = 1;
             Obj.Components.InstituteNameLabel.Layout.Column = 2;
+            app_addlisteners([], Obj.Components.InstituteNameLabel, {'eMouseMotion'});
 
             Obj.Components.InstituteAddressLabel = InlineEditField(Obj.Grid, ...
                 'Keys', 'content-header-InstituteAddress', ...
                 'Event', 'eContentChanged');
             Obj.Components.InstituteAddressLabel.Layout.Row = 2;
             Obj.Components.InstituteAddressLabel.Layout.Column = 2;
-
+            app_addlisteners([], Obj.Components.InstituteAddressLabel, {'eMouseMotion'});
         end
         
         function update(Obj)
@@ -79,11 +80,30 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
     end
 
     methods (Access = public)
-        
+        % =================================================================
+        function hInit(Obj)
+            app = app_gethandle();
+            % Set the UILabels
+            Obj.TitleStyle = app.Props.Settings.Report.style.title;
+            Obj.AddressStyle = app.Props.Settings.Report.style.small;
+            Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
+            Obj.AddressLabel = app.Props.Settings.Report.content.header.InstituteAddress;
+            % Set the logo source file
+            resourcesPath = fileparts(which('app_settings.json'));
+            resourcesLogo = dir(fullfile(resourcesPath, 'resources', sprintf('report_logo_%s*', app.Props.Settings.App.Id)));
+            if ~isempty(resourcesLogo)
+                Obj.LogoSource = fullfile(resourcesLogo(1).folder, resourcesLogo(1).name);
+            end
+            Obj.LogoWidth = app.Props.Settings.Report.style.logo.width * 72;
+        end
+        % =================================================================
         function hUpdate(Obj, app, event)
             % ---------------------------------------------------------
             % Check if app is valid
             % ---------------------------------------------------------
+            if ~isvalid(Obj)
+                return
+            end
             if isempty(app)
                 return
             end

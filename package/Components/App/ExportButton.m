@@ -22,6 +22,7 @@ classdef ExportButton < handle
         % ParentApp;  % Reference to the reports app for callbacks
         Verbose = false;
         TargetTag
+        EventFlag = '';
         Parent
         Graphics matlab.ui.control.Button
     end
@@ -40,8 +41,6 @@ classdef ExportButton < handle
             if nargin > 1
                 for i = 1:2:length(varargin)
                     switch lower(varargin{i})
-                        % case 'parentapp'
-                        %     Obj.ParentApp = varargin{i+1};
                         case 'verbose'
                             Obj.Verbose = varargin{i+1};
                         case 'text'
@@ -67,7 +66,7 @@ classdef ExportButton < handle
         % -----------------------------------------------------------------
         % Creates a new UIFigure with the same dimensions as a A4 paper
         function fig = createA4Figure(~)
-            fig = uifigure('Visible', 'off', ...
+            fig = uifigure('Visible', 'on', ...
                 'Units', 'centimeters', ...
                 'Position', [0.5, 0.5, 21, 29.7]);
             drawnow; pause(0.1);
@@ -185,12 +184,17 @@ classdef ExportButton < handle
 
         % -----------------------------------------------------------------
         % Method to export the panel (and its contents) to PDF
-        function ExportToPdf(Obj, app, fullfilepath) %#ok<INUSD>
+        function ExportToPdf(Obj, app, fullfilepath)
 
             % Get a handle to the target panel to print
             switch Obj.TargetTag
                 case 'DataTab'
                     srcPanel = app.Cmps.MainTabGroup.TabGroup.Children(1).UserData.DataTab;
+                case 'ReportTab'
+                    srcPanel = app.Cmps.MainTabGroup.TabGroup.Children(2).UserData.ReportTab;
+                otherwise
+                    Obj.TargetTag
+                    return
             end
 
             % Create a new A4-sized figure
@@ -201,18 +205,9 @@ classdef ExportButton < handle
             newPanel.Units = 'normalized';
             newPanel.Position = [0, 0, 1, 1];
 
-%             Obj.copyProps(srcPanel, newPanel); % copy panel-level props
-% 
-%             newPanel.Units = 'normalized';
-%             newPanel.Position = [0 0 1 1];
-% 
-%             % Recursively copy children using robust logic (no duplicates)
-%             Obj.syncUIProperties(srcPanel, newPanel);
-% 
             drawnow(); pause(0.1);
 
-            % Create temporary output for each page in the PDF and we merge
-            % them later
+            % Create temporary output for each page in the PDF and we merge them later
             TmpFile = getuuid();
             TmpPath = fullfile(app.Props.Path, 'Temp');
             if exist(TmpPath, 'dir') ~= 7
@@ -235,6 +230,9 @@ classdef ExportButton < handle
                         drawnow(); pause(0.2);
                         exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, page)));
                     end
+                case 'ReportTab'
+                    newPanel.GridLayout.Padding = 0;
+                    exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, 1)));
             end
 
             % Get the list of temp files

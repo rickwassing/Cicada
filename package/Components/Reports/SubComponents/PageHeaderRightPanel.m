@@ -74,10 +74,26 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
     end
 
     methods (Access = public)
+        % =================================================================
+        function hInit(Obj)
+            app = app_gethandle();
+            % Update styles from app state
+            tStyle = app.Props.Settings.Report.style.title;
+            tStyle.textAlign = 'right';
+            sStyle = app.Props.Settings.Report.style.small;
+            sStyle.textAlign = 'right';
+            Obj.TitleStyle = tStyle;
+            Obj.SmallStyle = sStyle;
+            Obj.TitleLabel = app.Props.Settings.Report.content.header.ReportTitle;
+        end
+        % =================================================================
         function hUpdate(Obj, app, event)
             % ---------------------------------------------------------
             % Check if app is valid
             % ---------------------------------------------------------
+            if ~isvalid(Obj)
+                return
+            end
             if isempty(app)
                 return
             end

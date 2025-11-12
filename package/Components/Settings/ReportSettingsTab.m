@@ -25,10 +25,10 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
         ExportButton ExportButton
-        TitleSettings FontStyleSettingsPanel
-        H1Settings FontStyleSettingsPanel
-        ParSettings FontStyleSettingsPanel
-        SmallSettings FontStyleSettingsPanel
+        TitleSettings ReportSettings_FontStyle
+        H1Settings ReportSettings_FontStyle
+        ParSettings ReportSettings_FontStyle
+        SmallSettings ReportSettings_FontStyle
         LogoPanel matlab.ui.container.Panel
         LogoGridLayout matlab.ui.container.GridLayout
         LogoImage matlab.ui.control.Image
@@ -66,7 +66,7 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
 
             % -------------------------------------------------------------
             % Title settings panel
-            Obj.TitleSettings = FontStyleSettingsPanel(Obj.GridLayout);
+            Obj.TitleSettings = ReportSettings_FontStyle(Obj.GridLayout);
             Obj.TitleSettings.Title = 'TITLES';
             Obj.TitleSettings.TagPrefix = 'title';
             Obj.TitleSettings.Layout.Row = 2;
@@ -74,7 +74,7 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
 
             % -------------------------------------------------------------
             % H1 settings panel
-            Obj.H1Settings = FontStyleSettingsPanel(Obj.GridLayout);
+            Obj.H1Settings = ReportSettings_FontStyle(Obj.GridLayout);
             Obj.H1Settings.Title = 'HEADERS';
             Obj.H1Settings.TagPrefix = 'h1';
             Obj.H1Settings.Layout.Row = 3;
@@ -82,7 +82,7 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
 
             % -------------------------------------------------------------
             % Paragraph settings panel
-            Obj.ParSettings = FontStyleSettingsPanel(Obj.GridLayout);
+            Obj.ParSettings = ReportSettings_FontStyle(Obj.GridLayout);
             Obj.ParSettings.Title = 'PARAGRAPH';
             Obj.ParSettings.TagPrefix = 'paragraph';
             Obj.ParSettings.Layout.Row = 4;
@@ -90,7 +90,7 @@ classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
 
             % -------------------------------------------------------------
             % Small settings panel
-            Obj.SmallSettings = FontStyleSettingsPanel(Obj.GridLayout);
+            Obj.SmallSettings = ReportSettings_FontStyle(Obj.GridLayout);
             Obj.SmallSettings.Title = 'SMALL';
             Obj.SmallSettings.TagPrefix = 'small';
             Obj.SmallSettings.Layout.Row = 5;

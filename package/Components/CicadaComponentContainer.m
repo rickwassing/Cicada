@@ -26,7 +26,7 @@ classdef CicadaComponentContainer < matlab.ui.componentcontainer.ComponentContai
     methods (Access = public)
         % =================================================================
         function newObj = deepCopy(obj, parent)
-            
+            clc
             % Get the class name dynamically
             className = class(obj);
 

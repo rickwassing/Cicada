@@ -46,6 +46,12 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
                 app_notify([], {Obj.Event}, {event, Obj}, 'Tag', 'Cicada_Report')
             end
         end
+        function hUpdate(Obj, app, ~)
+            if ~isvalid(Obj)
+                return
+            end
+            Obj.IsHovered = app.IsHovered(Obj);
+        end
     end
 
     methods (Access = protected)
@@ -101,7 +107,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             clr = app_colors();
             % Update component when properties change
             if Obj.IsHovered
-                Obj.Label.BackgroundColor = clr.bs_primary_subtle;
+                Obj.Label.BackgroundColor = clr.bs_primary_subtle.^0.33;
             else
                 Obj.Label.BackgroundColor = [1 1 1];
             end

@@ -100,7 +100,7 @@ classdef ReportTab < CicadaComponentContainer
             try
                 % ---------------------------------------------------------
                 % Do nothing
-            catch ME
+            catch ME %#ok<UNRCH>
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportTab.m')
             end
         end

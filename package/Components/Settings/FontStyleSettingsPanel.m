@@ -1,4 +1,4 @@
-% FONTSTYLESETTINGSPANEL
+% REPORTSETTINGS_FONTSTYLE
 % Reusable panel component for font style settings (family, size, color)
 
 % Authors:
@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef FontStyleSettingsPanel < matlab.ui.componentcontainer.ComponentContainer
+classdef ReportSettings_FontStyle < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties (Access = public)

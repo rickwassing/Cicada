@@ -42,7 +42,6 @@ classdef ReportPage < CicadaComponentContainer
     methods (Access = protected)
         % =================================================================
         function setup(Obj)
-            
             % -------------------------------------------------------------
             % Create the main panel (represents the page)
             Obj.Tag = 'ReportPage';
@@ -91,9 +90,6 @@ classdef ReportPage < CicadaComponentContainer
             % Add event listeners
             app_addlisteners([], Obj.HeaderRightPanel, {'eStyleChanged', 'eContentChanged', 'eDatasetChanged'});
             % -------------------------------------------------------------
-            % Note: Header components will be created in update() method
-            % after the state is loaded from app.Props.Settings.Report
-            % -------------------------------------------------------------
             % Create the body panel
             % -------------------------------------------------------------
             Obj.BodyPanel = uipanel(Obj.GridLayout, ...
@@ -141,14 +137,11 @@ classdef ReportPage < CicadaComponentContainer
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
                 % ---------------------------------------------------------
                 % Update panel tags with current page number
-                Obj.Panel.Tag = sprintf('ReportPage_%i_Panel', Obj.PageNum);
-                Obj.GridLayout.Tag = sprintf('ReportPage_%i_GridLayout', Obj.PageNum);
-                Obj.HeaderPanel.Tag = sprintf('ReportPage_%i_HeaderPanel', Obj.PageNum);
-                Obj.HeaderGridLayout.Tag = sprintf('ReportPage_%i_HeaderGridLayout', Obj.PageNum);
-                Obj.BodyPanel.Tag = sprintf('ReportPage_%i_BodyPanel', Obj.PageNum);
-                Obj.BodyGridLayout.Tag = sprintf('ReportPage_%i_BodyGridLayout', Obj.PageNum);
-                Obj.FooterPanel.Tag = sprintf('ReportPage_%i_FooterPanel', Obj.PageNum);
-                Obj.FooterGridLayout.Tag = sprintf('ReportPage_%i_FooterGridLayout', Obj.PageNum);
+                Obj.Tag = sprintf('ReportPage_%i', Obj.PageNum);
+                % ---------------------------------------------------------
+                % Initialize the components
+                Obj.HeaderLeftPanel.hInit();
+                Obj.HeaderRightPanel.hInit();
                 % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: ReportPage %i updated in %.1g s.\n', Obj.PageNum, (now-Time)*24*60*60) %#ok<TNOW1>

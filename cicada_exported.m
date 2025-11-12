@@ -502,6 +502,35 @@ classdef cicada_exported < matlab.apps.AppBase
                 end
             end
         end
+        % =================================================================
+        % Helper function to check if a point is inside an object
+        function inside = IsHovered(app, obj)
+            if ~isvalid(obj)
+                inside = false;
+                return
+            end
+            point = app.UIFigure.CurrentPoint;
+            pos = app.GetAbsolutePosition(obj);
+            inside = (point(1) > pos(1)) && (point(1) < (pos(1) + obj.Position(3))) && (point(2) > pos(2)) && (point(2) < (pos(2) + obj.Position(4)));
+        end
+        % =================================================================
+        % Hover functionality: get the absolute position of an element relative to the UIFigure
+        function pos = GetAbsolutePosition(~, obj)
+            % Get the position of the current UI element relative to its parent
+            pos = obj.Position(1:2); % Take x, y (ignore width, height)
+            parent = obj.Parent;
+            % Recursively add the positions of parent elements until we reach the UIFigure
+            while ~isa(parent, 'matlab.ui.Figure') % Stop if parent is UIFigure
+                pos = pos + parent.Position(1:2); % Add parent position
+                % Check if the parent is a scrollable container (like uipanel or uigridlayout)
+                if isprop(parent, 'Scrollable') 
+                    if strcmpi(parent.Scrollable, 'on')
+                        pos = pos - parent.ScrollableViewportLocation(1:2); % Subtract the scroll offset
+                    end
+                end
+                parent = parent.Parent; % Move up one level
+            end
+        end
     end
 
     % Callbacks that handle component events
