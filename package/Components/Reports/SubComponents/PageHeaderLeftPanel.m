@@ -81,8 +81,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
 
     methods (Access = public)
         % =================================================================
-        function hInit(Obj)
-            app = app_gethandle();
+        function hInit(Obj, app)
             % Set the UILabels
             Obj.TitleStyle = app.Props.Settings.Report.style.title;
             Obj.AddressStyle = app.Props.Settings.Report.style.small;

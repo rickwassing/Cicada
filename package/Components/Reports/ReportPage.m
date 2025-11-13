@@ -120,7 +120,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.PatientInfoTable.Layout.Column = 1;
             Obj.PatientInfoTable.Title = 'Patient Information';
             Obj.PatientInfoTable.TableConfig = Obj.hGetPatientInfoConfig();
-            app_addlisteners([], Obj.PatientInfoTable, {'eDatasetChanged'});
+            app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged'});
             % ---------------------------------------------------------
             % Recording Information Table
             Obj.RecordingInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
@@ -128,7 +128,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.RecordingInfoTable.Layout.Column = 1;
             Obj.RecordingInfoTable.Title = 'Recording Information';
             Obj.RecordingInfoTable.TableConfig = Obj.hGetRecordingInfoConfig();
-            app_addlisteners([], Obj.RecordingInfoTable, {'eDatasetChanged'});
+            app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged'});
             % ---------------------------------------------------------
             % Summary Statistics - Entire Recording Table
             Obj.SummaryStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
@@ -136,7 +136,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.SummaryStatsTable.Layout.Column = 1;
             Obj.SummaryStatsTable.Title = 'Summary Statistics - Entire Recording';
             Obj.SummaryStatsTable.TableConfig = Obj.hGetSummaryStatsConfig();
-            app_addlisteners([], Obj.SummaryStatsTable, {'eDatasetChanged'});
+            app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged'});
             % ---------------------------------------------------------
             % Summary Statistics - Sleep Windows Table
             Obj.SleepWindowStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
@@ -144,7 +144,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.SleepWindowStatsTable.Layout.Column = 1;
             Obj.SleepWindowStatsTable.Title = 'Summary Statistics - Average Sleep Windows';
             Obj.SleepWindowStatsTable.TableConfig = Obj.hGetSleepWindowStatsConfig();
-            app_addlisteners([], Obj.SleepWindowStatsTable, {'eDatasetChanged'});
+            app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged'});
             % -------------------------------------------------------------
             % Create the footer panel container
             % -------------------------------------------------------------
@@ -164,11 +164,19 @@ classdef ReportPage < CicadaComponentContainer
                 % Update panel tags with current page number
                 Obj.Tag = sprintf('ReportPage_%i', Obj.PageNum);
                 % ---------------------------------------------------------
+                % Get app handle
+                app = app_gethandle();
+                % ---------------------------------------------------------
                 % Initialize the components
-                Obj.HeaderLeftPanel.hInit();
-                Obj.HeaderRightPanel.hInit();
+                Obj.HeaderLeftPanel.hInit(app);
+                Obj.HeaderRightPanel.hInit(app);
                 Obj.FooterPanel.PageNum = Obj.PageNum;
-                Obj.FooterPanel.hInit();
+                Obj.FooterPanel.hInit(app);
+                % Initialize tables with styling
+                Obj.PatientInfoTable.hInit(app);
+                Obj.RecordingInfoTable.hInit(app);
+                Obj.SummaryStatsTable.hInit(app);
+                Obj.SleepWindowStatsTable.hInit(app);
                 % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: ReportPage %i updated in %.1g s.\n', Obj.PageNum, (now-Time)*24*60*60) %#ok<TNOW1>

@@ -23,14 +23,12 @@ classdef ReportTable < CicadaComponentContainer
         TableConfig struct             % Table configuration
         Data struct                    % Data from ACT
         Style struct                   % Table styling
-        CellHeight = 30;               % Height of each cell in pixels
+        CellHeight = 24;               % Height of each cell in pixels
     end
     
     properties (Access = private, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
         GridLayout matlab.ui.container.GridLayout
-        TitlePanel matlab.ui.container.Panel
-        TitleLabel matlab.ui.control.Label
         TablePanel matlab.ui.container.Panel
         TableGrid matlab.ui.container.GridLayout
         Cells                          % Array of cell components
@@ -44,40 +42,20 @@ classdef ReportTable < CicadaComponentContainer
             % -------------------------------------------------------------
             Obj.Tag = 'ReportTable';
             % -------------------------------------------------------------
-            % Get colors
-            Colors = app_colors();
-            % -------------------------------------------------------------
             % Create grid layout (2 rows: title + table)
             Obj.GridLayout = uigridlayout(Obj, ...
                 'ColumnWidth', {'1x'}, ...
-                'RowHeight', {32, '1x'}, ...
+                'RowHeight', {'1x'}, ...
                 'ColumnSpacing', 0, ...
                 'RowSpacing', 0, ...
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
             % -------------------------------------------------------------
-            % Create title panel
-            Obj.TitlePanel = uipanel(Obj.GridLayout, ...
-                'BorderType', 'none', ...
-                'BackgroundColor', Colors.bs_primary);
-            Obj.TitlePanel.Layout.Row = 1;
-            Obj.TitlePanel.Layout.Column = 1;
-            % -------------------------------------------------------------
-            % Create title label
-            Obj.TitleLabel = uilabel(Obj.TitlePanel, ...
-                'Text', '', ...
-                'FontSize', 14, ...
-                'FontWeight', 'bold', ...
-                'FontColor', [1, 1, 1], ...
-                'HorizontalAlignment', 'left', ...
-                'VerticalAlignment', 'center', ...
-                'Position', [12, 0, 500, 32]);
-            % -------------------------------------------------------------
             % Create table panel
             Obj.TablePanel = uipanel(Obj.GridLayout, ...
                 'BorderType', 'none', ...
                 'BackgroundColor', [1, 1, 1]);
-            Obj.TablePanel.Layout.Row = 2;
+            Obj.TablePanel.Layout.Row = 1;
             Obj.TablePanel.Layout.Column = 1;
         end
         
@@ -89,7 +67,7 @@ classdef ReportTable < CicadaComponentContainer
                 if Obj.Verbose; Time = now; end %#ok<TNOW1>
                 % ---------------------------------------------------------
                 % Update title
-                Obj.TitleLabel.Text = Obj.Title;
+                Obj.TablePanel.Title = Obj.Title;
                 % ---------------------------------------------------------
                 % Check if we have valid config
                 if isempty(Obj.TableConfig)
@@ -162,8 +140,49 @@ classdef ReportTable < CicadaComponentContainer
     % PUBLIC METHODS
     methods (Access = public)
         % =================================================================
-        function hInit(Obj)
+        function hInit(Obj, app)
             % Initialize table - called by parent component
+            if nargin < 2 || isempty(app)
+                app = app_gethandle();
+            end
+            
+            % Apply title styling from app settings
+            if isfield(app.Props, 'Settings') && ...
+               isfield(app.Props.Settings, 'Report') && ...
+               isfield(app.Props.Settings.Report, 'style') && ...
+               isfield(app.Props.Settings.Report.style, 'h1')
+                
+                style = app.Props.Settings.Report.style.h1;
+                
+                % Set font family
+                if isfield(style, 'fontFamily')
+                    Obj.TablePanel.FontName = style.fontFamily;
+                end
+                
+                % Set font size
+                if isfield(style, 'fontSize')
+                    Obj.TablePanel.FontSize = style.fontSize;
+                end
+                
+                % Set font weight
+                if isfield(style, 'fontWeight')
+                    Obj.TablePanel.FontWeight = style.fontWeight;
+                end
+                
+                % Set font angle (style)
+                if isfield(style, 'fontStyle')
+                    if strcmpi(style.fontStyle, 'italic')
+                        Obj.TablePanel.FontAngle = 'italic';
+                    else
+                        Obj.TablePanel.FontAngle = 'normal';
+                    end
+                end
+                
+                % Set foreground color (font color)
+                if isfield(style, 'fontColor')
+                    Obj.TablePanel.ForegroundColor = hex2rgb(style.fontColor);
+                end
+            end
         end
         
         % =================================================================
@@ -173,6 +192,10 @@ classdef ReportTable < CicadaComponentContainer
                 % Handle events from app
                 if ~isvalid(Obj)
                     return
+                end
+                % Set the style
+                if strcmpi(event.EventName, 'eStyleChanged')
+                    Obj.hInit(app)
                 end
                 % Update all cells
                 for i = 1:length(Obj.Cells)

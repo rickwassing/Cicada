@@ -64,8 +64,7 @@ classdef PageFooterPanel < CicadaComponentContainer
     
     methods (Access = public)
         % =================================================================
-        function hInit(Obj)
-            app = app_gethandle();
+        function hInit(Obj, app)
             % Update styles from app state
             Obj.SmallStyle = app.Props.Settings.Report.style.small;
         end

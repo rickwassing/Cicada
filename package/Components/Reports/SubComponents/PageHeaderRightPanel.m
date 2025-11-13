@@ -76,8 +76,7 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
 
     methods (Access = public)
         % =================================================================
-        function hInit(Obj)
-            app = app_gethandle();
+        function hInit(Obj, app)
             % Update styles from app state
             tStyle = app.Props.Settings.Report.style.title;
             tStyle.textAlign = 'right';
