@@ -94,11 +94,7 @@ classdef ReportTable < CicadaComponentContainer
                 end
                 % ---------------------------------------------------------
                 % Create table grid based on config
-                if strcmpi(Obj.TableConfig.type, 'keyvalue')
-                    Obj.hCreateKeyValueTable();
-                elseif strcmpi(Obj.TableConfig.type, 'grid')
-                    Obj.hCreateGridTable();
-                end
+                Obj.hCreateKeyValueTable();
                 % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: ReportTable ''%s'' updated in %.1g s.\n', Obj.Title, (now-Time)*24*60*60); %#ok<TNOW1>
@@ -113,9 +109,11 @@ classdef ReportTable < CicadaComponentContainer
         function hCreateKeyValueTable(Obj)
             % Create a key-value layout table (label-value pairs)
             % ---------------------------------------------------------
-            % Get number of rows and columns
+            % Get number of rows and columns from config
             numCols = Obj.TableConfig.columns;
-            numRows = length(Obj.TableConfig.cells) / (numCols / 2);
+            numCells = length(Obj.TableConfig.cells);
+            numRows = ceil(numCells / numCols);
+            
             % ---------------------------------------------------------
             % Create or update table grid
             if isempty(Obj.TableGrid) || ~isvalid(Obj.TableGrid)
@@ -125,99 +123,34 @@ classdef ReportTable < CicadaComponentContainer
                     'Padding', [0, 0, 0, 0], ...
                     'BackgroundColor', [1, 1, 1]);
             end
-            % Set column widths (alternating label-value)
-            colWidths = cell(1, numCols);
-            for i = 1:numCols
-                if mod(i, 2) == 1
-                    colWidths{i} = 120;  % Label column fixed width
-                else
-                    colWidths{i} = '1x';  % Value column flex
-                end
-            end
-            Obj.TableGrid.ColumnWidth = colWidths;
             
-            % Set row heights
-            rowHeights = repmat({Obj.CellHeight}, 1, numRows);
-            Obj.TableGrid.RowHeight = rowHeights;
-            
-            % ---------------------------------------------------------
-            % Create cells
-            Obj.Cells = [];
-            cellIdx = 1;
-            
-            for i = 1:length(Obj.TableConfig.cells)
-                cellConfig = Obj.TableConfig.cells{i};
-                
-                % Create cell component
-                h = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
-                h.CellType = cellConfig.type;
-                h.Text = cellConfig.text;
-                h.Field = cellConfig.field;
-                h.Editable = cellConfig.editable;
-                h.Layout.Row = cellConfig.row;
-                h.Layout.Column = cellConfig.col;
-                
-                % Store cell reference
-                Obj.Cells(cellIdx).Obj = h;
-                cellIdx = cellIdx + 1;
-            end
-        end
-        
-        % =================================================================
-        function hCreateGridTable(Obj)
-            % Create a grid layout table (headers + rows)
-            % ---------------------------------------------------------
-            % Get dimensions
-            numCols = length(Obj.TableConfig.headers);
-            numDataRows = length(Obj.TableConfig.cells) / numCols;
-            numRows = 1 + numDataRows; % Header row + data rows
-            % ---------------------------------------------------------
-            % Create or update table grid
-            if isempty(Obj.TableGrid) || ~isvalid(Obj.TableGrid)
-                Obj.TableGrid = uigridlayout(Obj.TablePanel, ...
-                    'ColumnSpacing', 0, ...
-                    'RowSpacing', 0, ...
-                    'Padding', [0, 0, 0, 0], ...
-                    'BackgroundColor', [1, 1, 1]);
-            end
-            % Set column widths (equal distribution)
+            % Set column widths (each cell is full width in its column)
             colWidths = repmat({'1x'}, 1, numCols);
             Obj.TableGrid.ColumnWidth = colWidths;
+            
             % Set row heights
             rowHeights = repmat({Obj.CellHeight}, 1, numRows);
             Obj.TableGrid.RowHeight = rowHeights;
-            % ---------------------------------------------------------
-            % Create header cells
-            Obj.Cells = [];
-            cellIdx = 1;
-            for i = 1:numCols
-                h = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
-                h.CellType = 'label';
-                h.Text = Obj.TableConfig.headers{i};
-                h.IsHeader = true;
-                h.Editable = false;
-                h.Layout.Row = 1;
-                h.Layout.Column = i;
-                
-                Obj.Cells(cellIdx).Obj = h;
-                cellIdx = cellIdx + 1;
-            end
             
             % ---------------------------------------------------------
-            % Create data cells
-            for i = 1:length(Obj.TableConfig.cells)
+            % Create cells (each cell is now a label-value pair)
+            Obj.Cells = [];
+            
+            for i = 1:numCells
                 cellConfig = Obj.TableConfig.cells{i};
                 
-                h = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
-                h.CellType = 'value';
-                h.Text = cellConfig.text;
-                h.Field = cellConfig.field;
-                h.Editable = cellConfig.editable;
-                h.Layout.Row = cellConfig.row + 1; % +1 for header row
-                h.Layout.Column = cellConfig.col;
+                % Create cell component (label-value pair)
+                cell = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
+                cell.KeyLabel = cellConfig.keyLabel;
+                cell.ValueText = cellConfig.text;
+                cell.Field = cellConfig.field;
+                cell.Editable = cellConfig.editable;
+                cell.Format = cellConfig.format;
+                cell.Layout.Row = cellConfig.row;
+                cell.Layout.Column = cellConfig.col;
                 
-                Obj.Cells(cellIdx).Obj = h;
-                cellIdx = cellIdx + 1;
+                % Store cell reference
+                Obj.Cells(i).Obj = cell;
             end
         end
     end

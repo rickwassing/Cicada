@@ -200,123 +200,85 @@ classdef ReportPage < CicadaComponentContainer
     methods (Access = private)
         % =================================================================
         function config = hGetPatientInfoConfig(~)
-            % Configuration for Patient Information table (3 rows x 4 cols)
+            % Configuration for Patient Information table (3 rows x 2 cols)
             config = struct();
-            config.type = 'keyvalue';
-            config.columns = 4;
+            config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'type', 'label', 'text', 'Name', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 2, 'type', 'value', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
-                struct('row', 1, 'col', 3, 'type', 'label', 'text', 'Date of Birth', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 4, 'type', 'value', 'text', '', 'field', 'info.dob', 'editable', true, 'format', 'date')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Name', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Date of Birth', 'text', '', 'field', 'info.dob', 'editable', true, 'format', 'date')
                 % Row 2
-                struct('row', 2, 'col', 1, 'type', 'label', 'text', 'Patient ID', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 2, 'type', 'value', 'text', '', 'field', 'info.participant_id', 'editable', false, 'format', 'string')
-                struct('row', 2, 'col', 3, 'type', 'label', 'text', 'Sex', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 4, 'type', 'value', 'text', '', 'field', 'info.sex', 'editable', true, 'format', 'string')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Patient ID', 'text', '', 'field', 'info.participant_id', 'editable', false, 'format', 'string')
+                struct('row', 2, 'col', 2, 'keyLabel', 'Sex', 'text', '', 'field', 'info.sex', 'editable', true, 'format', 'string')
                 % Row 3
-                struct('row', 3, 'col', 1, 'type', 'label', 'text', 'Referring Physician', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 2, 'type', 'value', 'text', '', 'field', 'info.researcher', 'editable', true, 'format', 'string')
-                struct('row', 3, 'col', 3, 'type', 'label', 'text', 'Study Date', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 4, 'type', 'value', 'text', '', 'field', 'info.study', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Referring Physician', 'text', '', 'field', 'info.researcher', 'editable', true, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Study Date', 'text', '', 'field', 'info.study', 'editable', false, 'format', 'string')
             };
         end
         % =================================================================
         function config = hGetRecordingInfoConfig(~)
-            % Configuration for Recording Information table (4 rows x 4 cols)
+            % Configuration for Recording Information table (4 rows x 2 cols)
             config = struct();
-            config.type = 'keyvalue';
-            config.columns = 4;
+            config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'type', 'label', 'text', 'Device', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.device_type', 'editable', false, 'format', 'string')
-                struct('row', 1, 'col', 3, 'type', 'label', 'text', 'Serial Number', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.serial_number', 'editable', false, 'format', 'string')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Device', 'text', '', 'field', 'stats.device_type', 'editable', false, 'format', 'string')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Serial Number', 'text', '', 'field', 'stats.serial_number', 'editable', false, 'format', 'string')
                 % Row 2
-                struct('row', 2, 'col', 1, 'type', 'label', 'text', 'Start Date/Time', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.start_datetime', 'editable', false, 'format', 'string')
-                struct('row', 2, 'col', 3, 'type', 'label', 'text', 'End Date/Time', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.end_datetime', 'editable', false, 'format', 'string')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Start Date/Time', 'text', '', 'field', 'stats.start_datetime', 'editable', false, 'format', 'string')
+                struct('row', 2, 'col', 2, 'keyLabel', 'End Date/Time', 'text', '', 'field', 'stats.end_datetime', 'editable', false, 'format', 'string')
                 % Row 3
-                struct('row', 3, 'col', 1, 'type', 'label', 'text', 'Duration', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.duration', 'editable', false, 'format', 'string')
-                struct('row', 3, 'col', 3, 'type', 'label', 'text', 'Sampling Rate', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.sampling_rate', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Duration', 'text', '', 'field', 'stats.duration', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Sampling Rate', 'text', '', 'field', 'stats.sampling_rate', 'editable', false, 'format', 'string')
                 % Row 4
-                struct('row', 4, 'col', 1, 'type', 'label', 'text', 'Epoch Length', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.epoch_length', 'editable', false, 'format', 'string')
-                struct('row', 4, 'col', 3, 'type', 'label', 'text', 'Total Epochs', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.total_epochs', 'editable', false, 'format', 'string')
+                struct('row', 4, 'col', 1, 'keyLabel', 'Epoch Length', 'text', '', 'field', 'stats.epoch_length', 'editable', false, 'format', 'string')
+                struct('row', 4, 'col', 2, 'keyLabel', 'Total Epochs', 'text', '', 'field', 'stats.total_epochs', 'editable', false, 'format', 'string')
             };
         end
         % =================================================================
         function config = hGetSummaryStatsConfig(~)
-            % Configuration for Summary Statistics table (5 rows x 4 cols)
+            % Configuration for Summary Statistics table (5 rows x 2 cols)
             config = struct();
-            config.type = 'keyvalue';
-            config.columns = 4;
+            config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'type', 'label', 'text', 'Number of Days', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.num_days', 'editable', false, 'format', 'number')
-                struct('row', 1, 'col', 3, 'type', 'label', 'text', 'Time Rejected (%)', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.time_rejected_pct', 'editable', false, 'format', 'number')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Number of Days', 'text', '', 'field', 'stats.num_days', 'editable', false, 'format', 'number')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Time Rejected (%)', 'text', '', 'field', 'stats.time_rejected_pct', 'editable', false, 'format', 'number')
                 % Row 2
-                struct('row', 2, 'col', 1, 'type', 'label', 'text', 'Inter-daily Stability (IS)', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.interdaily_stability', 'editable', false, 'format', 'number')
-                struct('row', 2, 'col', 3, 'type', 'label', 'text', 'Intra-daily Variability (IV)', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.intradaily_variability', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Inter-daily Stability (IS)', 'text', '', 'field', 'stats.interdaily_stability', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 2, 'keyLabel', 'Intra-daily Variability (IV)', 'text', '', 'field', 'stats.intradaily_variability', 'editable', false, 'format', 'number')
                 % Row 3
-                struct('row', 3, 'col', 1, 'type', 'label', 'text', 'Time in MVA (hours)', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.mva_time', 'editable', false, 'format', 'number')
-                struct('row', 3, 'col', 3, 'type', 'label', 'text', 'Mean EN in MVA', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.mva_mean_en', 'editable', false, 'format', 'number')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Time in MVA (hours)', 'text', '', 'field', 'stats.mva_time', 'editable', false, 'format', 'number')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Mean EN in MVA', 'text', '', 'field', 'stats.mva_mean_en', 'editable', false, 'format', 'number')
                 % Row 4
-                struct('row', 4, 'col', 1, 'type', 'label', 'text', 'Most Active 10h Start', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.m10_start', 'editable', false, 'format', 'string')
-                struct('row', 4, 'col', 3, 'type', 'label', 'text', 'Most Active 10h Amplitude', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.m10_amplitude', 'editable', false, 'format', 'number')
+                struct('row', 4, 'col', 1, 'keyLabel', 'Most Active 10h Start', 'text', '', 'field', 'stats.m10_start', 'editable', false, 'format', 'string')
+                struct('row', 4, 'col', 2, 'keyLabel', 'Most Active 10h Amplitude', 'text', '', 'field', 'stats.m10_amplitude', 'editable', false, 'format', 'number')
                 % Row 5
-                struct('row', 5, 'col', 1, 'type', 'label', 'text', 'Least Active 5h Start', 'field', '', 'editable', false)
-                struct('row', 5, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.l5_start', 'editable', false, 'format', 'string')
-                struct('row', 5, 'col', 3, 'type', 'label', 'text', 'Least Active 5h Amplitude', 'field', '', 'editable', false)
-                struct('row', 5, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.l5_amplitude', 'editable', false, 'format', 'number')
+                struct('row', 5, 'col', 1, 'keyLabel', 'Least Active 5h Start', 'text', '', 'field', 'stats.l5_start', 'editable', false, 'format', 'string')
+                struct('row', 5, 'col', 2, 'keyLabel', 'Least Active 5h Amplitude', 'text', '', 'field', 'stats.l5_amplitude', 'editable', false, 'format', 'number')
             };
         end
         % =================================================================
         function config = hGetSleepWindowStatsConfig(~)
-            % Configuration for Sleep Window Statistics table (5 rows x 4 cols)
+            % Configuration for Sleep Window Statistics table (5 rows x 2 cols)
             config = struct();
-            config.type = 'keyvalue';
-            config.columns = 4;
+            config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'type', 'label', 'text', 'Number of Sleep Windows', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.num_sleep_windows', 'editable', false, 'format', 'number')
-                struct('row', 1, 'col', 3, 'type', 'label', 'text', 'Lights Out Time', 'field', '', 'editable', false)
-                struct('row', 1, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.lights_out_time', 'editable', false, 'format', 'string')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Number of Sleep Windows', 'text', '', 'field', 'stats.num_sleep_windows', 'editable', false, 'format', 'number')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Lights Out Time', 'text', '', 'field', 'stats.lights_out_time', 'editable', false, 'format', 'string')
                 % Row 2
-                struct('row', 2, 'col', 1, 'type', 'label', 'text', 'Sleep Onset Latency (min)', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.sleep_onset_latency', 'editable', false, 'format', 'number')
-                struct('row', 2, 'col', 3, 'type', 'label', 'text', 'WASO (min)', 'field', '', 'editable', false)
-                struct('row', 2, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.waso', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Sleep Onset Latency (min)', 'text', '', 'field', 'stats.sleep_onset_latency', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 2, 'keyLabel', 'WASO (min)', 'text', '', 'field', 'stats.waso', 'editable', false, 'format', 'number')
                 % Row 3
-                struct('row', 3, 'col', 1, 'type', 'label', 'text', 'Final Awakening Time', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.final_awakening', 'editable', false, 'format', 'string')
-                struct('row', 3, 'col', 3, 'type', 'label', 'text', 'Lights On Time', 'field', '', 'editable', false)
-                struct('row', 3, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.lights_on_time', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Final Awakening Time', 'text', '', 'field', 'stats.final_awakening', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Lights On Time', 'text', '', 'field', 'stats.lights_on_time', 'editable', false, 'format', 'string')
                 % Row 4
-                struct('row', 4, 'col', 1, 'type', 'label', 'text', 'Sleep Window Duration (hours)', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.sleep_window_duration', 'editable', false, 'format', 'number')
-                struct('row', 4, 'col', 3, 'type', 'label', 'text', 'Total Time in Sustained Inactivity (hours)', 'field', '', 'editable', false)
-                struct('row', 4, 'col', 4, 'type', 'value', 'text', '', 'field', 'stats.sustained_inactivity', 'editable', false, 'format', 'number')
+                struct('row', 4, 'col', 1, 'keyLabel', 'Sleep Window Duration (hours)', 'text', '', 'field', 'stats.sleep_window_duration', 'editable', false, 'format', 'number')
+                struct('row', 4, 'col', 2, 'keyLabel', 'Total Time in Sustained Inactivity (hours)', 'text', '', 'field', 'stats.sustained_inactivity', 'editable', false, 'format', 'number')
                 % Row 5
-                struct('row', 5, 'col', 1, 'type', 'label', 'text', 'Sleep Efficiency (%)', 'field', '', 'editable', false)
-                struct('row', 5, 'col', 2, 'type', 'value', 'text', '', 'field', 'stats.sleep_efficiency', 'editable', false, 'format', 'number')
-                struct('row', 5, 'col', 3, 'type', 'label', 'text', '', 'field', '', 'editable', false)
-                struct('row', 5, 'col', 4, 'type', 'value', 'text', '', 'field', '', 'editable', false, 'format', 'string')
+                struct('row', 5, 'col', 1, 'keyLabel', 'Sleep Efficiency (%)', 'text', '', 'field', 'stats.sleep_efficiency', 'editable', false, 'format', 'number')
+                struct('row', 5, 'col', 2, 'keyLabel', '', 'text', '', 'field', '', 'editable', false, 'format', 'string')
             };
         end
     end

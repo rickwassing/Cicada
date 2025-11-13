@@ -1,5 +1,5 @@
 % REPORTTABLECELL
-% A single cell component for report tables with optional editability
+% A single cell component representing a label-value pair for report tables
 
 % Authors:
 %   Rick Wassing, Woolcock Institute of Medical Research, Sydney, Australia
@@ -19,21 +19,20 @@ classdef ReportTableCell < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties (Access = public)
-        CellType char = 'value';     % 'label' or 'value'
-        Text char = '';              % Display text
+        KeyLabel char = '';          % Label text (e.g., 'Name', 'Date of Birth')
+        ValueText char = '';         % Value text to display
         Field char = '';             % ACT field path (e.g., 'info.dob')
         Editable logical = false;    % Can user edit?
         Format char = 'string';      % 'string', 'number', 'date', etc.
-        Style struct                 % Cell styling
-        IsHeader logical = false;    % Is this a header cell?
         IsHovered logical = false;   % Hover state
         Id char                      % Unique identifier
     end
     
     properties (Access = private, Transient, NonCopyable)
-        Panel matlab.ui.container.Panel
-        Label matlab.ui.control.Label
-        Input matlab.ui.control.EditField
+        GridLayout matlab.ui.container.GridLayout
+        KeyLabelUI matlab.ui.control.Label
+        ValueLabelUI matlab.ui.control.Label
+        ValueInputUI matlab.ui.control.EditField
     end
     
     % *********************************************************************
@@ -47,80 +46,76 @@ classdef ReportTableCell < CicadaComponentContainer
             Obj.Tag = sprintf('ReportTableCell_%s', Obj.Id);
             
             % -------------------------------------------------------------
-            % Create panel for cell
-            Obj.Panel = uipanel(Obj, ...
-                'BorderType', 'line', ...
-                'BorderWidth', 1, ...
+            % Create grid layout (2 columns: key label | value area)
+            Obj.GridLayout = uigridlayout(Obj, ...
+                'ColumnWidth', {120, '1x'}, ...
+                'RowHeight', {30}, ...
+                'ColumnSpacing', 0, ...
+                'RowSpacing', 0, ...
+                'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
             
             % -------------------------------------------------------------
-            % Create label for display
-            Obj.Label = uilabel(Obj.Panel, ...
+            % Create key label (left side - always visible)
+            Obj.KeyLabelUI = uilabel(Obj.GridLayout, ...
                 'Text', '', ...
                 'HorizontalAlignment', 'left', ...
                 'VerticalAlignment', 'center', ...
-                'WordWrap', 'on', ...
-                'Position', [8, 0, 100, 30]);
+                'FontSize', 12, ...
+                'FontWeight', 'bold', ...
+                'FontColor', [0.173, 0.353, 0.627], ...
+                'BackgroundColor', [0.973, 0.976, 0.980]);
+            Obj.KeyLabelUI.Layout.Row = 1;
+            Obj.KeyLabelUI.Layout.Column = 1;
             
             % -------------------------------------------------------------
-            % Create edit field (initially hidden)
-            Obj.Input = uieditfield(Obj.Panel, ...
+            % Create value label (right side - display mode)
+            Obj.ValueLabelUI = uilabel(Obj.GridLayout, ...
+                'Text', '', ...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'center', ...
+                'FontSize', 12, ...
+                'FontWeight', 'normal', ...
+                'FontColor', [0.2, 0.2, 0.2], ...
+                'BackgroundColor', [1, 1, 1]);
+            Obj.ValueLabelUI.Layout.Row = 1;
+            Obj.ValueLabelUI.Layout.Column = 2;
+            
+            % -------------------------------------------------------------
+            % Create value input (right side - edit mode, initially hidden)
+            Obj.ValueInputUI = uieditfield(Obj.GridLayout, ...
                 'Value', '', ...
                 'Visible', 'off', ...
-                'Position', [8, 0, 100, 30]);
+                'FontSize', 12);
+            Obj.ValueInputUI.Layout.Row = 1;
+            Obj.ValueInputUI.Layout.Column = 2;
         end
         
         % =================================================================
         function update(Obj)
             try
                 % ---------------------------------------------------------
-                % Update label text
-                Obj.Label.Text = Obj.Text;
+                % Update key label text
+                Obj.KeyLabelUI.Text = ['  ' Obj.KeyLabel];
                 
                 % ---------------------------------------------------------
-                % Apply styling based on cell type
-                if Obj.IsHeader
-                    % Header cell styling (matches mockup th elements)
-                    Obj.Panel.BackgroundColor = [0.973, 0.976, 0.980]; % #f8f9fa
-                    Obj.Panel.BorderColor = [0.871, 0.886, 0.902]; % #dee2e6
-                    Obj.Label.FontWeight = 'bold';
-                    Obj.Label.FontColor = [0.173, 0.353, 0.627]; % Primary color #2c5aa0
-                    Obj.Label.FontSize = 12;
-                elseif strcmpi(Obj.CellType, 'label')
-                    % Label cell styling (matches mockup th elements)
-                    Obj.Panel.BackgroundColor = [0.973, 0.976, 0.980]; % #f8f9fa
-                    Obj.Panel.BorderColor = [0.871, 0.886, 0.902]; % #dee2e6
-                    Obj.Label.FontWeight = 'bold';
-                    Obj.Label.FontColor = [0.173, 0.353, 0.627]; % Primary color #2c5aa0
-                    Obj.Label.FontSize = 12;
+                % Update value label text
+                Obj.ValueLabelUI.Text = ['  ' Obj.ValueText];
+                
+                % ---------------------------------------------------------
+                % Apply hover styling to value area if editable
+                if Obj.Editable && Obj.IsHovered
+                    Obj.ValueLabelUI.BackgroundColor = [0.910, 0.957, 0.992]; % #e8f4fd
                 else
-                    % Value cell styling (matches mockup td elements)
-                    if Obj.IsHovered && Obj.Editable
-                        Obj.Panel.BackgroundColor = [0.910, 0.957, 0.992]; % #e8f4fd (hover color)
-                    else
-                        Obj.Panel.BackgroundColor = [1, 1, 1];
-                    end
-                    Obj.Panel.BorderColor = [0.871, 0.886, 0.902]; % #dee2e6
-                    Obj.Label.FontWeight = 'normal';
-                    Obj.Label.FontColor = [0.2, 0.2, 0.2]; % #333333
-                    Obj.Label.FontSize = 12;
-                end
-                
-                % ---------------------------------------------------------
-                % Update label and input field positions to fill panel
-                if ~isempty(Obj.Panel.Position)
-                    panelWidth = Obj.Panel.Position(3);
-                    panelHeight = Obj.Panel.Position(4);
-                    Obj.Label.Position = [8, 0, panelWidth-16, panelHeight];
-                    Obj.Input.Position = [8, (panelHeight-30)/2, panelWidth-16, 30];
+                    Obj.ValueLabelUI.BackgroundColor = [1, 1, 1];
                 end
                 
                 % ---------------------------------------------------------
                 % Set cursor style for editable cells
-                if Obj.Editable && strcmpi(Obj.CellType, 'value')
-                    Obj.Label.Tag = 'clickable';
+                if Obj.Editable
+                    Obj.ValueLabelUI.Tag = 'clickable';
                 else
-                    Obj.Label.Tag = '';
+                    Obj.ValueLabelUI.Tag = '';
                 end
                 
             catch ME
@@ -166,15 +161,15 @@ classdef ReportTableCell < CicadaComponentContainer
             
             if bool
                 % Switch to edit mode
-                Obj.Input.Value = Obj.Text;
-                Obj.Input.Visible = 'on';
-                Obj.Label.Visible = 'off';
-                focus(Obj.Input);
+                Obj.ValueInputUI.Value = Obj.ValueText;
+                Obj.ValueInputUI.Visible = 'on';
+                Obj.ValueLabelUI.Visible = 'off';
+                focus(Obj.ValueInputUI);
             else
                 % Switch to display mode
-                Obj.Text = Obj.Input.Value;
-                Obj.Input.Visible = 'off';
-                Obj.Label.Visible = 'on';
+                Obj.ValueText = Obj.ValueInputUI.Value;
+                Obj.ValueInputUI.Visible = 'off';
+                Obj.ValueLabelUI.Visible = 'on';
                 % TODO: Trigger event to save data back to ACT structure
             end
         end
