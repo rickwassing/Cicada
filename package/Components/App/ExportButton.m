@@ -232,7 +232,12 @@ classdef ExportButton < handle
                     end
                 case 'ReportTab'
                     newPanel.GridLayout.Padding = 0;
-                    exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, 1)));
+                    newPanel.GridLayout.RowSpacing = 0;
+                    for page = 1:newPanel.NumPages
+                        scroll(newPanel.GridLayout, [0, -(page-1)*(newPanel.PageHeight)])
+                        drawnow(); pause(0.2);
+                        exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, page)));
+                    end
             end
 
             % Get the list of temp files

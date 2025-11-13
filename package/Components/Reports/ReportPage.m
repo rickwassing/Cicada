@@ -21,7 +21,7 @@ classdef ReportPage < CicadaComponentContainer
     properties
         PageNum = 1;
         HeaderHeight = 72;
-        FooterHeight = 72;
+        FooterHeight = 24;
         Margin = 36;  % Page margin in pixels
     end
     properties (Access = public, Transient, NonCopyable)
@@ -31,11 +31,12 @@ classdef ReportPage < CicadaComponentContainer
         HeaderGridLayout matlab.ui.container.GridLayout
         BodyPanel matlab.ui.container.Panel
         BodyGridLayout matlab.ui.container.GridLayout
-        FooterPanel
+        FooterPanelContainer matlab.ui.container.Panel
         FooterGridLayout matlab.ui.container.GridLayout
         % Sub-components
         HeaderLeftPanel PageHeaderLeftPanel
         HeaderRightPanel PageHeaderRightPanel
+        FooterPanel PageFooterPanel
     end
     % *********************************************************************
     % METHODS
@@ -105,29 +106,13 @@ classdef ReportPage < CicadaComponentContainer
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
             % -------------------------------------------------------------
-            % Create the footer panel
+            % Create the footer panel container
             % -------------------------------------------------------------
-            Obj.FooterPanel = uipanel(Obj.GridLayout, ...
-                'BorderColor', [1, 1, 1], ...
-                'HighlightColor', [1, 1, 1], ...
-                'BackgroundColor', [1, 1, 1]);
+            Obj.FooterPanel = PageFooterPanel(Obj.GridLayout);
             Obj.FooterPanel.Layout.Row = 3;
             Obj.FooterPanel.Layout.Column = 1;
-            
-            Obj.FooterGridLayout = uigridlayout(Obj.FooterPanel, ...
-                'ColumnWidth', {'1x'}, ...
-                'RowHeight', {50}, ...
-                'Padding', [72, 36, 72, 4], ...
-                'BackgroundColor', [1, 1, 1]);
-            % -------------------------------------------------------------
-            % Create placeholder label in footer
-            % -------------------------------------------------------------
-            Obj.FooterPanel = uilabel(Obj.FooterGridLayout, ...
-                'BackgroundColor', [0.9412, 0.9412, 0.9412], ...
-                'HorizontalAlignment', 'center', ...
-                'Text', 'Drop content here');
-            Obj.FooterPanel.Layout.Row = 1;
-            Obj.FooterPanel.Layout.Column = 1;
+            % Add event listeners
+            app_addlisteners([], Obj.FooterPanel, {'eStyleChanged', 'eDatasetChanged'});
         end
         % =================================================================
         function update(Obj)
@@ -142,6 +127,8 @@ classdef ReportPage < CicadaComponentContainer
                 % Initialize the components
                 Obj.HeaderLeftPanel.hInit();
                 Obj.HeaderRightPanel.hInit();
+                Obj.FooterPanel.PageNum = Obj.PageNum;
+                Obj.FooterPanel.hInit();
                 % ---------------------------------------------------------
                 if Obj.Verbose
                     fprintf('>> CIC: ReportPage %i updated in %.1g s.\n', Obj.PageNum, (now-Time)*24*60*60) %#ok<TNOW1>
