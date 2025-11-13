@@ -44,6 +44,9 @@ classdef ReportTable < CicadaComponentContainer
             % -------------------------------------------------------------
             Obj.Tag = 'ReportTable';
             % -------------------------------------------------------------
+            % Get colors
+            Colors = app_colors();
+            % -------------------------------------------------------------
             % Create grid layout (2 rows: title + table)
             Obj.GridLayout = uigridlayout(Obj, ...
                 'ColumnWidth', {'1x'}, ...
@@ -56,7 +59,7 @@ classdef ReportTable < CicadaComponentContainer
             % Create title panel
             Obj.TitlePanel = uipanel(Obj.GridLayout, ...
                 'BorderType', 'none', ...
-                'BackgroundColor', [0.173, 0.353, 0.627]); % Primary color #2c5aa0
+                'BackgroundColor', Colors.bs_primary);
             Obj.TitlePanel.Layout.Row = 1;
             Obj.TitlePanel.Layout.Column = 1;
             % -------------------------------------------------------------

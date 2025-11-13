@@ -46,6 +46,10 @@ classdef ReportTableCell < CicadaComponentContainer
             Obj.Tag = sprintf('ReportTableCell_%s', Obj.Id);
             
             % -------------------------------------------------------------
+            % Get colors
+            Colors = app_colors();
+            
+            % -------------------------------------------------------------
             % Create grid layout (2 columns: key label | value area)
             Obj.GridLayout = uigridlayout(Obj, ...
                 'ColumnWidth', {120, '1x'}, ...
@@ -63,8 +67,8 @@ classdef ReportTableCell < CicadaComponentContainer
                 'VerticalAlignment', 'center', ...
                 'FontSize', 12, ...
                 'FontWeight', 'bold', ...
-                'FontColor', [0.173, 0.353, 0.627], ...
-                'BackgroundColor', [0.973, 0.976, 0.980]);
+                'FontColor', Colors.bs_primary, ...
+                'BackgroundColor', Colors.bg_secondary);
             Obj.KeyLabelUI.Layout.Row = 1;
             Obj.KeyLabelUI.Layout.Column = 1;
             
@@ -76,7 +80,7 @@ classdef ReportTableCell < CicadaComponentContainer
                 'VerticalAlignment', 'center', ...
                 'FontSize', 12, ...
                 'FontWeight', 'normal', ...
-                'FontColor', [0.2, 0.2, 0.2], ...
+                'FontColor', Colors.body_secondary, ...
                 'BackgroundColor', [1, 1, 1]);
             Obj.ValueLabelUI.Layout.Row = 1;
             Obj.ValueLabelUI.Layout.Column = 2;
@@ -95,6 +99,10 @@ classdef ReportTableCell < CicadaComponentContainer
         function update(Obj)
             try
                 % ---------------------------------------------------------
+                % Get colors
+                Colors = app_colors();
+                
+                % ---------------------------------------------------------
                 % Update key label text
                 Obj.KeyLabelUI.Text = ['  ' Obj.KeyLabel];
                 
@@ -105,7 +113,7 @@ classdef ReportTableCell < CicadaComponentContainer
                 % ---------------------------------------------------------
                 % Apply hover styling to value area if editable
                 if Obj.Editable && Obj.IsHovered
-                    Obj.ValueLabelUI.BackgroundColor = [0.910, 0.957, 0.992]; % #e8f4fd
+                    Obj.ValueLabelUI.BackgroundColor = Colors.bs_primary_subtle;
                 else
                     Obj.ValueLabelUI.BackgroundColor = [1, 1, 1];
                 end
