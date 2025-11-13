@@ -191,13 +191,8 @@ classdef ReportPage < CicadaComponentContainer
         function hUpdate(Obj, app, event) %#ok<INUSD>
             try
                 % ---------------------------------------------------------
-                % Handle dataset changes and populate tables
-                if ~isempty(app) && isfield(app, 'ACT') && ~isempty(app.ACT)
-                    Obj.PatientInfoTable.hPopulateFromData(app.ACT);
-                    Obj.RecordingInfoTable.hPopulateFromData(app.ACT);
-                    Obj.SummaryStatsTable.hPopulateFromData(app.ACT);
-                    Obj.SleepWindowStatsTable.hPopulateFromData(app.ACT);
-                end
+                % Children handle their own updates via event listeners
+                % No direct manipulation of child state needed here
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportPage.m')
             end

@@ -31,7 +31,7 @@ classdef ReportTable < CicadaComponentContainer
         GridLayout matlab.ui.container.GridLayout
         TablePanel matlab.ui.container.Panel
         TableGrid matlab.ui.container.GridLayout
-        Cells                          % Array of cell components
+        Cells % Array of cell components
     end
     
     % *********************************************************************
@@ -121,17 +121,17 @@ classdef ReportTable < CicadaComponentContainer
                 cellConfig = Obj.TableConfig.cells{i};
                 
                 % Create cell component (label-value pair)
-                cell = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
-                cell.KeyLabel = cellConfig.keyLabel;
-                cell.ValueText = cellConfig.text;
-                cell.Field = cellConfig.field;
-                cell.Editable = cellConfig.editable;
-                cell.Format = cellConfig.format;
-                cell.Layout.Row = cellConfig.row;
-                cell.Layout.Column = cellConfig.col;
+                cellObj = ReportTableCell(Obj.TableGrid, 'Verbose', Obj.Verbose);
+                cellObj.KeyLabel = cellConfig.keyLabel;
+                cellObj.ValueText = cellConfig.text;
+                cellObj.Field = cellConfig.field;
+                cellObj.Editable = cellConfig.editable;
+                cellObj.Format = cellConfig.format;
+                cellObj.Layout.Row = cellConfig.row;
+                cellObj.Layout.Column = cellConfig.col;
                 
                 % Store cell reference
-                Obj.Cells(i).Obj = cell;
+                Obj.Cells(i).Obj = cellObj;
             end
         end
     end
@@ -193,11 +193,23 @@ classdef ReportTable < CicadaComponentContainer
                 if ~isvalid(Obj)
                     return
                 end
-                % Set the style
+                
+                % ---------------------------------------------------------
+                % Handle style changes
                 if strcmpi(event.EventName, 'eStyleChanged')
                     Obj.hInit(app)
                 end
-                % Update all cells
+                
+                % ---------------------------------------------------------
+                % Handle dataset changes - populate from ACT
+                if strcmpi(event.EventName, 'eDatasetChanged')
+                    if isfield(app, 'ACT') && ~isempty(app.ACT)
+                        Obj.hPopulateFromData(app.ACT);
+                    end
+                end
+                
+                % ---------------------------------------------------------
+                % Update all child cells
                 for i = 1:length(Obj.Cells)
                     if isvalid(Obj.Cells(i).Obj)
                         Obj.Cells(i).Obj.hUpdate(app, event);
@@ -218,20 +230,20 @@ classdef ReportTable < CicadaComponentContainer
             end
             
             for i = 1:length(Obj.Cells)
-                cell = Obj.Cells(i).Obj;
+                cellObj = Obj.Cells(i).Obj;
                 
                 % Skip if no field mapping
-                if isempty(cell.Field)
+                if isempty(cellObj.Field)
                     continue
                 end
                 
                 % Get value from ACT structure
                 try
-                    value = Obj.hGetFieldValue(ACT, cell.Field);
+                    value = Obj.hGetFieldValue(ACT, cellObj.Field);
                     
-                    % Format value based on cell format
+                    % Format value based on cellObj format
                     if ~isempty(value)
-                        cell.Text = Obj.hFormatValue(value, cell.Format);
+                        cellObj.ValueText = Obj.hFormatValue(value, cellObj.Format);
                     end
                 catch
                     % Field doesn't exist in ACT, keep existing text
