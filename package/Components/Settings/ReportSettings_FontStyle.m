@@ -128,8 +128,8 @@ classdef ReportSettings_FontStyle < matlab.ui.componentcontainer.ComponentContai
             if ~isnumeric(val)
                 val = 11;
             end
-            Obj.FontSizeInput.Items = arrayfun(@(i) sprintf('%i', i), unique([8:24, val]), 'UniformOutput', false);
-            Obj.FontSizeInput.ItemsData = unique([8:24, val]);
+            Obj.FontSizeInput.Items = arrayfun(@(i) sprintf('%i', i), unique([8:18, val]), 'UniformOutput', false);
+            Obj.FontSizeInput.ItemsData = unique([8:18, val]);
             Obj.FontSizeInput.Value = val;
         end
 

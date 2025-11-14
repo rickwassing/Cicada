@@ -29,33 +29,33 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
     end
     
     properties (Access = private, Transient, NonCopyable)
-        Grid matlab.ui.container.GridLayout
+        GridLayout matlab.ui.container.GridLayout
     end
     
     methods (Access = protected)
         function setup(Obj)
 
-            Obj.Grid = uigridlayout(Obj, [2 2]);
-            Obj.Grid.ColumnWidth = {72, '1x'}; % 72 pixels per inch
-            Obj.Grid.RowHeight = {24, '1x'};
-            Obj.Grid.ColumnSpacing = 6;
-            Obj.Grid.RowSpacing = 0;
-            Obj.Grid.Padding = [0 0 0 0];
-            Obj.Grid.BackgroundColor = [1 1 1];
+            Obj.GridLayout = uigridlayout(Obj, [2 2]);
+            Obj.GridLayout.ColumnWidth = {72, '1x'}; % 72 pixels per inch
+            Obj.GridLayout.RowHeight = {24, '1x'};
+            Obj.GridLayout.ColumnSpacing = 6;
+            Obj.GridLayout.RowSpacing = 0;
+            Obj.GridLayout.Padding = [0 0 0 0];
+            Obj.GridLayout.BackgroundColor = [1 1 1];
 
-            Obj.Components.LogoImage = uiimage(Obj.Grid);
+            Obj.Components.LogoImage = uiimage(Obj.GridLayout);
             Obj.Components.LogoImage.HorizontalAlignment = 'left';
             Obj.Components.LogoImage.Layout.Row = [1 2];
             Obj.Components.LogoImage.Layout.Column = 1;
 
-            Obj.Components.InstituteNameLabel = InlineEditField(Obj.Grid, ...
+            Obj.Components.InstituteNameLabel = InlineEditField(Obj.GridLayout, ...
                 'Keys', 'content-header-InstituteName', ...
                 'Event', 'eContentChanged');
             Obj.Components.InstituteNameLabel.Layout.Row = 1;
             Obj.Components.InstituteNameLabel.Layout.Column = 2;
             app_addlisteners([], Obj.Components.InstituteNameLabel, {'eMouseMotion'});
 
-            Obj.Components.InstituteAddressLabel = InlineEditField(Obj.Grid, ...
+            Obj.Components.InstituteAddressLabel = InlineEditField(Obj.GridLayout, ...
                 'Keys', 'content-header-InstituteAddress', ...
                 'Event', 'eContentChanged');
             Obj.Components.InstituteAddressLabel.Layout.Row = 2;
@@ -69,7 +69,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 return
             end
             % ---------------------------------------------------------
-            Obj.Grid.ColumnWidth = {Obj.LogoWidth, '1x'};
+            Obj.GridLayout.ColumnWidth = {Obj.LogoWidth, '1x'};
             Obj.Components.InstituteNameLabel.Text = Obj.TitleLabel;
             Obj.Components.InstituteNameLabel.Style = Obj.TitleStyle;
             Obj.Components.InstituteAddressLabel.Text = Obj.AddressLabel;
@@ -131,6 +131,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
 
                 case {'eStyleChanged'}
                     % Update styles from app state
+                    Obj.GridLayout.RowHeight{1} = getpanelheight(app.Props.Settings.Report.style.title.fontFamily, app.Props.Settings.Report.style.title.fontSize, -3, 0, 0, 0);
                     Obj.TitleStyle = app.Props.Settings.Report.style.title;
                     Obj.AddressStyle = app.Props.Settings.Report.style.small;
 

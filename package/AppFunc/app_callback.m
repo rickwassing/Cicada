@@ -29,6 +29,9 @@
 
 function app_callback(event, fcn, EventName)
 try
+    if nargin < 3
+        EventName = {};
+    end
     % -------------------------------------------------------------------------
     % Get the app handle
     app = app_gethandle();
@@ -58,8 +61,8 @@ try
             % set the application state
             app.Props.Settings.Report = set_reportstyle(app.Props.Settings.Report, event);
             app_savesettings(app.Props.Settings);
-        case 'set_reportcontent'
-            app.Props.Settings.Report = set_reportcontent(app.Props.Settings.Report, event);
+        case 'set_reporttemplate'
+            app.Props.Settings.Report = set_reporttemplate(app.Props.Settings.Report, event);
             app_savesettings(app.Props.Settings);
         otherwise
             % set the actogram state
@@ -67,7 +70,9 @@ try
     end
     % -------------------------------------------------------------------------
     % Notify
-    app_notify(app, EventName);
+    if ~isempty(EventName)
+        app_notify(app, EventName);
+    end
     % Broadcast 'eDatasetStatusChanged' in case the status did change
     if ~strcmpi(app.ACT.status, currentStatus)
         app_notify(app, {'eDatasetStatusChanged'});

@@ -43,7 +43,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Input.Visible = 'off';
             Obj.Text = strjoin(Obj.Input.Value, '\\n');
             if ~isempty(Obj.Event)
-                app_callback({event, Obj}, 'set_reportcontent', {'eContentChanged'})
+                app_callback({event, Obj}, 'set_reporttemplate', {'eContentChanged'})
                 app_notify([], {Obj.Event}, {event, Obj})
             end
         end

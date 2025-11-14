@@ -1,5 +1,5 @@
 % SETNESTEDFIELDS
-% [insert description]
+% Sets a value of a nested field in a structure.
 
 % Authors: 
 %   Rick Wassing, Woolcock Institute of Medical Research, Sydney, Australia

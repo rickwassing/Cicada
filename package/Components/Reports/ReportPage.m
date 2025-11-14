@@ -107,7 +107,12 @@ classdef ReportPage < CicadaComponentContainer
             
             Obj.BodyGridLayout = uigridlayout(Obj.BodyPanel, ...
                 'ColumnWidth', {'1x'}, ...
-                'RowHeight', {180, 140, 180, 180}, ...
+                'RowHeight', {...
+                    getpanelheight('georgia', 14, 0, 3, 20, 0), ... % fontName, fontSize, padding, numRows, rowHeight, rowSpacing
+                    getpanelheight('georgia', 14, 0, 4, 20, 0), ...
+                    getpanelheight('georgia', 14, 0, 5, 20, 0), ...
+                    getpanelheight('georgia', 14, 0, 5, 20, 0), ...
+                    }, ...
                 'RowSpacing', 12, ...
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
@@ -128,7 +133,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.RecordingInfoTable.Layout.Column = 1;
             Obj.RecordingInfoTable.Title = 'Recording Information';
             Obj.RecordingInfoTable.TableConfig = Obj.hGetRecordingInfoConfig();
-            app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
             % ---------------------------------------------------------
             % Summary Statistics - Entire Recording Table
             Obj.SummaryStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
@@ -136,7 +141,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.SummaryStatsTable.Layout.Column = 1;
             Obj.SummaryStatsTable.Title = 'Summary Statistics - Entire Recording';
             Obj.SummaryStatsTable.TableConfig = Obj.hGetSummaryStatsConfig();
-            app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
             % ---------------------------------------------------------
             % Summary Statistics - Sleep Windows Table
             Obj.SleepWindowStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
@@ -144,7 +149,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.SleepWindowStatsTable.Layout.Column = 1;
             Obj.SleepWindowStatsTable.Title = 'Summary Statistics - Average Sleep Windows';
             Obj.SleepWindowStatsTable.TableConfig = Obj.hGetSleepWindowStatsConfig();
-            app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
             % -------------------------------------------------------------
             % Create the footer panel container
             % -------------------------------------------------------------
@@ -191,8 +196,13 @@ classdef ReportPage < CicadaComponentContainer
         function hUpdate(Obj, app, event) %#ok<INUSD>
             try
                 % ---------------------------------------------------------
-                % Children handle their own updates via event listeners
-                % No direct manipulation of child state needed here
+                style = app.Props.Settings.Report.style.title;
+                Obj.BodyGridLayout.RowHeight = {...
+                    getpanelheight(style.fontFamily, style.fontSize, 0, 3, 20, 0), ... % fontName, fontSize, padding, numRows, rowHeight, rowSpacing
+                    getpanelheight(style.fontFamily, style.fontSize, 0, 4, 20, 0), ...
+                    getpanelheight(style.fontFamily, style.fontSize, 0, 5, 20, 0), ...
+                    getpanelheight(style.fontFamily, style.fontSize, 0, 5, 20, 0), ...
+                    };
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportPage.m')
             end
@@ -208,14 +218,14 @@ classdef ReportPage < CicadaComponentContainer
             config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'keyLabel', 'Name', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Patient Name', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
                 struct('row', 1, 'col', 2, 'keyLabel', 'Date of Birth', 'text', '', 'field', 'info.dob', 'editable', true, 'format', 'date')
                 % Row 2
-                struct('row', 2, 'col', 1, 'keyLabel', 'Patient ID', 'text', '', 'field', 'info.participant_id', 'editable', false, 'format', 'string')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Patient ID', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
                 struct('row', 2, 'col', 2, 'keyLabel', 'Sex', 'text', '', 'field', 'info.sex', 'editable', true, 'format', 'string')
                 % Row 3
                 struct('row', 3, 'col', 1, 'keyLabel', 'Referring Physician', 'text', '', 'field', 'info.researcher', 'editable', true, 'format', 'string')
-                struct('row', 3, 'col', 2, 'keyLabel', 'Study Date', 'text', '', 'field', 'info.study', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Study', 'text', '', 'field', 'info.study', 'editable', false, 'format', 'string')
             };
         end
         % =================================================================
@@ -225,17 +235,17 @@ classdef ReportPage < CicadaComponentContainer
             config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'keyLabel', 'Device', 'text', '', 'field', 'stats.device_type', 'editable', false, 'format', 'string')
-                struct('row', 1, 'col', 2, 'keyLabel', 'Serial Number', 'text', '', 'field', 'stats.serial_number', 'editable', false, 'format', 'string')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Device', 'text', '', 'field', 'info.devices(1).name', 'editable', false, 'format', 'string')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Serial Number', 'text', '', 'field', 'info.devices(1).serial', 'editable', false, 'format', 'string')
                 % Row 2
-                struct('row', 2, 'col', 1, 'keyLabel', 'Start Date/Time', 'text', '', 'field', 'stats.start_datetime', 'editable', false, 'format', 'string')
-                struct('row', 2, 'col', 2, 'keyLabel', 'End Date/Time', 'text', '', 'field', 'stats.end_datetime', 'editable', false, 'format', 'string')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Start Date/Time', 'text', '', 'field', 'xmin', 'editable', false, 'format', 'datetime')
+                struct('row', 2, 'col', 2, 'keyLabel', 'End Date/Time', 'text', '', 'field', 'xmax', 'editable', false, 'format', 'datetime')
                 % Row 3
-                struct('row', 3, 'col', 1, 'keyLabel', 'Duration', 'text', '', 'field', 'stats.duration', 'editable', false, 'format', 'string')
-                struct('row', 3, 'col', 2, 'keyLabel', 'Sampling Rate', 'text', '', 'field', 'stats.sampling_rate', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Duration', 'text', '', 'field', '<duration>', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Location', 'text', '', 'field', 'data(1).loc', 'editable', false, 'format', 'string')
                 % Row 4
-                struct('row', 4, 'col', 1, 'keyLabel', 'Epoch Length', 'text', '', 'field', 'stats.epoch_length', 'editable', false, 'format', 'string')
-                struct('row', 4, 'col', 2, 'keyLabel', 'Total Epochs', 'text', '', 'field', 'stats.total_epochs', 'editable', false, 'format', 'string')
+                struct('row', 4, 'col', 1, 'keyLabel', 'Sampling Rate', 'text', '', 'field', 'data(1).srate', 'editable', false, 'format', '%.0f Hz')
+                struct('row', 4, 'col', 2, 'keyLabel', 'Epoch Length', 'text', '', 'field', 'epoch', 'editable', false, 'format', '%i s')
             };
         end
         % =================================================================
@@ -246,13 +256,13 @@ classdef ReportPage < CicadaComponentContainer
             config.cells = {
                 % Row 1
                 struct('row', 1, 'col', 1, 'keyLabel', 'Number of Days', 'text', '', 'field', 'stats.num_days', 'editable', false, 'format', 'number')
-                struct('row', 1, 'col', 2, 'keyLabel', 'Time Rejected (%)', 'text', '', 'field', 'stats.time_rejected_pct', 'editable', false, 'format', 'number')
+                struct('row', 1, 'col', 2, 'keyLabel', 'Time Rejected', 'text', '', 'field', 'stats.time_rejected_pct', 'editable', false, 'format', 'number')
                 % Row 2
-                struct('row', 2, 'col', 1, 'keyLabel', 'Inter-daily Stability (IS)', 'text', '', 'field', 'stats.interdaily_stability', 'editable', false, 'format', 'number')
-                struct('row', 2, 'col', 2, 'keyLabel', 'Intra-daily Variability (IV)', 'text', '', 'field', 'stats.intradaily_variability', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 1, 'keyLabel', 'Inter-daily Stability', 'text', '', 'field', 'stats.interdaily_stability', 'editable', false, 'format', 'number')
+                struct('row', 2, 'col', 2, 'keyLabel', 'Intra-daily Variability', 'text', '', 'field', 'stats.intradaily_variability', 'editable', false, 'format', 'number')
                 % Row 3
-                struct('row', 3, 'col', 1, 'keyLabel', 'Time in MVA (hours)', 'text', '', 'field', 'stats.mva_time', 'editable', false, 'format', 'number')
-                struct('row', 3, 'col', 2, 'keyLabel', 'Mean EN in MVA', 'text', '', 'field', 'stats.mva_mean_en', 'editable', false, 'format', 'number')
+                struct('row', 3, 'col', 1, 'keyLabel', 'Time in MVA', 'text', '', 'field', 'stats.mva_time', 'editable', false, 'format', 'number')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Mean ENMO in MVA', 'text', '', 'field', 'stats.mva_mean_en', 'editable', false, 'format', 'number')
                 % Row 4
                 struct('row', 4, 'col', 1, 'keyLabel', 'Most Active 10h Start', 'text', '', 'field', 'stats.m10_start', 'editable', false, 'format', 'string')
                 struct('row', 4, 'col', 2, 'keyLabel', 'Most Active 10h Amplitude', 'text', '', 'field', 'stats.m10_amplitude', 'editable', false, 'format', 'number')

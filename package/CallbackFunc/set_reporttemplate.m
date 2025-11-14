@@ -1,15 +1,15 @@
-% SET_REPORTCONTENT
-% Updates the reporting content in the ACT struct
+% SET_REPORTTEMPLATE
+% Update the report template content i.e., header info etc.
 %
 % Usage:
-%   >> set_reportcontent(ACT, src, event);
+%   >> set_reporttemplate(state, event);
 %
 % Inputs:
-%   'ACT' - [struct] standardized ACT structure
+%   'state' - [struct] app state
 %   'event' - [Object] event data.
 %
 % Outputs:
-%   'ACT' - [struct] standardized ACT structure
+%   'state' - [struct] app state
 
 % Authors:
 %   Rick Wassing, Woolcock Institute of Medical Research, Sydney, Australia
@@ -25,14 +25,13 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-function ACT = set_reportcontent(ACT, event)
+function state = set_reporttemplate(state, event)
 try
     % =====================================================================
     src = event{2};
     fnames = strsplit(src.Keys, '-');
     val = src.Text;
-    keyboard
-    ACT = setnestedfield(ACT, fnames, val);
+    state = setnestedfield(state, fnames, val);
 catch ME
     % ---------------------------------------------------------------------
     % Something went wrong, set status and error message

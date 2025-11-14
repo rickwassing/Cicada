@@ -26,13 +26,14 @@ classdef ReportTableCell < CicadaComponentContainer
         Format char = 'string';      % 'string', 'number', 'date', etc.
         IsHovered logical = false;   % Hover state
         Id char                      % Unique identifier
+        CellHeight double = 20;      % Table row height
     end
     
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
-        KeyLabelUI matlab.ui.control.Label
-        ValueLabelUI matlab.ui.control.Label
-        ValueInputUI matlab.ui.control.EditField
+        KeyLabelObj matlab.ui.control.Label
+        ValueLabelObj matlab.ui.control.Label
+        ValueInputObj matlab.ui.control.EditField
     end
     
     % *********************************************************************
@@ -44,16 +45,14 @@ classdef ReportTableCell < CicadaComponentContainer
             % Generate unique ID
             Obj.Id = getuuid('full');
             Obj.Tag = sprintf('ReportTableCell_%s', Obj.Id);
-            
             % -------------------------------------------------------------
             % Get colors
             Colors = app_colors();
-            
             % -------------------------------------------------------------
             % Create grid layout (2 columns: key label | value area)
             Obj.GridLayout = uigridlayout(Obj, ...
-                'ColumnWidth', {120, '1x'}, ...
-                'RowHeight', {30}, ...
+                'ColumnWidth', {'1x', '1x'}, ...
+                'RowHeight', {Obj.CellHeight}, ...
                 'ColumnSpacing', 0, ...
                 'RowSpacing', 0, ...
                 'Padding', [0, 0, 0, 0], ...
@@ -61,38 +60,32 @@ classdef ReportTableCell < CicadaComponentContainer
             
             % -------------------------------------------------------------
             % Create key label (left side - always visible)
-            Obj.KeyLabelUI = uilabel(Obj.GridLayout, ...
+            Obj.KeyLabelObj = uilabel(Obj.GridLayout, ...
                 'Text', '', ...
                 'HorizontalAlignment', 'left', ...
                 'VerticalAlignment', 'center', ...
-                'FontSize', 12, ...
-                'FontWeight', 'bold', ...
-                'FontColor', Colors.bs_primary, ...
                 'BackgroundColor', Colors.bg_secondary);
-            Obj.KeyLabelUI.Layout.Row = 1;
-            Obj.KeyLabelUI.Layout.Column = 1;
+            Obj.KeyLabelObj.Layout.Row = 1;
+            Obj.KeyLabelObj.Layout.Column = 1;
             
             % -------------------------------------------------------------
             % Create value label (right side - display mode)
-            Obj.ValueLabelUI = uilabel(Obj.GridLayout, ...
+            Obj.ValueLabelObj = uilabel(Obj.GridLayout, ...
                 'Text', '', ...
                 'HorizontalAlignment', 'left', ...
                 'VerticalAlignment', 'center', ...
-                'FontSize', 12, ...
-                'FontWeight', 'normal', ...
-                'FontColor', Colors.body_secondary, ...
                 'BackgroundColor', [1, 1, 1]);
-            Obj.ValueLabelUI.Layout.Row = 1;
-            Obj.ValueLabelUI.Layout.Column = 2;
+            Obj.ValueLabelObj.Layout.Row = 1;
+            Obj.ValueLabelObj.Layout.Column = 2;
             
             % -------------------------------------------------------------
             % Create value input (right side - edit mode, initially hidden)
-            Obj.ValueInputUI = uieditfield(Obj.GridLayout, ...
+            Obj.ValueInputObj = uieditfield(Obj.GridLayout, ...
                 'Value', '', ...
                 'Visible', 'off', ...
-                'FontSize', 12);
-            Obj.ValueInputUI.Layout.Row = 1;
-            Obj.ValueInputUI.Layout.Column = 2;
+                'FontSize', 11);
+            Obj.ValueInputObj.Layout.Row = 1;
+            Obj.ValueInputObj.Layout.Column = 2;
         end
         
         % =================================================================
@@ -101,31 +94,26 @@ classdef ReportTableCell < CicadaComponentContainer
                 % ---------------------------------------------------------
                 % Get colors
                 Colors = app_colors();
-                
                 % ---------------------------------------------------------
                 % Update key label text
-                Obj.KeyLabelUI.Text = ['  ' Obj.KeyLabel];
-                
+                Obj.KeyLabelObj.Text = [' ', Obj.KeyLabel];
                 % ---------------------------------------------------------
                 % Update value label text
-                Obj.ValueLabelUI.Text = ['  ' Obj.ValueText];
-                
+                Obj.ValueLabelObj.Text =[' ', Obj.ValueText];
                 % ---------------------------------------------------------
                 % Apply hover styling to value area if editable
                 if Obj.Editable && Obj.IsHovered
-                    Obj.ValueLabelUI.BackgroundColor = Colors.bs_primary_subtle;
+                    Obj.ValueLabelObj.BackgroundColor = Colors.bs_primary_subtle.^0.33;
                 else
-                    Obj.ValueLabelUI.BackgroundColor = [1, 1, 1];
+                    Obj.ValueLabelObj.BackgroundColor = [1, 1, 1];
                 end
-                
                 % ---------------------------------------------------------
                 % Set cursor style for editable cells
                 if Obj.Editable
-                    Obj.ValueLabelUI.Tag = 'clickable';
+                    Obj.ValueLabelObj.Tag = 'clickable';
                 else
-                    Obj.ValueLabelUI.Tag = '';
+                    Obj.ValueLabelObj.Tag = '';
                 end
-                
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportTableCell.m')
             end
@@ -136,49 +124,93 @@ classdef ReportTableCell < CicadaComponentContainer
     % PUBLIC METHODS
     methods (Access = public)
         % =================================================================
-        function hInit(Obj)
-            % Initialize cell - called by parent component
+        function hInit(Obj, app)
+            % Initialize table
+            if nargin < 2 || isempty(app)
+                app = app_gethandle();
+            end
+            % -------------------------------------------------------------
+            % Apply styling
+            Obj.hApplyStyle(app);
         end
         
         % =================================================================
-        function hUpdate(Obj, app, event) %#ok<INUSD>
+        function hUpdate(Obj, app, event)
             try
                 % ---------------------------------------------------------
                 % Handle events from parent or app
                 if ~isvalid(Obj)
                     return
                 end
-                
+                % ---------------------------------------------------------
+                % Handle style changes
+                if strcmpi(event.EventName, 'eStyleChanged')
+                    Obj.hApplyStyle(app);
+                end
                 % ---------------------------------------------------------
                 % Update hover state
-                if isfield(app, 'IsHovered')
+                if strcmpi(event.EventName, 'eMouseMotion')
                     Obj.IsHovered = app.IsHovered(Obj);
                 end
-                
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportTableCell.m')
             end
         end
-        
         % =================================================================
-        function hToggleEdit(Obj, bool)
-            % Toggle between display and edit mode
-            if ~Obj.Editable
-                return
+        function OnClick(Obj, ~)
+            Obj.ValueInputObj.Value = Obj.ValueText;
+            Obj.ValueInputObj.Visible = 'on';
+            drawnow()
+            focus(Obj.ValueLabelObj)
+        end
+        % =================================================================
+        function OnBlur(Obj, event)
+            Obj.ValueInputObj.Visible = 'off';
+            Obj.ValueText = Obj.Input.Value;
+            if ~isempty(Obj.Event)
+                app_callback({event, Obj}, 'set_reportcontent')
+                app_notify([], {Obj.Event}, {event, Obj})
+            end
+        end
+
+        % =================================================================
+        function hApplyStyle(Obj, app)
+            % Apply styling to table title panel
+            if nargin < 2 || isempty(app)
+                app = app_gethandle();
             end
             
-            if bool
-                % Switch to edit mode
-                Obj.ValueInputUI.Value = Obj.ValueText;
-                Obj.ValueInputUI.Visible = 'on';
-                Obj.ValueLabelUI.Visible = 'off';
-                focus(Obj.ValueInputUI);
-            else
-                % Switch to display mode
-                Obj.ValueText = Obj.ValueInputUI.Value;
-                Obj.ValueInputUI.Visible = 'off';
-                Obj.ValueLabelUI.Visible = 'on';
-                % TODO: Trigger event to save data back to ACT structure
+            % Apply title styling from app settings
+            if isfield(app.Props, 'Settings') && ...
+               isfield(app.Props.Settings, 'Report') && ...
+               isfield(app.Props.Settings.Report, 'style') && ...
+               isfield(app.Props.Settings.Report.style, 'h1')
+                
+                style = app.Props.Settings.Report.style.h1;
+                % Set font family
+                if isfield(style, 'fontFamily')
+                    Obj.KeyLabelObj.FontName = style.fontFamily;
+                end
+                % Set font size
+                if isfield(style, 'fontSize')
+                    Obj.KeyLabelObj.FontSize = style.fontSize;
+                end
+                % Set font weight
+                if isfield(style, 'fontWeight')
+                    Obj.KeyLabelObj.FontWeight = style.fontWeight;
+                end
+                % Set font angle (style)
+                if isfield(style, 'fontStyle')
+                    if strcmpi(style.fontStyle, 'italic')
+                        Obj.KeyLabelObj.FontAngle = 'italic';
+                    else
+                        Obj.KeyLabelObj.FontAngle = 'normal';
+                    end
+                end
+                % Set foreground color (font color)
+                if isfield(style, 'fontColor')
+                    Obj.KeyLabelObj.FontColor = hex2rgb(style.fontColor);
+                end
             end
         end
     end

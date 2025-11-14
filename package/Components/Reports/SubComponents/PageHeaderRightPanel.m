@@ -118,6 +118,7 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
                     Obj.TitleLabel = app.Props.Settings.Report.content.header.ReportTitle;
                 case {'eStyleChanged'}
                     % Update styles from app state
+                    Obj.Grid.RowHeight{1} = getpanelheight(app.Props.Settings.Report.style.title.fontFamily, app.Props.Settings.Report.style.title.fontSize, -3, 0, 0, 0);
                     tStyle = app.Props.Settings.Report.style.title;
                     tStyle.textAlign = 'right';
                     sStyle = app.Props.Settings.Report.style.small;

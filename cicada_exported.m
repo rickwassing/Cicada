@@ -1031,7 +1031,7 @@ classdef cicada_exported < matlab.apps.AppBase
             elseif strcmpi(event.Source.CurrentObject.Tag, 'clickable')
                 lbl = event.Source.CurrentObject;
                 parentComp = ancestor(lbl, 'matlab.ui.componentcontainer.ComponentContainer');
-                if isa(parentComp, 'InlineEditField')
+                if isa(parentComp, 'InlineEditField') || contains(parentComp.Tag, 'ReportTableCell')
                     app.Props.SelectedInputRef = parentComp;
                     parentComp.OnClick(event);
                 end

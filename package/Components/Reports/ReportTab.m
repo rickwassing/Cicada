@@ -72,7 +72,7 @@ classdef ReportTab < CicadaComponentContainer
                     if DoRender
                         Obj.Pages(i) = ReportPage(Obj.GridLayout);
                         % Add event listeners for each new page
-                        app_addlisteners([], Obj.Pages(i), {'eDataChanged', 'eDatasetChanged'});
+                        app_addlisteners([], Obj.Pages(i), {'eDataChanged', 'eDatasetChanged', 'eStyleChanged'});
                     else
                         Obj.Pages(i).Parent = Obj.GridLayout;
                     end
