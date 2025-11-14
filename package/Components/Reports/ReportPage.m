@@ -125,7 +125,7 @@ classdef ReportPage < CicadaComponentContainer
             Obj.PatientInfoTable.Layout.Column = 1;
             Obj.PatientInfoTable.Title = 'Patient Information';
             Obj.PatientInfoTable.TableConfig = Obj.hGetPatientInfoConfig();
-            app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eInfoChanged'});
             % ---------------------------------------------------------
             % Recording Information Table
             Obj.RecordingInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);

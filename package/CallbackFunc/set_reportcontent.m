@@ -30,7 +30,26 @@ try
     % =====================================================================
     src = event{2};
     fnames = strsplit(src.Keys, '.');
-    val = src.Text;
+    if contains(lower(src.Keys), 'date') || contains(lower(src.Keys), 'dob')
+        try
+            val = human2iso(src.Text);
+            src.Text
+            val
+        catch
+            return;
+        end
+    elseif contains(lower(src.Keys), 'sex')
+        switch lower(src.Text)
+            case {'male', 'm', 'man', 'boy'}
+                val = 'male';
+            case {'female', 'f', 'woman', 'girl'}
+                val = 'female';
+            otherwise
+                return;
+        end
+    else
+        val = src.Text;
+    end
     ACT = setnestedfield(ACT, fnames, val);
 catch ME
     % ---------------------------------------------------------------------

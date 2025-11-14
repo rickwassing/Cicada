@@ -79,7 +79,6 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Label.FontWeight = Obj.Style.fontWeight;
             Obj.Label.FontAngle = Obj.Style.fontStyle;
             Obj.Label.HorizontalAlignment = Obj.Style.textAlign;
-            Obj.Label.VerticalAlignment = 'top';
 
             Obj.Input.Value = strsplit(Obj.Text, '\\n');
             Obj.Input.FontSize = Obj.Style.fontSize;

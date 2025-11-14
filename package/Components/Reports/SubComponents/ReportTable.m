@@ -182,7 +182,9 @@ classdef ReportTable < CicadaComponentContainer
                 end
                 % ---------------------------------------------------------
                 % Handle dataset changes - populate from ACT
-                if strcmpi(event.EventName, 'eDatasetChanged')
+                if ...
+                        strcmpi(event.EventName, 'eDatasetChanged') || ...
+                        strcmpi(event.EventName, 'eInfoChanged')
                     Obj.hPopulateFromData(app.ACT);
                 end
 

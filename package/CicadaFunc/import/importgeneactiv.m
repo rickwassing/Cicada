@@ -126,7 +126,7 @@ else
                     case 'chest'
                         location = 'chest';
                     otherwise
-                        location = 'missing';
+                        location = 'unspecified';
                 end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 ACT.info.sex = strtrim(Header{cnt}.Sex);
@@ -136,7 +136,7 @@ else
                     case {'female', 'f'}
                         ACT.info.sex = 'female';
                     otherwise
-                        ACT.info.sex = 'missing';
+                        ACT.info.sex = 'unspecified';
                 end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 ACT.info.height = str2double(strtrim(Header{cnt}.Height));
