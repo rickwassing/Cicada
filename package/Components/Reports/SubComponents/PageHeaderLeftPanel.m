@@ -54,7 +54,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 'Event', 'eReportTemplateChanged');
             Obj.Components.InstituteNameLabel.Layout.Row = 1;
             Obj.Components.InstituteNameLabel.Layout.Column = 2;
-            app_addlisteners([], Obj.Components.InstituteNameLabel, {'eMouseMotion'});
+            app_addlisteners([], Obj.Components.InstituteNameLabel, {'eMouseMotion', 'eReportTabHovered'});
 
             Obj.Components.InstituteAddressLabel = InlineEditField(Obj.GridLayout, ...
                 'Keys', 'content-header-InstituteAddress', ...
@@ -62,7 +62,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                 'Event', 'eReportTemplateChanged');
             Obj.Components.InstituteAddressLabel.Layout.Row = 2;
             Obj.Components.InstituteAddressLabel.Layout.Column = 2;
-            app_addlisteners([], Obj.Components.InstituteAddressLabel, {'eMouseMotion'});
+            app_addlisteners([], Obj.Components.InstituteAddressLabel, {'eMouseMotion', 'eReportTabHovered'});
         end
         
         function update(Obj)

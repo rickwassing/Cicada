@@ -23,6 +23,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
         Text char
         Style struct = struct('fontFamily', 'Helvetica', 'fontSize', 11, 'fontColor', '#262626', 'fontWeight', 'normal', 'fontStyle', 'normal', 'textAlign', 'left', 'lineHeight', 1);
         IsHovered logical = false;
+        ShowEditableIndicator logical = false;
         Id char
         CallbackFcn char = ''
         Event char = ''
@@ -35,36 +36,6 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
     end
     % *********************************************************************
     % METHODS
-    methods
-        function OnClick(Obj, ~)
-            if Obj.Disabled
-                return
-            end
-            Obj.Input.Visible = 'on';
-            drawnow()
-            focus(Obj.Input)
-        end
-        function OnBlur(Obj, event)
-            if Obj.Disabled
-                return
-            end
-            Obj.Input.Visible = 'off';
-            Obj.Text = strjoin(Obj.Input.Value, '\\n');
-            if ~isempty(Obj.CallbackFcn)
-                app_callback({event, Obj}, Obj.CallbackFcn, {Obj.Event})
-            end
-        end
-        function hUpdate(Obj, app, ~)
-            if ~isvalid(Obj)
-                return
-            end
-            if Obj.Disabled
-                return
-            end
-            Obj.IsHovered = app.IsHovered(Obj);
-        end
-    end
-
     methods (Access = protected)
         function setup(Obj)
             
@@ -73,7 +44,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
 
             % Create the main grid layout
             Obj.Grid = uigridlayout(Obj, [1 1]);
-            Obj.Grid.Padding = [0 0 0 0];
+            Obj.Grid.Padding = [0, 1, 0, 0];
             Obj.Grid.RowSpacing = 0;
             Obj.Grid.ColumnSpacing = 0;
             
@@ -84,6 +55,7 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Label.Layout.Row = 1;
             Obj.Label.Layout.Column = 1;
             Obj.Label.UserData.Id = Obj.Id;
+            Obj.Label.VerticalAlignment = 'center';
 
             Obj.Input = uitextarea(Obj.Grid);
             Obj.Input.Value = '';
@@ -118,13 +90,60 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Input.HorizontalAlignment = Obj.Style.textAlign;
 
             clr = app_colors();
-            % Update component when properties change
-            if Obj.IsHovered
-                Obj.Label.BackgroundColor = clr.bs_primary_subtle.^0.33;
+            
+            % Update component visual state based on hover and editable indicator
+            % When ReportTab is hovered, show border on all editable fields
+            if Obj.ShowEditableIndicator && ~Obj.Disabled
+                Obj.Grid.BackgroundColor = clr.bs_secondary;
+                Obj.Label.BackgroundColor = clr.bs_secondary_subtle.^0.33;
             else
-                Obj.Label.BackgroundColor = [1 1 1];
+                Obj.Grid.BackgroundColor = [1, 1, 1];
+                Obj.Label.BackgroundColor = [1, 1, 1];
+            end
+            
+            % When individual field is hovered, also change label background
+            if Obj.IsHovered
+                Obj.Label.BackgroundColor = clr.bs_secondary_subtle;
             end
 
+        end
+    end
+    % =====================================================================
+    methods
+        function OnClick(Obj, ~)
+            if Obj.Disabled
+                return
+            end
+            Obj.Input.Visible = 'on';
+            drawnow()
+            focus(Obj.Input)
+        end
+        function OnBlur(Obj, event)
+            if Obj.Disabled
+                return
+            end
+            Obj.Input.Visible = 'off';
+            Obj.Text = strjoin(Obj.Input.Value, '\\n');
+            if ~isempty(Obj.CallbackFcn)
+                app_callback({event, Obj}, Obj.CallbackFcn, {Obj.Event})
+            end
+        end
+        function hUpdate(Obj, app, event)
+            if ~isvalid(Obj)
+                return
+            end
+            if Obj.Disabled
+                return
+            end
+            
+            % Handle different events
+            if strcmpi(event.EventName, 'eReportTabHovered')
+                % Update the editable indicator based on report tab hover state
+                Obj.ShowEditableIndicator = event.UserData.Payload{2};
+            elseif strcmpi(event.EventName, 'eMouseMotion')
+                % Update individual hover state
+                Obj.IsHovered = app.IsHovered(Obj);
+            end
         end
     end
     

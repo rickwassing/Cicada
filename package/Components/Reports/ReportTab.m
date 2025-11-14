@@ -22,6 +22,7 @@ classdef ReportTab < CicadaComponentContainer
         NumPages = 2;
         PageHeight = 842;  % A4 height at 72 DPI
         PageWidth = 595;   % A4 width at 72 DPI
+        IsHovered logical = false;
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -53,6 +54,9 @@ classdef ReportTab < CicadaComponentContainer
                 'Padding', [0, 24, 0, 24], ...
                 'Scrollable', 'on', ...
                 'BackgroundColor', Colors.bg_secondary);
+            % -------------------------------------------------------------
+            % Add event listeners
+            app_addlisteners([], Obj, {'eMouseMotion', 'eDatasetChanged', 'eDataChanged'});
         end
         % =================================================================
         function update(Obj)
@@ -96,11 +100,21 @@ classdef ReportTab < CicadaComponentContainer
     end
     % *********************************************************************
     methods (Access = public)
-        function hUpdate(Obj, app, event) %#ok<INUSD>
+        function hUpdate(Obj, app, event)
             try
                 % ---------------------------------------------------------
-                % Do nothing
-            catch ME %#ok<UNRCH>
+                % Handle mouse motion event
+                if strcmpi(event.EventName, 'eMouseMotion')
+                    % Store previous hover state
+                    wasHovered = Obj.IsHovered;
+                    % Check if mouse is hovering over this component
+                    Obj.IsHovered = app.IsHovered(Obj);
+                    % Only broadcast if state changed
+                    if wasHovered ~= Obj.IsHovered
+                        app_notify(app, {'eReportTabHovered'}, AppEventData(event, {'IsHovered', Obj.IsHovered}));
+                    end
+                end
+            catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportTab.m')
             end
         end

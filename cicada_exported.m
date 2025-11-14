@@ -93,6 +93,7 @@ classdef cicada_exported < matlab.apps.AppBase
         eStyleChanged; % When any style has changed for the report
         eLogoChanged; % When the report logo has changed
         eReportTemplateChanged; % When the report content has changed
+        eReportTabHovered; % When the mouse hovers over the Report Tab
         eMouseMotion; % When the mouse moves
         eMouseDown; % When the mouse is pressed
         eMouseUp; % When the mouse is released

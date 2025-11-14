@@ -74,7 +74,7 @@ classdef ReportTableCell < CicadaComponentContainer
                 'Event', 'eInfoChanged');
             Obj.ValueLabelObj.Layout.Row = 1;
             Obj.ValueLabelObj.Layout.Column = 2;
-            app_addlisteners([], Obj.ValueLabelObj, {'eMouseMotion'});
+            app_addlisteners([], Obj.ValueLabelObj, {'eMouseMotion', 'eReportTabHovered'});
         end
         
         % =================================================================

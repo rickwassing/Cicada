@@ -45,7 +45,7 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
                 'Event', 'eReportTemplateChanged');
             Obj.Components.TitleLabel.Layout.Row = 1;
             Obj.Components.TitleLabel.Layout.Column = 1;
-            app_addlisteners([], Obj.Components.TitleLabel, {'eMouseMotion'});
+            app_addlisteners([], Obj.Components.TitleLabel, {'eMouseMotion', 'eReportTabHovered'});
 
             Obj.Components.DateLabel = uilabel(Obj.Grid);
             Obj.Components.DateLabel.VerticalAlignment = 'top';

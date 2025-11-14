@@ -110,16 +110,12 @@ classdef MainTabGroup < matlab.ui.componentcontainer.ComponentContainer
                     'ActogramLength', 1, ...
                     'NumPanels', 0, ...
                     'Verbose', Obj.Verbose);
-                app_addlisteners([], Obj.TabGroup.Children(i).UserData.DataTab, ...
-                    {'eDatasetChanged', 'eDataChanged', 'eActogramSettingsChanged'});
             elseif i == 2
                 % ---------------------------------------------------------
                 % REPORT CONTAINER
                 % ---------------------------------------------------------
                 Obj.TabGroup.Children(i).UserData.ReportTab = ReportTab(Obj.TabGroup.Children(i).UserData.GridLayout, ...
                     'Verbose', Obj.Verbose);
-                app_addlisteners([], Obj.TabGroup.Children(i).UserData.ReportTab, ...
-                    {'eDatasetChanged', 'eDataChanged'});
             end
         end
     end

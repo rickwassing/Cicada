@@ -62,6 +62,9 @@ classdef DataTab < CicadaComponentContainer
             % -------------------------------------------------------------
             Obj.Pool = DataPanelPool(Obj.GridLayout);
             Obj.Pool.Layout.Column = 2;
+            % -------------------------------------------------------------
+            % Add event listeners
+            app_addlisteners([], Obj, {'eDatasetChanged', 'eDataChanged', 'eActogramSettingsChanged'});
         end
         % =================================================================
         function update(Obj)
