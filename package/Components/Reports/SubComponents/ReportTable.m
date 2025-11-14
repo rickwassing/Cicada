@@ -140,11 +140,7 @@ classdef ReportTable < CicadaComponentContainer
                 cellObj.Layout.Column = cellConfig.col;
                 cellObj.hInit();
                 % Add event listeners to cell
-                if cellConfig.editable
-                    app_addlisteners([], cellObj, {'eStyleChanged', 'eMouseMotion'});
-                else
-                    app_addlisteners([], cellObj, {'eStyleChanged'});
-                end
+                app_addlisteners([], cellObj, {'eStyleChanged'});
                 % Store cell reference
                 Obj.Cells(i).Obj = cellObj;
             end
@@ -343,7 +339,7 @@ classdef ReportTable < CicadaComponentContainer
 
                 case 'date'
                     % Assume ISO date format, convert to readable format
-                    formatted = iso2human(value, 'DateOnly', true);
+                    formatted = iso2human(value, 'Format', 'dd MMM uuuu');
 
                 case 'datetime'
                     % Assume ISO date format, convert to readable format

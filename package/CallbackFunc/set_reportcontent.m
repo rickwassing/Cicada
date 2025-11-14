@@ -29,9 +29,8 @@ function ACT = set_reportcontent(ACT, event)
 try
     % =====================================================================
     src = event{2};
-    fnames = strsplit(src.Keys, '-');
+    fnames = strsplit(src.Keys, '.');
     val = src.Text;
-    keyboard
     ACT = setnestedfield(ACT, fnames, val);
 catch ME
     % ---------------------------------------------------------------------

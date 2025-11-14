@@ -26,6 +26,7 @@ function dstr = iso2human(dstr, varargin)
 DateOnly = false;
 OmitMilliseconds = false;
 OmitSeconds = false;
+Format = 'dd-MMM-uuuu HH:mm:ss.SSS';
 for i = 1:2:length(varargin)
     switch lower(varargin{i})
         case 'dateonly'
@@ -34,6 +35,8 @@ for i = 1:2:length(varargin)
             OmitMilliseconds = varargin{i+1};
         case 'omitseconds'
             OmitSeconds = varargin{i+1};
+        case 'format'
+            Format = varargin{i+1};
     end
 end
 % ---------------------------------------------------------------------
@@ -44,8 +47,6 @@ elseif OmitSeconds
     Format = 'dd-MMM-uuuu HH:mm';
 elseif OmitMilliseconds
     Format = 'dd-MMM-uuuu HH:mm:ss';
-else
-    Format = 'dd-MMM-uuuu HH:mm:ss.SSS';
 end
 % ---------------------------------------------------------------------
 % Run

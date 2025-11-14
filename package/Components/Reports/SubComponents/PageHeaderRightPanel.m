@@ -41,7 +41,8 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
 
             Obj.Components.TitleLabel = InlineEditField(Obj.Grid, ...
                 'Keys', 'content-header-ReportTitle', ...
-                'Event', 'eContentChanged');
+                'CallbackFcn', 'set_reporttemplate', ...
+                'Event', 'eReportTemplateChanged');
             Obj.Components.TitleLabel.Layout.Row = 1;
             Obj.Components.TitleLabel.Layout.Column = 1;
             app_addlisteners([], Obj.Components.TitleLabel, {'eMouseMotion'});
@@ -125,7 +126,7 @@ classdef PageHeaderRightPanel < CicadaComponentContainer
                     sStyle.textAlign = 'right';
                     Obj.TitleStyle = tStyle;
                     Obj.SmallStyle = sStyle;
-                case {'eContentChanged'}
+                case {'eReportTemplateChanged'}
                     % Update content from app state
                     Obj.TitleLabel = app.Props.Settings.Report.content.header.ReportTitle;
             end

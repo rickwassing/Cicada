@@ -87,14 +87,14 @@ classdef ReportPage < CicadaComponentContainer
             Obj.HeaderLeftPanel.Layout.Row = 1;
             Obj.HeaderLeftPanel.Layout.Column = 1;
             % Add event listeners
-            app_addlisteners([], Obj.HeaderLeftPanel, {'eStyleChanged', 'eLogoChanged', 'eContentChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.HeaderLeftPanel, {'eStyleChanged', 'eLogoChanged', 'eReportTemplateChanged', 'eDatasetChanged'});
             % ---------------------------------------------------------
             % Create right header panel
             Obj.HeaderRightPanel = PageHeaderRightPanel(Obj.HeaderGridLayout);
             Obj.HeaderRightPanel.Layout.Row = 1;
             Obj.HeaderRightPanel.Layout.Column = 2;
             % Add event listeners
-            app_addlisteners([], Obj.HeaderRightPanel, {'eStyleChanged', 'eContentChanged', 'eDatasetChanged'});
+            app_addlisteners([], Obj.HeaderRightPanel, {'eStyleChanged', 'eReportTemplateChanged', 'eDatasetChanged'});
             % -------------------------------------------------------------
             % Create the body panel
             % -------------------------------------------------------------
@@ -218,14 +218,14 @@ classdef ReportPage < CicadaComponentContainer
             config.columns = 2;
             config.cells = {
                 % Row 1
-                struct('row', 1, 'col', 1, 'keyLabel', 'Patient Name', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
+                struct('row', 1, 'col', 1, 'keyLabel', 'Patient Name', 'text', '', 'field', 'info.participant_name', 'editable', true, 'format', 'string')
                 struct('row', 1, 'col', 2, 'keyLabel', 'Date of Birth', 'text', '', 'field', 'info.dob', 'editable', true, 'format', 'date')
                 % Row 2
                 struct('row', 2, 'col', 1, 'keyLabel', 'Patient ID', 'text', '', 'field', 'info.participant_id', 'editable', true, 'format', 'string')
                 struct('row', 2, 'col', 2, 'keyLabel', 'Sex', 'text', '', 'field', 'info.sex', 'editable', true, 'format', 'string')
                 % Row 3
                 struct('row', 3, 'col', 1, 'keyLabel', 'Referring Physician', 'text', '', 'field', 'info.researcher', 'editable', true, 'format', 'string')
-                struct('row', 3, 'col', 2, 'keyLabel', 'Study', 'text', '', 'field', 'info.study', 'editable', false, 'format', 'string')
+                struct('row', 3, 'col', 2, 'keyLabel', 'Study', 'text', '', 'field', 'info.study', 'editable', true, 'format', 'string')
             };
         end
         % =================================================================

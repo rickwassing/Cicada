@@ -50,14 +50,16 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
 
             Obj.Components.InstituteNameLabel = InlineEditField(Obj.GridLayout, ...
                 'Keys', 'content-header-InstituteName', ...
-                'Event', 'eContentChanged');
+                'CallbackFcn', 'set_reporttemplate', ...
+                'Event', 'eReportTemplateChanged');
             Obj.Components.InstituteNameLabel.Layout.Row = 1;
             Obj.Components.InstituteNameLabel.Layout.Column = 2;
             app_addlisteners([], Obj.Components.InstituteNameLabel, {'eMouseMotion'});
 
             Obj.Components.InstituteAddressLabel = InlineEditField(Obj.GridLayout, ...
                 'Keys', 'content-header-InstituteAddress', ...
-                'Event', 'eContentChanged');
+                'CallbackFcn', 'set_reporttemplate', ...
+                'Event', 'eReportTemplateChanged');
             Obj.Components.InstituteAddressLabel.Layout.Row = 2;
             Obj.Components.InstituteAddressLabel.Layout.Column = 2;
             app_addlisteners([], Obj.Components.InstituteAddressLabel, {'eMouseMotion'});
@@ -144,7 +146,7 @@ classdef PageHeaderLeftPanel < CicadaComponentContainer
                     end
                     Obj.LogoWidth = app.Props.Settings.Report.style.logo.width * 72;
 
-                case {'eContentChanged'}
+                case {'eReportTemplateChanged'}
                     % Update content from app state
                     Obj.TitleLabel = app.Props.Settings.Report.content.header.InstituteName;
                     Obj.AddressLabel = app.Props.Settings.Report.content.header.InstituteAddress;

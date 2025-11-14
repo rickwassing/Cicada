@@ -70,7 +70,8 @@ try
     end
     % -------------------------------------------------------------------------
     % Notify
-    if ~isempty(EventName)
+    if ~all(cellfun(@isempty, EventName))
+        EventName = EventName(~cellfun(@isempty, EventName)); % Remove any empty cells
         app_notify(app, EventName);
     end
     % Broadcast 'eDatasetStatusChanged' in case the status did change

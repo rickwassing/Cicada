@@ -32,8 +32,7 @@ classdef ReportTableCell < CicadaComponentContainer
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
         KeyLabelObj matlab.ui.control.Label
-        ValueLabelObj matlab.ui.control.Label
-        ValueInputObj matlab.ui.control.EditField
+        ValueLabelObj InlineEditField
     end
     
     % *********************************************************************
@@ -53,7 +52,7 @@ classdef ReportTableCell < CicadaComponentContainer
             Obj.GridLayout = uigridlayout(Obj, ...
                 'ColumnWidth', {'1x', '1x'}, ...
                 'RowHeight', {Obj.CellHeight}, ...
-                'ColumnSpacing', 0, ...
+                'ColumnSpacing', 3, ...
                 'RowSpacing', 0, ...
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
@@ -70,49 +69,28 @@ classdef ReportTableCell < CicadaComponentContainer
             
             % -------------------------------------------------------------
             % Create value label (right side - display mode)
-            Obj.ValueLabelObj = uilabel(Obj.GridLayout, ...
-                'Text', '', ...
-                'HorizontalAlignment', 'left', ...
-                'VerticalAlignment', 'center', ...
-                'BackgroundColor', [1, 1, 1]);
+            Obj.ValueLabelObj = InlineEditField(Obj.GridLayout, ...
+                'CallbackFcn', 'set_reportcontent', ...
+                'Event', 'eInfoChanged');
             Obj.ValueLabelObj.Layout.Row = 1;
             Obj.ValueLabelObj.Layout.Column = 2;
-            
-            % -------------------------------------------------------------
-            % Create value input (right side - edit mode, initially hidden)
-            Obj.ValueInputObj = uieditfield(Obj.GridLayout, ...
-                'Value', '', ...
-                'Visible', 'off', ...
-                'FontSize', 11);
-            Obj.ValueInputObj.Layout.Row = 1;
-            Obj.ValueInputObj.Layout.Column = 2;
+            app_addlisteners([], Obj.ValueLabelObj, {'eMouseMotion'});
         end
         
         % =================================================================
         function update(Obj)
             try
                 % ---------------------------------------------------------
-                % Get colors
-                Colors = app_colors();
-                % ---------------------------------------------------------
                 % Update key label text
                 Obj.KeyLabelObj.Text = [' ', Obj.KeyLabel];
                 % ---------------------------------------------------------
                 % Update value label text
-                Obj.ValueLabelObj.Text =[' ', Obj.ValueText];
-                % ---------------------------------------------------------
-                % Apply hover styling to value area if editable
-                if Obj.Editable && Obj.IsHovered
-                    Obj.ValueLabelObj.BackgroundColor = Colors.bs_primary_subtle.^0.33;
-                else
-                    Obj.ValueLabelObj.BackgroundColor = [1, 1, 1];
-                end
+                Obj.ValueLabelObj.Keys = Obj.Field;
+                Obj.ValueLabelObj.Text = Obj.ValueText;
                 % ---------------------------------------------------------
                 % Set cursor style for editable cells
-                if Obj.Editable
-                    Obj.ValueLabelObj.Tag = 'clickable';
-                else
-                    Obj.ValueLabelObj.Tag = '';
+                if ~Obj.Editable
+                    Obj.ValueLabelObj.Disabled = true;
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportTableCell.m')
@@ -154,22 +132,6 @@ classdef ReportTableCell < CicadaComponentContainer
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in ReportTableCell.m')
-            end
-        end
-        % =================================================================
-        function OnClick(Obj, ~)
-            Obj.ValueInputObj.Value = Obj.ValueText;
-            Obj.ValueInputObj.Visible = 'on';
-            drawnow()
-            focus(Obj.ValueLabelObj)
-        end
-        % =================================================================
-        function OnBlur(Obj, event)
-            Obj.ValueInputObj.Visible = 'off';
-            Obj.ValueText = Obj.Input.Value;
-            if ~isempty(Obj.Event)
-                app_callback({event, Obj}, 'set_reportcontent')
-                app_notify([], {Obj.Event}, {event, Obj})
             end
         end
 

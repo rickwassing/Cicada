@@ -56,6 +56,7 @@ ACT.info = struct();
 ACT.info.institute = '';
 ACT.info.study = '';
 ACT.info.researcher = '';
+ACT.info.participant_name = '';
 ACT.info.participant_id = '';
 ACT.info.group = '';
 ACT.info.session = '';

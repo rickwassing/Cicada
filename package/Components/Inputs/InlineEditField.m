@@ -21,10 +21,12 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
     properties (Access = public)
         Keys char
         Text char
-        Style struct
+        Style struct = struct('fontFamily', 'Helvetica', 'fontSize', 11, 'fontColor', '#262626', 'fontWeight', 'normal', 'fontStyle', 'normal', 'textAlign', 'left', 'lineHeight', 1);
         IsHovered logical = false;
         Id char
+        CallbackFcn char = ''
         Event char = ''
+        Disabled logical = false;
     end
     properties (Access = private, Transient, NonCopyable)
         Label
@@ -35,20 +37,28 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
     % METHODS
     methods
         function OnClick(Obj, ~)
+            if Obj.Disabled
+                return
+            end
             Obj.Input.Visible = 'on';
             drawnow()
             focus(Obj.Input)
         end
         function OnBlur(Obj, event)
+            if Obj.Disabled
+                return
+            end
             Obj.Input.Visible = 'off';
             Obj.Text = strjoin(Obj.Input.Value, '\\n');
-            if ~isempty(Obj.Event)
-                app_callback({event, Obj}, 'set_reporttemplate', {'eContentChanged'})
-                app_notify([], {Obj.Event}, {event, Obj})
+            if ~isempty(Obj.CallbackFcn)
+                app_callback({event, Obj}, Obj.CallbackFcn, {Obj.Event})
             end
         end
         function hUpdate(Obj, app, ~)
             if ~isvalid(Obj)
+                return
+            end
+            if Obj.Disabled
                 return
             end
             Obj.IsHovered = app.IsHovered(Obj);
@@ -73,12 +83,14 @@ classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
             Obj.Label.Text = '';
             Obj.Label.Layout.Row = 1;
             Obj.Label.Layout.Column = 1;
+            Obj.Label.UserData.Id = Obj.Id;
 
             Obj.Input = uitextarea(Obj.Grid);
             Obj.Input.Value = '';
             Obj.Input.Visible = 'off';
             Obj.Input.Layout.Row = 1;
             Obj.Input.Layout.Column = 1;
+            Obj.Input.UserData.Id = Obj.Id;
 
         end
         

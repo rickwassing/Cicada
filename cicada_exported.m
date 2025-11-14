@@ -85,13 +85,14 @@ classdef cicada_exported < matlab.apps.AppBase
         eDatasetChanged; % When the entire dataset has changed e.g., new, load, import, close
         eDatasetStatusChanged; % When the dataset is saved
         eDataChanged; % The values in ACT.data, or ACT.metric, or ACT.analysis.events has changed
+        eInfoChanged; % The values in ACT.info has changed
         eActogramSettingsChanged; % When the values in ACT.info.actogram have changed
         eDisplaySettingsChanged; % When the display settings change
         eEventSettingsChanged; % When the event settings change
         eDataPanelPulled; % When a new data panel is pulled, re-render its components
         eStyleChanged; % When any style has changed for the report
         eLogoChanged; % When the report logo has changed
-        eContentChanged; % When the report content has changed
+        eReportTemplateChanged; % When the report content has changed
         eMouseMotion; % When the mouse moves
         eMouseDown; % When the mouse is pressed
         eMouseUp; % When the mouse is released
@@ -583,8 +584,8 @@ classdef cicada_exported < matlab.apps.AppBase
             % =============================================================
             % CREATE EVENT LISTENERS
             app_addlisteners(app, app, {'eDatasetChanged', 'eDatasetStatusChanged'}); % TODO: when the dataset status changed, broadcast 'eDatasetStatusChanged'
-            app_addlisteners(app, app.Cmps.InfoPanel_Study, {'eDatasetChanged'});
-            app_addlisteners(app, app.Cmps.InfoPanel_Participant, {'eDatasetChanged'});
+            app_addlisteners(app, app.Cmps.InfoPanel_Study, {'eDatasetChanged', 'eInfoChanged'});
+            app_addlisteners(app, app.Cmps.InfoPanel_Participant, {'eDatasetChanged', 'eInfoChanged'});
             app_addlisteners(app, app.Cmps.InfoPanel_Recording, {'eDatasetChanged'});
             app_addlisteners(app, app.Cmps.InfoPanel_Modalities, {'eDatasetChanged'});
             app_addlisteners(app, app.Cmps.MainTabGroup, {'eDatasetChanged'});
@@ -1017,6 +1018,13 @@ classdef cicada_exported < matlab.apps.AppBase
             app.Props.IsMouseDown = true;
             if isfield(app.Props, 'SelectedInputRef')
                 if ~isempty(app.Props.SelectedInputRef)
+                    if ...
+                        isprop(app.Props.SelectedInputRef, 'Id') && ...
+                        isfield(app.UIFigure.CurrentObject.UserData, 'Id') && ...
+                        strcmpi(app.UIFigure.CurrentObject.UserData.Id, app.Props.SelectedInputRef.Id)
+                        return % still editing the same input field
+                    end
+                    % If another input field was selected, trigger the OnBlur event of the previous one
                     app.Props.SelectedInputRef.OnBlur(event);
                     app.Props.SelectedInputRef = [];
                 end
@@ -1031,7 +1039,7 @@ classdef cicada_exported < matlab.apps.AppBase
             elseif strcmpi(event.Source.CurrentObject.Tag, 'clickable')
                 lbl = event.Source.CurrentObject;
                 parentComp = ancestor(lbl, 'matlab.ui.componentcontainer.ComponentContainer');
-                if isa(parentComp, 'InlineEditField') || contains(parentComp.Tag, 'ReportTableCell')
+                if isa(parentComp, 'InlineEditField')
                     app.Props.SelectedInputRef = parentComp;
                     parentComp.OnClick(event);
                 end
