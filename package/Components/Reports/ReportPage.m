@@ -20,6 +20,7 @@ classdef ReportPage < CicadaComponentContainer
     % PROPERTIES
     properties
         PageNum = 1;
+        PageType char = 'tables';  % Type of content: 'tables', 'other', etc.
         HeaderHeight = 72;
         FooterHeight = 24;
         Margin = 36;  % Page margin in pixels
@@ -107,49 +108,10 @@ classdef ReportPage < CicadaComponentContainer
             
             Obj.BodyGridLayout = uigridlayout(Obj.BodyPanel, ...
                 'ColumnWidth', {'1x'}, ...
-                'RowHeight', {...
-                    getpanelheight('georgia', 14, 0, 3, 20, 0), ... % fontName, fontSize, padding, numRows, rowHeight, rowSpacing
-                    getpanelheight('georgia', 14, 0, 4, 20, 0), ...
-                    getpanelheight('georgia', 14, 0, 5, 20, 0), ...
-                    getpanelheight('georgia', 14, 0, 5, 20, 0), ...
-                    }, ...
+                'RowHeight', {'1x'}, ...
                 'RowSpacing', 12, ...
                 'Padding', [0, 0, 0, 0], ...
                 'BackgroundColor', [1, 1, 1]);
-            % -------------------------------------------------------------
-            % Create table components
-            % -------------------------------------------------------------
-            % Patient Information Table
-            Obj.PatientInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-            Obj.PatientInfoTable.Layout.Row = 1;
-            Obj.PatientInfoTable.Layout.Column = 1;
-            Obj.PatientInfoTable.Title = 'Patient Information';
-            Obj.PatientInfoTable.TableConfig = Obj.hGetPatientInfoConfig();
-            app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eInfoChanged'});
-            % ---------------------------------------------------------
-            % Recording Information Table
-            Obj.RecordingInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-            Obj.RecordingInfoTable.Layout.Row = 2;
-            Obj.RecordingInfoTable.Layout.Column = 1;
-            Obj.RecordingInfoTable.Title = 'Recording Information';
-            Obj.RecordingInfoTable.TableConfig = Obj.hGetRecordingInfoConfig();
-            app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
-            % ---------------------------------------------------------
-            % Summary Statistics - Entire Recording Table
-            Obj.SummaryStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-            Obj.SummaryStatsTable.Layout.Row = 3;
-            Obj.SummaryStatsTable.Layout.Column = 1;
-            Obj.SummaryStatsTable.Title = 'Summary Statistics - Entire Recording';
-            Obj.SummaryStatsTable.TableConfig = Obj.hGetSummaryStatsConfig();
-            app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
-            % ---------------------------------------------------------
-            % Summary Statistics - Sleep Windows Table
-            Obj.SleepWindowStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-            Obj.SleepWindowStatsTable.Layout.Row = 4;
-            Obj.SleepWindowStatsTable.Layout.Column = 1;
-            Obj.SleepWindowStatsTable.Title = 'Summary Statistics - Average Sleep Windows';
-            Obj.SleepWindowStatsTable.TableConfig = Obj.hGetSleepWindowStatsConfig();
-            app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
             % -------------------------------------------------------------
             % Create the footer panel container
             % -------------------------------------------------------------
@@ -177,18 +139,92 @@ classdef ReportPage < CicadaComponentContainer
                 Obj.HeaderRightPanel.hInit(app);
                 Obj.FooterPanel.PageNum = Obj.PageNum;
                 Obj.FooterPanel.hInit(app);
-                % Initialize tables with styling
-                Obj.PatientInfoTable.hInit(app);
-                Obj.RecordingInfoTable.hInit(app);
-                Obj.SummaryStatsTable.hInit(app);
-                Obj.SleepWindowStatsTable.hInit(app);
+                % ---------------------------------------------------------
+                % Create page-specific content based on PageType
+                Obj.hCreatePageContent(app);
                 % ---------------------------------------------------------
                 if Obj.Verbose
-                    fprintf('>> CIC: ReportPage %i updated in %.1g s.\n', Obj.PageNum, (now-Time)*24*60*60) %#ok<TNOW1>
+                    fprintf('>> CIC: ReportPage %i (type: %s) updated in %.1g s.\n', Obj.PageNum, Obj.PageType, (now-Time)*24*60*60) %#ok<TNOW1>
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportPage.m')
             end
+        end
+        % =================================================================
+        function hCreatePageContent(Obj, app)
+            % Create page content based on PageType
+            switch lower(Obj.PageType)
+                case 'tables'
+                    Obj.hCreateTableContent(app);
+                case 'other'
+                    Obj.hCreateOtherContent(app);
+                otherwise
+                    % Default to empty content
+                    Obj.BodyGridLayout.RowHeight = {'1x'};
+            end
+        end
+        % =================================================================
+        function hCreateTableContent(Obj, app)
+            % Create and initialize table components for page 1
+            % ---------------------------------------------------------
+            % Set grid layout for tables
+            style = app.Props.Settings.Report.style.title;
+            Obj.BodyGridLayout.RowHeight = {...
+                getpanelheight(style.fontFamily, style.fontSize, 0, 3, 20, 0), ...
+                getpanelheight(style.fontFamily, style.fontSize, 0, 4, 20, 0), ...
+                getpanelheight(style.fontFamily, style.fontSize, 0, 5, 20, 0), ...
+                getpanelheight(style.fontFamily, style.fontSize, 0, 5, 20, 0), ...
+                };
+            % ---------------------------------------------------------
+            % Create tables if they don't exist
+            if isempty(Obj.PatientInfoTable) || ~isvalid(Obj.PatientInfoTable)
+                Obj.PatientInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
+                Obj.PatientInfoTable.Layout.Row = 1;
+                Obj.PatientInfoTable.Layout.Column = 1;
+                Obj.PatientInfoTable.Title = 'Patient Information';
+                Obj.PatientInfoTable.TableConfig = Obj.hGetPatientInfoConfig();
+                app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eInfoChanged'});
+            end
+            % ---------------------------------------------------------
+            if isempty(Obj.RecordingInfoTable) || ~isvalid(Obj.RecordingInfoTable)
+                Obj.RecordingInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
+                Obj.RecordingInfoTable.Layout.Row = 2;
+                Obj.RecordingInfoTable.Layout.Column = 1;
+                Obj.RecordingInfoTable.Title = 'Recording Information';
+                Obj.RecordingInfoTable.TableConfig = Obj.hGetRecordingInfoConfig();
+                app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
+            end
+            % ---------------------------------------------------------
+            if isempty(Obj.SummaryStatsTable) || ~isvalid(Obj.SummaryStatsTable)
+                Obj.SummaryStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
+                Obj.SummaryStatsTable.Layout.Row = 3;
+                Obj.SummaryStatsTable.Layout.Column = 1;
+                Obj.SummaryStatsTable.Title = 'Summary Statistics - Entire Recording';
+                Obj.SummaryStatsTable.TableConfig = Obj.hGetSummaryStatsConfig();
+                app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
+            end
+            % ---------------------------------------------------------
+            if isempty(Obj.SleepWindowStatsTable) || ~isvalid(Obj.SleepWindowStatsTable)
+                Obj.SleepWindowStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
+                Obj.SleepWindowStatsTable.Layout.Row = 4;
+                Obj.SleepWindowStatsTable.Layout.Column = 1;
+                Obj.SleepWindowStatsTable.Title = 'Summary Statistics - Average Sleep Windows';
+                Obj.SleepWindowStatsTable.TableConfig = Obj.hGetSleepWindowStatsConfig();
+                app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
+            end
+            % ---------------------------------------------------------
+            % Initialize tables with styling and data
+            Obj.PatientInfoTable.hInit(app);
+            Obj.RecordingInfoTable.hInit(app);
+            Obj.SummaryStatsTable.hInit(app);
+            Obj.SleepWindowStatsTable.hInit(app);
+        end
+        % =================================================================
+        function hCreateOtherContent(Obj, app) %#ok<INUSD>
+            % Placeholder for other content types (to be developed)
+            % For now, just display empty page with message
+            Obj.BodyGridLayout.RowHeight = {'1x'};
+            % Future: Add components for page 2 content here
         end
     end
     % *********************************************************************

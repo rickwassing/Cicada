@@ -81,6 +81,7 @@ classdef ReportTab < CicadaComponentContainer
                         Obj.Pages(i).Parent = Obj.GridLayout;
                     end
                     Obj.Pages(i).PageNum = i;
+                    Obj.Pages(i).PageType = Obj.hGetPageType(i);
                     Obj.Pages(i).Verbose = Obj.Verbose;
                     Obj.Pages(i).Layout.Column = 2;
                     Obj.Pages(i).Layout.Row = i;
@@ -95,6 +96,24 @@ classdef ReportTab < CicadaComponentContainer
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportTab.m')
+            end
+        end
+    end
+    % *********************************************************************
+    % PRIVATE METHODS
+    methods (Access = private)
+        % =================================================================
+        function pageType = hGetPageType(~, pageNum)
+            % Determine the page type based on page number
+            % This method defines which content appears on each page
+            switch pageNum
+                case 1
+                    pageType = 'tables';
+                case 2
+                    pageType = 'other';
+                otherwise
+                    % Default for any additional pages
+                    pageType = 'other';
             end
         end
     end
