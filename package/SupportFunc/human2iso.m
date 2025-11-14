@@ -8,6 +8,7 @@
 %
 % History:
 %   Created 2025-11-14, Rick Wassing
+%   Updated 2025-11-14, Added separator filtering for efficient format matching
 
 % Cicada (C) 2023 by Rick Wassing is licensed under
 % Attribution-NonCommercial-ShareAlike 4.0 International
@@ -31,8 +32,25 @@ if isstring(dstr)
 end
 dstr = strtrim(dstr);
 
-% List of accepted formats (extend as needed)
-fmts = getdateformats();
+% Detect separators in input string
+separators = {' ', '/', '-', '.'};
+detected_seps = {};
+for i = 1:numel(separators)
+    if contains(dstr, separators{i})
+        detected_seps{end+1} = separators{i}; %#ok<AGROW>
+    end
+end
+
+% Get all date formats and filter by detected separators
+all_fmts = getdateformats();
+if isempty(detected_seps)
+    % No separators detected - use only compact formats (no separators)
+    fmts = all_fmts;
+else
+    % Filter formats to only those containing at least one detected separator
+    fmts = all_fmts(contains(all_fmts, detected_seps));
+end
+
 dt = [];
 % Try parsing with original casing first, then lowercase
 dstrVariants = {dstr, lower(dstr)};
@@ -47,6 +65,7 @@ for v = 1:numel(dstrVariants)
         break;
     end
 end
+
 % As a fallback, try MATLAB's flexible parser
 if isempty(dt)
     try
@@ -59,11 +78,13 @@ if isempty(dt)
         end
     end
 end
+
 % Fix two-digit years: assume years < 1950 should be in 2000s
 % (e.g., '25' -> 2025, not 1925)
 if dt.Year < 1950
     dt.Year = dt.Year + 100;
 end
+
 % Output ISO format
 iso = char(dt, 'yyyy-MM-dd');
 
@@ -271,6 +292,6 @@ iso = char(dt, 'yyyy-MM-dd');
             'yyyy/MM/dd HH:mm:ss'
             'yyyy.MM.dd HH:mm:ss'
             'yyyy MM dd HH:mm:ss'
-            };
+        };
     end
 end
