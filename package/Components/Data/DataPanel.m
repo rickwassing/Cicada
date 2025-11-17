@@ -103,13 +103,13 @@ classdef DataPanel < CicadaComponentContainer
                     return
                 end
                 Obj.UpdateHoverOnly = false;
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 % If this component is returned to the pool, its status is 'idle'
                 if strcmpi(Obj.Status, 'idle') || isempty(Obj.Metric) || isempty(Obj.Start) || isempty(Obj.End)
                     Obj.hReset();
+                    Obj.endPerformanceTracking();
                     return
                 end
                 % ---------------------------------------------------------
@@ -186,7 +186,7 @@ classdef DataPanel < CicadaComponentContainer
                         DoRender = true;
                     end
                     if DoRender
-                        Obj.EventGraphics(i).Obj = EventTrace(Obj.Axes, 'Verbose', Obj.Verbose);
+                        Obj.EventGraphics(i).Obj = EventTrace(Obj.Axes);
                     end
                     Obj.EventGraphics(i).Obj.Event = Obj.Events(i, :);
                     Obj.EventGraphics(i).Obj.Track = track(i);
@@ -214,7 +214,7 @@ classdef DataPanel < CicadaComponentContainer
                     DoRender = true;
                 end
                 if DoRender
-                    Obj.Legend = DataLegend(Obj.Axes, 'Verbose', Obj.Verbose);
+                    Obj.Legend = DataLegend(Obj.Axes);
                 end
                 Obj.Legend.Metric = Obj.Metric;
                 Obj.Legend.Offset = Offset;
@@ -239,7 +239,7 @@ classdef DataPanel < CicadaComponentContainer
                         DoRender = true;
                     end
                     if DoRender
-                        Obj.MetricGraphics(i).Obj = DataTrace(Obj.Axes, 'Verbose', Obj.Verbose);
+                        Obj.MetricGraphics(i).Obj = DataTrace(Obj.Axes);
                     end
                     Obj.MetricGraphics(i).Obj.Metric = Obj.Metric(i);
                     Obj.MetricGraphics(i).Obj.Offset = Offset;
@@ -264,10 +264,13 @@ classdef DataPanel < CicadaComponentContainer
                     findobj(Obj.Axes.Children, 'type', 'patch'); ...
                     findobj(Obj.Axes.Children, '-not', 'type', 'patch')];
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DataPanel ''%s'' updated in %.1g s.\n', Obj.Axes.Title.String, (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in DataPanel.m')
             end
         end

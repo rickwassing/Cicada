@@ -21,7 +21,6 @@ classdef ColorPicker < CicadaComponentContainer
     properties
         Fcn;
         EventName;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
@@ -71,14 +70,16 @@ classdef ColorPicker < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: ColorPicker updated in %.1g s.\n', (now-Time)*18*60*60) %#ok<TNOW1>
-                end
+                % Start performance tracking
+                Obj.startPerformanceTracking();
+                % ---------------------------------------------------------
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in ColorPicker.m')
             end
         end

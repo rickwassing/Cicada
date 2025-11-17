@@ -67,4 +67,13 @@ for i = 1:length(eventlabels)
     end
 end
 % -------------------------------------------------------------------------
+% Display performance summary after event broadcast (for verbosity level 1+)
+if app.Props.Verbose >= 1 && ~isempty(eventlabels)
+    % Don't show summary for mouse motion events
+    if ~any(ismember(eventlabels, {'eMouseMotion', 'eReportTabHovered'}))
+        tracker = PerformanceTracker.getInstance();
+        tracker.displaySummary(eventlabels{1});
+    end
+end
+% -------------------------------------------------------------------------
 end

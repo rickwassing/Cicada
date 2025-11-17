@@ -21,7 +21,6 @@ classdef DataSettings_Modality < CicadaComponentContainer
     properties
         Modality;
         Metric = struct('y', [], 'modality', '', 'device', '', 'labels', {}, 'srate', [], 'pnts', [], 'xmin', '', 'xmax', '', 'showSingleMetric', [], 'show', [], 'height', [], 'log', [], 'ylim', [], 'color', [], 'zindex', []);
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -151,9 +150,8 @@ classdef DataSettings_Modality < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 Colors = app_colors();
                 % ---------------------------------------------------------
@@ -308,10 +306,13 @@ classdef DataSettings_Modality < CicadaComponentContainer
                     end
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DisplaySettingsModality ''%s'' updated in %.1g s.\n', Obj.Modality, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in DataSettings_Modality.m')
             end
         end

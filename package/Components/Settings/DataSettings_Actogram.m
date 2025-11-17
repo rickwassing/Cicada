@@ -20,7 +20,6 @@ classdef DataSettings_Actogram < CicadaComponentContainer
     % PROPERTIES
     properties
         Settings;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -133,9 +132,8 @@ classdef DataSettings_Actogram < CicadaComponentContainer
                 if isempty(Obj.Settings)
                     return
                 end
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 Value = num2str(Obj.Settings.length);
                 if ismember(Value, Obj.Inputs(1).h.Items)
@@ -164,11 +162,14 @@ classdef DataSettings_Actogram < CicadaComponentContainer
                 else
                     Obj.Inputs(4).h.Value = '15:00';
                 end
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DisplaySettingsActogram updated in %.1g s.\n', (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % ---------------------------------------------------------
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in DataSettings_Actogram.m')
             end
         end

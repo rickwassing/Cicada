@@ -124,9 +124,8 @@ classdef ReportPage < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 % Update panel tags with current page number
                 Obj.Tag = sprintf('ReportPage_%i', Obj.PageNum);
@@ -143,10 +142,13 @@ classdef ReportPage < CicadaComponentContainer
                 % Create page-specific content based on PageType
                 Obj.hCreatePageContent(app);
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: ReportPage %i (type: %s) updated in %.1g s.\n', Obj.PageNum, Obj.PageType, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportPage.m')
             end
         end

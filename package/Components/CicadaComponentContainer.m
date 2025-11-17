@@ -19,10 +19,30 @@ classdef CicadaComponentContainer < matlab.ui.componentcontainer.ComponentContai
     % *********************************************************************
     % PROPERTIES
     properties
-        Verbose logical = false;
+        Verbose double = 0; % 0=off, 1=summary, 2-3=log+summary
     end
     % *********************************************************************
     % METHODS
+    methods (Access = protected)
+        % =================================================================
+        function startPerformanceTracking(Obj)
+            % Start tracking component update performance
+            if Obj.Verbose > 0
+                tracker = PerformanceTracker.getInstance();
+                tracker.startTracking(class(Obj), Obj.Verbose);
+            end
+        end
+        
+        % =================================================================
+        function endPerformanceTracking(Obj)
+            % End tracking component update performance
+            if Obj.Verbose > 0
+                tracker = PerformanceTracker.getInstance();
+                tracker.endTracking(class(Obj), Obj.Verbose);
+            end
+        end
+    end
+    
     methods (Access = public)
         % =================================================================
         function newObj = deepCopy(obj, parent)

@@ -22,7 +22,6 @@ classdef Placeholder < CicadaComponentContainer
         ImageSrc;
         Header;
         SubHeader;
-        Verbose;
         Size;
     end
     properties (Access = private, Transient, NonCopyable)

@@ -25,7 +25,6 @@ classdef DataSettingsTab < CicadaComponentContainer
         NumEventGroups = 0;
         Modalities;
         RowHeights;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
@@ -81,10 +80,9 @@ classdef DataSettingsTab < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
+                % Start performance tracking
+                Obj.startPerformanceTracking();
+                % ---------------------------------------------------------
                 h = Obj.NumEventGroups;
                 h = h*26 + (h+1)*Obj.EventSettings.GridLayout.RowSpacing + 12;
                 if Obj.NumEventGroups == 0
@@ -130,11 +128,14 @@ classdef DataSettingsTab < CicadaComponentContainer
                 end
                 % -------------------------------------------------------------
                 Obj.EventSettings.Layout.Row = Obj.NumModalities+3;
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DataSettingsTab updated in %.1g s.\n', (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % ---------------------------------------------------------
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in DataSettingsTab.m')
             end
         end

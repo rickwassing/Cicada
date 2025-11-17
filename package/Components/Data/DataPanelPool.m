@@ -19,7 +19,6 @@ classdef DataPanelPool < matlab.ui.componentcontainer.ComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -40,7 +39,7 @@ classdef DataPanelPool < matlab.ui.componentcontainer.ComponentContainer
                 'HighLightColor', [0.8, 0.8, 0.8], ...
                 'Units', 'normalized', ...
                 'Position', [0, 0, 1, 1]);
-            Obj.Pool(1) = DataPanel(Obj.Panel, 'Title', 'none', 'Status', 'idle', 'Verbose', true);
+            Obj.Pool(1) = DataPanel(Obj.Panel, 'Title', 'none', 'Status', 'idle', 'Verbose', false); % Verbosity will be set later
         end
         % =================================================================
         function update(Obj)
@@ -54,15 +53,9 @@ classdef DataPanelPool < matlab.ui.componentcontainer.ComponentContainer
         % Pull an object from the pool, or create new if pool is empty
         function Singleton = pull(Obj, Parent)
             if isscalar(Obj.Pool)
-                if Obj.Verbose
-                    fprintf('>> CIC: Copying a DataPanel from the Pool.\n')
-                end
                 Singleton = copyobj(Obj.Pool(1), Parent);
                 app_addlisteners([], Singleton, {'eDatasetChanged', 'eDataChanged', 'eDataPanelPulled', 'eDisplaySettingsChanged'});
             else
-                if Obj.Verbose
-                    fprintf('>> CIC: Grabbing a DataPanel from the Pool.\n')
-                end
                 Singleton = Obj.Pool(end);
                 Singleton.Parent = Parent;
                 Obj.Pool(end) = [];

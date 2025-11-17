@@ -27,7 +27,6 @@ classdef EventExcerpt < CicadaComponentContainer
         EventLabelIsEditable = true;
         EventLabels;
         Metric = struct('y', [], 'modality', '', 'device', '', 'labels', {}, 'srate', [], 'pnts', [], 'xmin', '', 'xmax', '', 'showSingleMetric', [], 'show', [], 'height', [], 'log', [], 'ylim', [], 'color', [], 'zindex', []);
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -272,9 +271,8 @@ classdef EventExcerpt < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 % Return if the metric is empty
                 if isempty(Obj.Metric) || isempty(Obj.SelectedSegment)
@@ -312,7 +310,7 @@ classdef EventExcerpt < CicadaComponentContainer
                         DoRender = true;
                     end
                     if DoRender
-                        Obj.Graphics(i) = DataTrace(Obj.Axes, 'Verbose', Obj.Verbose);
+                        Obj.Graphics(i) = DataTrace(Obj.Axes);
                     end
                     Obj.Graphics(i).Metric = Obj.Metric(i);
                     Obj.Graphics(i).Offset = Offset;
@@ -368,10 +366,13 @@ classdef EventExcerpt < CicadaComponentContainer
                     Obj.Buttons.Submit.Enable = 'on';
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: EventsExcerpt updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in EventsExcerpt.m')
             end
         end

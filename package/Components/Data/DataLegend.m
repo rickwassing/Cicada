@@ -22,7 +22,6 @@ classdef DataLegend < handle
         Metric;
         Offset = 0;
         Tag;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Parent
@@ -38,16 +37,6 @@ classdef DataLegend < handle
             % Create the original and smooth lines
             Obj.Tag = 'DataLegend';
             Obj.Parent = Parent;
-            % -------------------------------------------------------------
-            % Set other parameters using name-value pairs
-            if nargin > 1
-                for i = 1:2:length(varargin)
-                    switch lower(varargin{i})
-                        case 'verbose'
-                            Obj.Verbose = varargin{i+1};
-                    end
-                end
-            end
         end
         % =================================================================
         function update(Obj)

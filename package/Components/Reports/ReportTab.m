@@ -61,9 +61,8 @@ classdef ReportTab < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 Obj.GridLayout.RowHeight = repmat({Obj.PageHeight}, 1, Obj.NumPages);
                 for i = 1:Obj.NumPages
@@ -91,10 +90,13 @@ classdef ReportTab < CicadaComponentContainer
                     Obj.Pages(i) = [];
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: ReportTab updated ''%i'' pages in %.1g s.\n', Obj.NumPages, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportTab.m')
             end
         end
@@ -126,10 +128,10 @@ classdef ReportTab < CicadaComponentContainer
                 if strcmpi(event.EventName, 'eMouseMotion')
                     % Store previous hover state
                     wasHovered = Obj.IsHovered;
-                    % Check if mouse is hovering over this component
-                    Obj.IsHovered = app.IsHovered(Obj);
-                    % Only broadcast if state changed
+                    % Only update if state changed
                     if wasHovered ~= Obj.IsHovered
+                        % Check if mouse is hovering over this component
+                        Obj.IsHovered = app.IsHovered(Obj);
                         app_notify(app, {'eReportTabHovered'}, AppEventData(event, {'IsHovered', Obj.IsHovered}));
                     end
                 end

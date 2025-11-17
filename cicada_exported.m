@@ -464,8 +464,7 @@ classdef cicada_exported < matlab.apps.AppBase
                 'Message', cfg.Message, ...
                 'Color', cfg.Color, ...
                 'Timeout', cfg.Timeout, ...
-                'Position', Position, ...
-                'Verbose', app.Props.Verbose);
+                'Position', Position);
         end
         % =================================================================
         function [Filename, Path] = getfile(app, filter)
@@ -570,7 +569,7 @@ classdef cicada_exported < matlab.apps.AppBase
             app.Props.SelectedSegment = [];
             app.Props.IsMouseDown = false;
             app.Props.ToggleModal = false;
-            app.Props.Verbose = true;
+            app.Props.Verbose = 2; % 0 = silent, 1 = summary, 2 = full
             % -------------------------------------------------------------
             % App settings
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

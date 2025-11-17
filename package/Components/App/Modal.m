@@ -21,7 +21,6 @@ classdef Modal < handle
     properties
         DisableBackdropClose;
         ComponentProps;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         BgModalImage matlab.ui.control.Image

@@ -69,12 +69,10 @@ classdef DataTab < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 PanelPulled = false;
-                Obj.Pool.Verbose = Obj.Verbose;
                 % ---------------------------------------------------------
                 Obj.GridLayout.RowHeight = repmat({Obj.PanelHeight}, 1, Obj.NumPanels);
                 for i = 1:Obj.NumPanels
@@ -105,10 +103,13 @@ classdef DataTab < CicadaComponentContainer
                     app_notify([], {'eDataPanelPulled'}); % first argument can be empty, in which case the handle is searched using 'findall'
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DataTab updated ''%i'' panels in %.1g s.\n', Obj.NumPanels, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in DataTab.m')
             end
         end

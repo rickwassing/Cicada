@@ -22,7 +22,6 @@ classdef MainTabGroup < CicadaComponentContainer
     properties
         TabTitles = {'Data', 'Report'};
         IsVisible;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         Placeholder Placeholder;
@@ -54,9 +53,8 @@ classdef MainTabGroup < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 for i = 1:length(Obj.TabTitles)
                     if i > length(Obj.TabGroup.Children)
@@ -80,11 +78,13 @@ classdef MainTabGroup < CicadaComponentContainer
                         Obj.Placeholder.Visible = 'on';
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: MainTabGroup updated in %.1g s.\n', (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
-                printerrormessage(ME, 'The error occurred during ''update'' in MainTabGroup.m')
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
             end
         end
         % =================================================================

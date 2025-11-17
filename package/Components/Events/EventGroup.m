@@ -26,7 +26,6 @@ classdef EventGroup < CicadaComponentContainer
         Color;
         IsSelected = false;
         EditStatus = false;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
@@ -126,9 +125,8 @@ classdef EventGroup < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 Colors = app_colors();
                 Obj.Tag = ['EventGroup_label-', Obj.LabelText, '_type-', Obj.TypeText];
@@ -164,10 +162,13 @@ classdef EventGroup < CicadaComponentContainer
                     Obj.DeleteUndoButton.BackgroundColor = Colors.bs_danger;
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: EventGroup updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in EventGroup.m')
             end
         end

@@ -27,7 +27,6 @@ classdef EventTrace < handle
         Tag;
         IsHovered;
         PointerBehaviorIsSet = false;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Line (1,1) matlab.graphics.chart.primitive.Line
@@ -55,16 +54,6 @@ classdef EventTrace < handle
                 'LineStyle', 'none', ...
                 'FaceColor', [0.25, 0.25, 0.25], ...
                 'FaceAlpha', 0.67);
-            % -------------------------------------------------------------
-            % Set other parameters using name-value pairs
-            if nargin > 1
-                for i = 1:2:length(varargin)
-                    switch lower(varargin{i})
-                        case 'verbose'
-                            Obj.Verbose = varargin{i+1};
-                    end
-                end
-            end
         end
         % =================================================================
         function update(Obj)

@@ -25,7 +25,6 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
         Message = '';
         Color;
         Timeout;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         ToastGridLayout matlab.ui.container.GridLayout

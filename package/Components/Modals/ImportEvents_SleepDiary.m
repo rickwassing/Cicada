@@ -26,7 +26,6 @@ classdef ImportEvents_SleepDiary < CicadaComponentContainer
         ParsedData = table();
         IsValid = false;
         Auth;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -367,9 +366,8 @@ classdef ImportEvents_SleepDiary < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 % Check if there is raw data and set visibilty of tab 2 objects
                 if ~isempty(Obj.RawData)
@@ -447,10 +445,13 @@ classdef ImportEvents_SleepDiary < CicadaComponentContainer
                 % Set the  parsed data table on tab 2
                  Obj.TabTables(2).h.Data = Obj.ParsedData;
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: ImportEvents_SleepDiary updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in ImportEvents_SleepDiary.m')
             end
         end

@@ -22,7 +22,6 @@ classdef InfoPanel < CicadaComponentContainer
         Title;
         KeyValues;
         Row;
-        Verbose;
         Enable;
     end
     properties (Access = private, Transient, NonCopyable)
@@ -64,9 +63,8 @@ classdef InfoPanel < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 Colors = app_colors();
                 % ---------------------------------------------------------
@@ -89,10 +87,13 @@ classdef InfoPanel < CicadaComponentContainer
                     delete(Obj.ValueLabels(i));
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: InfoPanel ''%s'' updated in %.1g s.\n', Obj.Title, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in InfoPanel.m')
             end
         end

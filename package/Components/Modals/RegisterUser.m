@@ -21,7 +21,6 @@ classdef RegisterUser < CicadaComponentContainer
     properties
         Size = [450, 415];
         Auth;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
@@ -255,9 +254,8 @@ classdef RegisterUser < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 if isempty(Obj.Auth)
                     Obj.Auth = struct(...
@@ -280,10 +278,13 @@ classdef RegisterUser < CicadaComponentContainer
                 % ---------------------------------------------------------
                 Obj.validate();
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: RegisterUser updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in RegisterUser.m')
             end
         end

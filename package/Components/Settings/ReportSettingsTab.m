@@ -20,7 +20,6 @@ classdef ReportSettingsTab < CicadaComponentContainer
     % PROPERTIES
     properties
         State;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         GridLayout matlab.ui.container.GridLayout
@@ -157,10 +156,9 @@ classdef ReportSettingsTab < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
+                % Start performance tracking
+                Obj.startPerformanceTracking();
+                % ---------------------------------------------------------
                 % Update font style panels if state is available
                 if ~isempty(Obj.State)
                     % Title settings
@@ -201,11 +199,14 @@ classdef ReportSettingsTab < CicadaComponentContainer
                         Obj.LogoImage.ImageSource = Obj.State.ImageSource;
                     end
                 end
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: ReportSettingsTab updated in %.1g s.\n', (now-Time)*24*60*60) %#ok<TNOW1>
-                end
+                % ---------------------------------------------------------
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in ReportSettingsTab.m')
             end
         end

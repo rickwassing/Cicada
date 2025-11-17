@@ -23,7 +23,6 @@ classdef DataTrace < handle
         Offset;
         Height;
         Tag;
-        Verbose;
     end
     properties (Access = private, Transient, NonCopyable)
         Line (1,1) matlab.graphics.chart.primitive.Line
@@ -40,16 +39,6 @@ classdef DataTrace < handle
             Obj.Line = plot(Parent, NaN, NaN, ...
                 'Tag', 'DataTrace_Line', ...
                 'LineWidth', 1.25);
-            % -------------------------------------------------------------
-            % Set other parameters using name-value pairs
-            if nargin > 1
-                for i = 1:2:length(varargin)
-                    switch lower(varargin{i})
-                        case 'verbose'
-                            Obj.Verbose = varargin{i+1};
-                    end
-                end
-            end
         end
         % =================================================================
         function update(Obj)

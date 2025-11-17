@@ -23,7 +23,6 @@ classdef EventGroupPanel < CicadaComponentContainer
         NumEventList;
         DoShowList;
         ColorList;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
@@ -71,9 +70,8 @@ classdef EventGroupPanel < CicadaComponentContainer
         % =================================================================
         function update(Obj)
             try
-                % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
+                % Start performance tracking
+                Obj.startPerformanceTracking();
                 % ---------------------------------------------------------
                 if size(Obj.EventGroupList, 1) == 0
                     Obj.GridLayout.RowHeight = {'1x'};
@@ -103,10 +101,13 @@ classdef EventGroupPanel < CicadaComponentContainer
                     delete(Obj.EventGroup(i))
                 end
                 % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: EventGroupPanel updated in %.1g s.\n', (now-Time)*24*60*60); %#ok<TNOW1>
-                end
+                % End performance tracking
+                Obj.endPerformanceTracking();
             catch ME
+                % Ensure tracking ends even on error
+                if Obj.Verbose > 0
+                    Obj.endPerformanceTracking();
+                end
                 printerrormessage(ME, 'The error occurred during ''update'' in EventGroupPanel.m')
             end
         end

@@ -20,7 +20,6 @@ classdef ExportButton < handle
     % PROPERTIES
     properties
         % ParentApp;  % Reference to the reports app for callbacks
-        Verbose = false;
         TargetTag
         EventFlag = '';
         Parent
@@ -41,8 +40,6 @@ classdef ExportButton < handle
             if nargin > 1
                 for i = 1:2:length(varargin)
                     switch lower(varargin{i})
-                        case 'verbose'
-                            Obj.Verbose = varargin{i+1};
                         case 'text'
                             Text = upper(varargin{i+1});
                         case 'targettag'

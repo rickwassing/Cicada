@@ -22,7 +22,6 @@ classdef Tooltip < handle
         Label;
         Visible;
         Position;
-        Verbose;
     end
     properties (Access = public, Transient, NonCopyable)
         LabelObj;
