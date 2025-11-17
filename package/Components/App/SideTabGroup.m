@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef SideTabGroup < matlab.ui.componentcontainer.ComponentContainer
+classdef SideTabGroup < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

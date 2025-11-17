@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under 
 % identical terms.
 
-classdef Placeholder < matlab.ui.componentcontainer.ComponentContainer
+classdef Placeholder < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

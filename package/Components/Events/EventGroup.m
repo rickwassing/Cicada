@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef EventGroup < matlab.ui.componentcontainer.ComponentContainer
+classdef EventGroup < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

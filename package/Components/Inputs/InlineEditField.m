@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef InlineEditField < matlab.ui.componentcontainer.ComponentContainer
+classdef InlineEditField < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties (Access = public)

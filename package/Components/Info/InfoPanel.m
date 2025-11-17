@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef InfoPanel < matlab.ui.componentcontainer.ComponentContainer
+classdef InfoPanel < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

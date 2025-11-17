@@ -134,7 +134,7 @@ classdef Selection < handle
                         app.Props.SelectedSegment(2), Obj.Patch.Parent.YLim(2); ...
                         app.Props.SelectedSegment(1), Obj.Patch.Parent.YLim(2); ...
                         ];
-                elseif length(app.Props.SelectedSegment) == 1
+                elseif isscalar(app.Props.SelectedSegment)
                     Obj.Patch.Vertices = zeros(4, 2);
                 elseif isempty(app.Props.SelectedSegment)
                     Obj.Patch.Vertices = zeros(4, 2);

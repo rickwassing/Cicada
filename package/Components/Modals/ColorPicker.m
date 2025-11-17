@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef ColorPicker < matlab.ui.componentcontainer.ComponentContainer
+classdef ColorPicker < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef ReportSettingsTab < matlab.ui.componentcontainer.ComponentContainer
+classdef ReportSettingsTab < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

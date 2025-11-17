@@ -53,9 +53,6 @@ classdef DataLegend < handle
         function update(Obj)
             try
                 % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
                 Colors = app_colors();
                 % -------------------------------------------------------------
                 Modalities = unique({Obj.Metric.modality}, 'stable');
@@ -97,10 +94,6 @@ classdef DataLegend < handle
                 for i = length(Obj.Graphics):-1:length(Obj.Metric)+1
                     Obj.Graphics(i).String = '';
                     Obj.Graphics(i).Position(2) = -1;
-                end
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DataLegend ''%s'' updated in %.1g s.\n', Obj.Parent.Tag, (now-Time)*24*60*60); %#ok<TNOW1>
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in DataLegend.m')

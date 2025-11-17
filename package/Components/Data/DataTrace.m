@@ -55,9 +55,6 @@ classdef DataTrace < handle
         function update(Obj)
             try
                 % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
                 if isempty(Obj.Metric)
                     delete(Obj.Line);
                     return
@@ -118,10 +115,6 @@ classdef DataTrace < handle
                 % Set the tag
                 Obj.Tag = ['DataTrace_', strrep(Obj.Metric.label, ' ', '_')];
                 Obj.Line.Tag = ['DataTrace_Line_', strrep(Obj.Metric.label, ' ', '_')];
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: DataTrace ''%s'' at ''%s'' updated in %.1g s.\n', Obj.Metric.label, datenum2iso(Obj.Line.XData(1)), (now-Time)*24*60*60); %#ok<TNOW1>
-                end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in DataTrace.m')
             end

@@ -119,9 +119,6 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
         function update(Obj)
             try
                 % -------------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % -------------------------------------------------------------
                 Obj.ToastTitleLabel.Text = Obj.Title;
                 Obj.ToastMessageLabel.Text = Obj.Message;
                 % -------------------------------------------------------------
@@ -153,10 +150,6 @@ classdef Toast < matlab.ui.componentcontainer.ComponentContainer
                     'StartDelay', Obj.Timeout, ...
                     'TimerFcn', {@deletetoast, Obj});
                 start(Timing);
-                % -------------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: Toast ''%s'' updated in %.1g s.\n', Obj.Id, (now-Time)*24*60*60) %#ok<TNOW1>
-                end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in Toast.m')
             end

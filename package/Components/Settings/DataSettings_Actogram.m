@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef DataSettings_Actogram < matlab.ui.componentcontainer.ComponentContainer
+classdef DataSettings_Actogram < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

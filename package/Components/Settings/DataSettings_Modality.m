@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef DataSettings_Modality < matlab.ui.componentcontainer.ComponentContainer
+classdef DataSettings_Modality < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef ReportSettings_FontStyle < matlab.ui.componentcontainer.ComponentContainer
+classdef ReportSettings_FontStyle < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties (Access = public)

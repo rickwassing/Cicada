@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef EventExcerpt < matlab.ui.componentcontainer.ComponentContainer
+classdef EventExcerpt < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

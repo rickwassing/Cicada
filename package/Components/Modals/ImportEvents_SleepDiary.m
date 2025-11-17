@@ -15,7 +15,7 @@
 % adapt the material, they must license the modified material under
 % identical terms.
 
-classdef ImportEvents_SleepDiary < matlab.ui.componentcontainer.ComponentContainer
+classdef ImportEvents_SleepDiary < CicadaComponentContainer
     % *********************************************************************
     % PROPERTIES
     properties

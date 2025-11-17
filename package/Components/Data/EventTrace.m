@@ -70,9 +70,6 @@ classdef EventTrace < handle
         function update(Obj)
             try
                 % ---------------------------------------------------------
-                % Timer
-                if Obj.Verbose; Time = now; end %#ok<TNOW1>
-                % ---------------------------------------------------------
                 if size(Obj.Event, 1) > 1
                     error('The EventTrace property ''event'' must be a single row table.')
                 end
@@ -154,10 +151,6 @@ classdef EventTrace < handle
                         else
                             Obj.Line.Color = Obj.Event.color{1};
                         end
-                end
-                % ---------------------------------------------------------
-                if Obj.Verbose
-                    fprintf('>> CIC: EventTrace id ''%i'' labelled ''%s (%s)'' updated in %.1g s.\n', Obj.Event.id, Obj.Event.label{1}, Obj.Event.type{1}, (now-Time)*24*60*60); %#ok<TNOW1>
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''update'' in EventTrace.m')
