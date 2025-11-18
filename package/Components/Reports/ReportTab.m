@@ -23,9 +23,9 @@ classdef ReportTab < CicadaComponentContainer
         PageHeight = 842;  % A4 height at 72 DPI
         PageWidth = 595;   % A4 width at 72 DPI
         IsHovered logical = false;
-        Pages ReportPage
     end
     properties (Access = public, Transient, NonCopyable)
+        Pages ReportPage
         Panel matlab.ui.container.Panel
         GridLayout matlab.ui.container.GridLayout
     end

@@ -60,84 +60,99 @@ classdef ExportButton < handle
         end
         % =================================================================
         % Helper functions
-        % -----------------------------------------------------------------
-        % Creates a new UIFigure with the same dimensions as a A4 paper
-        function fig = createA4Figure(~)
-            fig = uifigure('Visible', 'on', ...
-                'Units', 'centimeters', ...
-                'Position', [0.5, 0.5, 21, 29.7]);
-            drawnow; pause(0.1);
-            fig.Units = 'pixels';
-            drawnow; pause(0.1);
-        end
 
         % -----------------------------------------------------------------
-        % Method to export the panel (and its contents) to PDF
-        function ExportToPdf(Obj, app, fullfilepath)
-            % Get a handle to the target panel to print
+        % Get the target panel to export based on TargetTag
+        function srcPanel = getTargetPanel(Obj, app)
             switch Obj.TargetTag
                 case 'DataTab'
                     srcPanel = app.Cmps.MainTabGroup.TabGroup.Children(1).UserData.DataTab;
                 case 'ReportTab'
                     srcPanel = app.Cmps.MainTabGroup.TabGroup.Children(2).UserData.ReportTab;
                 otherwise
-                    Obj.TargetTag
-                    return
+                    error('ExportButton:InvalidTargetTag', 'Invalid TargetTag: %s', Obj.TargetTag);
             end
+        end
 
-            % Create a new A4-sized figure
-            TmpFig = Obj.createA4Figure();
-
-            % Create a fresh top-level container of the same class in TmpFig
-            newPanel = srcPanel.deepCopy(TmpFig);
-            newPanel.Units = 'normalized';
-            newPanel.Position = [0, 0, 1, 1];
-
-            drawnow(); pause(0.1);
-
-            % Create temporary output for each page in the PDF and we merge them later
-            TmpFile = getuuid();
+        % -----------------------------------------------------------------
+        % Create and setup temporary directory for PDF export
+        function TmpPath = prepareTempEnvironment(~, app)
             TmpPath = fullfile(app.Props.Path, 'Temp');
             if exist(TmpPath, 'dir') ~= 7
                 mkdir(TmpPath);
             end
+        end
 
+        % -----------------------------------------------------------------
+        % Create A4 figure with copied panel content
+        function [TmpFig, newPanel] = createExportFigure(~, srcPanel)
+            TmpFig = uifigure('Visible', 'off', ...
+                'Units', 'centimeters', ...
+                'Position', [0.5, 0.5, 21, 29.7]);
+            drawnow; pause(0.1);
+            TmpFig.Units = 'pixels';
+            drawnow; pause(0.1);
+            newPanel = srcPanel.deepCopy(TmpFig);
+            newPanel.Units = 'normalized';
+            newPanel.Position = [0, 0, 1, 1];
+            drawnow(); pause(0.1);
+        end
+
+        % -----------------------------------------------------------------
+        % Configure DataTab-specific layout for export
+        function configureDataTabForExport(~, newPanel, figHeight)
+            N = floor(newPanel.ActogramLength);
+            AddEmpty = N - mod(newPanel.NumPanels, N);
+            newPanel.PanelHeight = ((figHeight - (N-1)*18 - 36) / N);
+            drawnow();
+            newPanel.GridLayout.RowHeight = [...
+                newPanel.GridLayout.RowHeight, ...
+                repmat(newPanel.GridLayout.RowHeight(1), 1, AddEmpty)];
+            TmpPanel = uipanel(newPanel.GridLayout); 
+            TmpPanel.Layout.Row = length(newPanel.GridLayout.RowHeight);
+            newPanel.GridLayout.Padding = [18, 18, 18, 18];
+            newPanel.GridLayout.RowSpacing = 18;
+        end
+
+        % -----------------------------------------------------------------
+        % Configure ReportTab-specific layout for export
+        function configureReportTabForExport(~, newPanel)
+            newPanel.GridLayout.Padding = 0;
+            newPanel.GridLayout.RowSpacing = 0;
+        end
+
+        % -----------------------------------------------------------------
+        % Export pages to individual PDF files
+        function exportPages(Obj, TmpFig, newPanel, tempPath, tempFileId)
             switch Obj.TargetTag
                 case 'DataTab'
                     N = floor(newPanel.ActogramLength);
-                    AddEmpty = N - mod(newPanel.NumPanels, N);
-                    newPanel.PanelHeight = ((TmpFig.Position(4) - (N-1)*18 - 36) / N);
-                    drawnow();
-                    newPanel.GridLayout.RowHeight = [newPanel.GridLayout.RowHeight, repmat(newPanel.GridLayout.RowHeight(1), 1, AddEmpty)];
-                    TmpPanel = uipanel(newPanel.GridLayout); 
-                    TmpPanel.Layout.Row = length(newPanel.GridLayout.RowHeight);
-                    newPanel.GridLayout.Padding = [18, 18, 18, 18];
-                    newPanel.GridLayout.RowSpacing = 18;
                     for page = 1:N:length(newPanel.GridLayout.RowHeight)
                         scroll(newPanel.GridLayout, [0, -(page-1)*(newPanel.PanelHeight+18)])
                         drawnow(); pause(0.2);
-                        exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, page)));
+                        exportapp(TmpFig, fullfile(tempPath, sprintf('%s-%i.pdf', tempFileId, page)));
                     end
                 case 'ReportTab'
-                    newPanel.GridLayout.Padding = 0;
-                    newPanel.GridLayout.RowSpacing = 0;
                     for page = 1:newPanel.NumPages
                         scroll(newPanel.GridLayout, [0, -(page-1)*(newPanel.PageHeight)])
                         drawnow(); pause(0.2);
-                        exportapp(TmpFig, fullfile(TmpPath, sprintf('%s-%i.pdf', TmpFile, page)));
+                        exportapp(TmpFig, fullfile(tempPath, sprintf('%s-%i.pdf', tempFileId, page)));
                     end
             end
+        end
 
+        % -----------------------------------------------------------------
+        % Merge individual PDFs and cleanup temporary files
+        function mergeAndCleanup(~, tmpFig, tempPath, tempFileId, outputPath)
             % Get the list of temp files
-            TmpFiles = dir(fullfile(TmpPath, sprintf('%s-*.pdf', TmpFile)));
+            TmpFiles = dir(fullfile(tempPath, sprintf('%s-*.pdf', tempFileId)));
             TmpFiles = arrayfun(@(d) fullfile(d.folder, d.name), TmpFiles, 'UniformOutput', false);
             % Merge them together
-            mergepdfs(TmpFiles, fullfilepath)
-            % Delete temp files.
-            delete(fullfile(TmpPath, sprintf('%s-*.pdf', TmpFile)))
-
+            mergepdfs(TmpFiles, outputPath);
+            % Delete temp files
+            delete(fullfile(tempPath, sprintf('%s-*.pdf', tempFileId)));
             % Delete temp figure
-            delete(TmpFig);
+            delete(tmpFig);
         end
 
         % -----------------------------------------------------------------
@@ -151,50 +166,116 @@ classdef ExportButton < handle
                 system(['xdg-open "', fullfilepath, '"']);
             end
         end
-        % =================================================================
-        % Event calls
-        function onExportButtonPushed(Obj, src, ~)
-            try
-                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                % Disable the button immediately
-                src.Enable = 'off';
-                drawnow();
-                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                % Ask the user where to save it
-                app = app_gethandle();
-                [Filename, Path] = app.putfile({'*.pdf'});
-                if Filename == 0
-                    src.Enable = 'on';
-                    return % user pressed cancel
-                end
-                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                % Show waitbar
-                progdlg = uiprogressdlg(app.UIFigure, ...
-                    'Title', 'The Cicada is buzzing, please wait...',...
-                    'Indeterminate','on');
-                drawnow();
-                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                % Now we can generate and save it
-                Obj.ExportToPdf(app, fullfile(Path, Filename));
-                close(progdlg)
-                drawnow();
-                % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                % Done, ask the user to confirm or open the PDF
-                selection = uiconfirm(app.UIFigure, ...
-                    'PDF Exported!', 'Good, that went surprisingly well!', ...
-                    'Icon' , 'success', ...
-                    'Options', {'Open PDF', 'OK'});
-                switch selection
-                    case 'Open PDF'
-                        Obj.openPDF(fullfile(Path, Filename))
-                end
-            catch ME
-                % Only close progress dialog if it exists and is still valid
-                if exist('progdlg', 'var') && isvalid(progdlg)
-                    close(progdlg);
-                end                
-                getReport(ME)
+
+        % -----------------------------------------------------------------
+        % Prompt user for save location
+        function [success, filepath] = promptForSaveLocation(~, app)
+            [Filename, Path] = app.putfile({'*.pdf'});
+            if Filename == 0
+                success = false;
+                filepath = '';
+            else
+                success = true;
+                filepath = fullfile(Path, Filename);
             end
+        end
+
+        % -----------------------------------------------------------------
+        % Show export progress dialog
+        function progdlg = showExportProgress(~, app)
+            progdlg = uiprogressdlg(app.UIFigure, ...
+                'Title', 'The Cicada is buzzing, please wait...', ...
+                'Indeterminate', 'on');
+            drawnow();
+        end
+
+        % -----------------------------------------------------------------
+        % Hide export progress dialog safely
+        function hideExportProgress(~, progdlg)
+            if exist('progdlg', 'var') && isvalid(progdlg)
+                close(progdlg);
+            end
+        end
+
+        % -----------------------------------------------------------------
+        % Show confirmation dialog and optionally open PDF
+        function confirmAndOpenPdf(Obj, app, filepath)
+            selection = uiconfirm(app.UIFigure, ...
+                'PDF Exported!', 'Good, that went surprisingly well!', ...
+                'Icon', 'success', ...
+                'Options', {'Open PDF', 'OK'});
+            if strcmp(selection, 'Open PDF')
+                Obj.openPDF(filepath);
+            end
+        end
+
+        % -----------------------------------------------------------------
+        % Handle export errors
+        function handleExportError(Obj, ME, progdlg)
+            Obj.hideExportProgress(progdlg);
+            getReport(ME);
+        end
+
+        % =================================================================
+        % MAIN METHODS
+        % -----------------------------------------------------------------
+        % Main method to orchestrate PDF export process
+        function onExportButtonPushed(Obj, src, ~)
+            % Disable button to prevent multiple clicks
+            src.Enable = 'off';
+            drawnow();
+            
+            try
+                % Get app handle
+                app = app_gethandle();
+                
+                % Prompt for save location
+                [success, fullfilepath] = Obj.promptForSaveLocation(app);
+                if ~success
+                    src.Enable = 'on';
+                    return; % User cancelled
+                end
+                
+                % Show progress
+                progdlg = Obj.showExportProgress(app);
+                
+                % Get the target panel
+                srcPanel = Obj.getTargetPanel(app);
+                
+                % Setup temp environment
+                TmpPath = Obj.prepareTempEnvironment(app);
+                TmpFile = getuuid();
+                
+                % Create export figure with panel content
+                [TmpFig, newPanel] = Obj.createExportFigure(srcPanel);
+                
+                % Configure layout based on target type
+                switch Obj.TargetTag
+                    case 'DataTab'
+                        Obj.configureDataTabForExport(newPanel, TmpFig.Position(4));
+                    case 'ReportTab'
+                        Obj.configureReportTabForExport(newPanel);
+                end
+                
+                % Export pages
+                Obj.exportPages(TmpFig, newPanel, TmpPath, TmpFile);
+                
+                % Merge and cleanup
+                Obj.mergeAndCleanup(TmpFig, TmpPath, TmpFile, fullfilepath);
+
+                
+                % Hide progress
+                Obj.hideExportProgress(progdlg);
+                drawnow();
+                
+                % Show confirmation and offer to open
+                Obj.confirmAndOpenPdf(app, fullfilepath);
+                
+            catch ME
+                Obj.handleExportError(ME, progdlg);
+            end
+            
+            % Re-enable button
             src.Enable = 'on';
         end
     end
