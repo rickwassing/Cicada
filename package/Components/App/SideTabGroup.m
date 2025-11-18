@@ -41,6 +41,9 @@ classdef SideTabGroup < CicadaComponentContainer
                 'Units', 'normalized', ...
                 'Visible', 'off', ...
                 'Position', [0, 0, 1, 1]);
+            % Disable tab interaction by hiding the tab bar
+            % This makes the tabs programmatically accessible but not clickable by users
+            Obj.TabGroup.TabLocation = 'bottom';
         end
         % =================================================================
         function update(Obj)
@@ -67,6 +70,12 @@ classdef SideTabGroup < CicadaComponentContainer
                     case 'off'
                         Obj.TabGroup.Visible = 'off';
                 end
+                % ---------------------------------------------------------
+                Obj.TabGroup.Units = 'normalized';
+                Obj.TabGroup.Position = [0, 0, 1, 1];
+                Obj.TabGroup.Units = 'pixels';
+                Obj.TabGroup.Position(2) = -24;
+                Obj.TabGroup.Position(4) = Obj.TabGroup.Position(4)+24;
                 % ---------------------------------------------------------
                 % End performance tracking
                 Obj.endPerformanceTracking();
@@ -114,6 +123,9 @@ classdef SideTabGroup < CicadaComponentContainer
     end
     methods (Access = public)
         function hUpdate(Obj, app, event)
+            if nargin == 3 && strcmpi(event.EventName, 'eMainTabSelectionChanged')
+                Obj.hMainTabSelectionChanged(app, event);
+            end
             try
                 % -------------------------------------------------------------
                 if isempty(app.ACT)
@@ -125,6 +137,17 @@ classdef SideTabGroup < CicadaComponentContainer
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in SideTabGroup.m')
+            end
+        end
+        % =================================================================
+        function hMainTabSelectionChanged(Obj, app, event) %#ok<INUSL>
+            try
+                % Sync to the same tab index as MainTabGroup
+                if event.UserData.Payload <= length(Obj.TabGroup.Children)
+                    Obj.TabGroup.SelectedTab = Obj.TabGroup.Children(event.UserData.Payload);
+                end
+            catch ME
+                printerrormessage(ME, 'The error occurred during ''hMainTabSelectionChanged'' in SideTabGroup.m')
             end
         end
     end

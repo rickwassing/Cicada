@@ -23,11 +23,11 @@ classdef ReportTab < CicadaComponentContainer
         PageHeight = 842;  % A4 height at 72 DPI
         PageWidth = 595;   % A4 width at 72 DPI
         IsHovered logical = false;
+        Pages ReportPage
     end
     properties (Access = public, Transient, NonCopyable)
         Panel matlab.ui.container.Panel
         GridLayout matlab.ui.container.GridLayout
-        Pages ReportPage
     end
     % *********************************************************************
     % METHODS
@@ -122,14 +122,15 @@ classdef ReportTab < CicadaComponentContainer
     % *********************************************************************
     methods (Access = public)
         function hUpdate(Obj, app, event)
+            if ~isvalid(Obj)
+                return
+            end
             try
                 % ---------------------------------------------------------
                 % Handle mouse motion event
                 if strcmpi(event.EventName, 'eMouseMotion')
-                    % Store previous hover state
-                    wasHovered = Obj.IsHovered;
                     % Only update if state changed
-                    if wasHovered ~= Obj.IsHovered
+                    if app.IsHovered(Obj) ~= Obj.IsHovered
                         % Check if mouse is hovering over this component
                         Obj.IsHovered = app.IsHovered(Obj);
                         app_notify(app, {'eReportTabHovered'}, AppEventData(event, {'IsHovered', Obj.IsHovered}));

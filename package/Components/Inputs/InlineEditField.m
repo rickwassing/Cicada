@@ -134,7 +134,6 @@ classdef InlineEditField < CicadaComponentContainer
             if Obj.Disabled
                 return
             end
-            
             % Handle different events
             if strcmpi(event.EventName, 'eReportTabHovered')
                 % Update the editable indicator based on report tab hover state

@@ -94,6 +94,7 @@ classdef cicada_exported < matlab.apps.AppBase
         eLogoChanged; % When the report logo has changed
         eReportTemplateChanged; % When the report content has changed
         eReportTabHovered; % When the mouse hovers over the Report Tab
+        eMainTabSelectionChanged; % When the main tab selection changes
         eMouseMotion; % When the mouse moves
         eMouseDown; % When the mouse is pressed
         eMouseUp; % When the mouse is released
@@ -569,7 +570,7 @@ classdef cicada_exported < matlab.apps.AppBase
             app.Props.SelectedSegment = [];
             app.Props.IsMouseDown = false;
             app.Props.ToggleModal = false;
-            app.Props.Verbose = 2; % 0 = silent, 1 = summary, 2 = full
+            app.Props.Verbose = 1; % 0 = silent, 1 = summary, 2 = full
             % -------------------------------------------------------------
             % App settings
             % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -589,7 +590,7 @@ classdef cicada_exported < matlab.apps.AppBase
             app_addlisteners(app, app.Cmps.InfoPanel_Recording, {'eDatasetChanged'});
             app_addlisteners(app, app.Cmps.InfoPanel_Modalities, {'eDatasetChanged'});
             app_addlisteners(app, app.Cmps.MainTabGroup, {'eDatasetChanged'});
-            app_addlisteners(app, app.Cmps.SideTabGroup, {'eDatasetChanged'});
+            app_addlisteners(app, app.Cmps.SideTabGroup, {'eDatasetChanged', 'eMainTabSelectionChanged'});
             % =============================================================
             % Show logo and info
             app_asciilogo();

@@ -72,117 +72,8 @@ classdef ExportButton < handle
         end
 
         % -----------------------------------------------------------------
-        % Used to copy the grid layout of the original component
-        function copyLayoutInfo(~, src, dst)
-            try
-                if isprop(src, 'Layout') && isprop(dst, 'Layout') && ~isempty(src.Layout)
-                    % Some components have Layout objects with Row/Column properties
-                    try dst.Layout.Row = src.Layout.Row; end %#ok<TRYNC>
-                    try dst.Layout.Column = src.Layout.Column; end %#ok<TRYNC>
-                    try dst.Layout.RowSpan = src.Layout.RowSpan; end %#ok<TRYNC>
-                    try dst.Layout.ColumnSpan = src.Layout.ColumnSpan; end %#ok<TRYNC>
-                end
-            catch
-                % ignore
-            end
-        end
-
-        % -----------------------------------------------------------------
-        % Copy writable properties from source to destination
-        function copyProps(~, src, dst)
-            pList = properties(src);
-            if isa(src.Parent, 'matlab.ui.container.GridLayout')
-                skip = {'Children', 'Parent', 'Position', 'InnerPosition', 'OuterPosition'};
-            else
-                skip = {'Children', 'Parent'};
-            end
-            for i = 1:numel(pList)
-                prop = pList{i};
-                if any(strcmp(prop, skip))
-                    continue
-                end
-                if isprop(dst, prop)
-                    try
-                        val = src.(prop);
-                        % Avoid copying handles to objects belonging to the source figure
-                        % (e.g. callbacks or Parent handles). Best-effort attempt.
-                        dst.(prop) = val;
-                    catch
-                        % ignore read-only or incompatible props
-                    end
-                end
-            end
-        end
-
-        % -----------------------------------------------------------------
-        % Recursively copy children from srcParent into dstParent
-        function syncUIProperties(Obj, srcParent, dstParent)
-            % Rules:
-            % - If child is a ComponentContainer subclass -> call deepCopy(dstParent)
-            % - Else if child has children (container) -> create new empty container in dstParent and recurse
-            % - Else (leaf control) -> copyobj(child, dstParent)
-            srcChildren = srcParent.GridLayout.Children; % this preserves on-screen ordering
-            for k = 1:numel(srcChildren)
-                srcChild = srcChildren(k);
-                if isa(srcChild, 'DataPanelPool')
-                    continue
-                end
-                if isa(srcChild, 'CicadaComponentContainer')
-                    % Custom component: use its deepCopy(parent) contract
-                    try
-                        newChild = srcChild.deepCopy(dstParent);
-                    catch ME
-                        printwarningmessage(ME)
-                        % fallback: create an instance and copy public props
-                        newChild = feval(class(srcChild), 'Parent', dstParent);
-                        Obj.copyProps(srcChild, newChild);
-                        if ismethod(newChild, 'update'); newChild.update(); end
-                    end
-
-                elseif isprop(srcChild, 'Children') && ~isempty(srcChild.Children)
-                    % Standard container (has children) -> create new container and recurse
-                    newChild = feval(class(srcChild), 'Parent', dstParent);
-                    Obj.copyProps(srcChild, newChild);
-                    % Copy layout hints (if present)
-                    Obj.copyLayoutInfo(srcChild, newChild);
-                    % Recurse into children
-                    syncUIProperties(Obj, srcChild, newChild);
-
-                else
-                    % Leaf standard control: safe to use copyobj
-                    try
-                        newChild = copyobj(srcChild, dstParent);
-                    catch
-                        % If copyobj fails for some reason, fallback to constructing
-                        % same class with parent and copying props.
-                        newChild = feval(class(srcChild), 'Parent', dstParent);
-                        Obj.copyProps(srcChild, newChild);
-                    end
-                    % Force reload of resource-based properties (images, etc.)
-                    try
-                        if isprop(srcChild, 'ImageSource') && isprop(newChild, 'ImageSource')
-                            newChild.ImageSource = srcChild.ImageSource;
-                        end
-                        if isprop(srcChild, 'LogoSource') && isprop(newChild, 'LogoSource')
-                            newChild.LogoSource = srcChild.LogoSource;
-                        end
-                    catch
-                        % ignore
-                    end
-
-                    % preserve layout hints
-                    Obj.copyLayoutInfo(srcChild, newChild);
-                end
-
-                % Some components need a redraw to settle (do it per-child cheaply)
-                drawnow();
-            end
-        end
-
-        % -----------------------------------------------------------------
         % Method to export the panel (and its contents) to PDF
         function ExportToPdf(Obj, app, fullfilepath)
-
             % Get a handle to the target panel to print
             switch Obj.TargetTag
                 case 'DataTab'
@@ -271,13 +162,11 @@ classdef ExportButton < handle
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 % Ask the user where to save it
                 app = app_gethandle();
-                % [Filename, Path] = app.putfile({'*.pdf'});
-                % if Filename == 0
-                %     src.Enable = 'on';
-                %     return % user pressed cancel
-                % end
-                Path = '/Users/rickwassing';
-                Filename = 'cicadatest.pdf';
+                [Filename, Path] = app.putfile({'*.pdf'});
+                if Filename == 0
+                    src.Enable = 'on';
+                    return % user pressed cancel
+                end
                 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 % Show waitbar
                 progdlg = uiprogressdlg(app.UIFigure, ...

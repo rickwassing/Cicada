@@ -40,7 +40,8 @@ classdef MainTabGroup < CicadaComponentContainer
             Obj.TabGroup = uitabgroup(Obj, ...
                 'Tag', 'MainTabGroup_TabGroup', ...
                 'Units', 'normalized', ...
-                'Position', [0, 0, 1, 1]);
+                'Position', [0, 0, 1, 1], ...
+                'SelectionChangedFcn', @(src, event) Obj.onTabSelectionChanged(src, event));
             Obj.Placeholder = Placeholder(Obj, ...
                 'ImageSrc', 'no-data.png', ...
                 'Header', 'Nothing to see here.', ...
@@ -73,6 +74,10 @@ classdef MainTabGroup < CicadaComponentContainer
                     case 'on'
                         Obj.TabGroup.Visible = 'on';
                         Obj.Placeholder.Visible = 'off';
+                        % Set default tab to Data (first tab) if not already set
+                        if ~isempty(Obj.TabGroup.Children) && isempty(Obj.TabGroup.SelectedTab)
+                            Obj.TabGroup.SelectedTab = Obj.TabGroup.Children(1);
+                        end
                     case 'off'
                         Obj.TabGroup.Visible = 'off';
                         Obj.Placeholder.Visible = 'on';
@@ -132,6 +137,21 @@ classdef MainTabGroup < CicadaComponentContainer
                 end
             catch ME
                 printerrormessage(ME, 'The error occurred during ''hUpdate'' in MainTabGroup.m')
+            end
+        end
+        % =================================================================
+        function onTabSelectionChanged(Obj, src, event) %#ok<INUSD>
+            try
+                % Get the selected tab index
+                selectedIdx = find(Obj.TabGroup.Children == Obj.TabGroup.SelectedTab);
+                
+                % Create event data with tab information
+                eventData = AppEventData(event, selectedIdx);
+                
+                % Notify listeners through the app
+                app_notify([], {'eMainTabSelectionChanged'}, eventData);
+            catch ME
+                printerrormessage(ME, 'The error occurred during ''onTabSelectionChanged'' in MainTabGroup.m')
             end
         end
     end
