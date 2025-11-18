@@ -64,7 +64,6 @@ classdef CicadaComponentContainer < matlab.ui.componentcontainer.ComponentContai
                         ~prop.Transient && ...
                         ~prop.NonCopyable
                     try
-                        fprintf('>> CIC: Deep copying property ''%s''.\n', prop.Name)
                         newObj.(prop.Name) = obj.(prop.Name);
                     catch
                         % Skip properties that can't be copied

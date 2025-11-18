@@ -23,7 +23,7 @@ classdef ReportTable < CicadaComponentContainer
         TableConfig struct             % Table configuration
         Data struct                    % Data from ACT
         Style struct                   % Table styling
-        CellHeight = 20;               % Height of each cell in pixels
+        CellHeight = 21;               % Height of each cell in pixels
     end
 
     properties (Access = private, Transient, NonCopyable)
@@ -167,6 +167,9 @@ classdef ReportTable < CicadaComponentContainer
             % -------------------------------------------------------------
             % Apply styling
             Obj.hApplyStyle(app);
+            % -------------------------------------------------------------
+            % Populate data
+            Obj.hPopulateFromData(app.ACT);
         end
 
         % =================================================================

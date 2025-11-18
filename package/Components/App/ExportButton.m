@@ -152,7 +152,9 @@ classdef ExportButton < handle
             % Delete temp files
             delete(fullfile(tempPath, sprintf('%s-*.pdf', tempFileId)));
             % Delete temp figure
-            delete(tmpFig);
+            if strcmpi(tmpFig.Visible, 'off')
+                delete(tmpFig);
+            end
         end
 
         % -----------------------------------------------------------------

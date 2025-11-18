@@ -30,7 +30,7 @@ s.style.title.lineHeight = 1;
 
 s.style.h1.fontFamily = 'Georgia';
 s.style.h1.fontSize = 11;
-s.style.h1.fontColor = '#337380';
+s.style.h1.fontColor = '#262626';
 s.style.h1.fontWeight = 'bold';
 s.style.h1.fontStyle = 'normal';
 s.style.h1.textAlign = 'left';

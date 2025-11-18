@@ -26,7 +26,7 @@ classdef ReportTableCell < CicadaComponentContainer
         Format char = 'string';      % 'string', 'number', 'date', etc.
         IsHovered logical = false;   % Hover state
         Id char                      % Unique identifier
-        CellHeight double = 20;      % Table row height
+        CellHeight double = 21;      % Table row height
     end
     
     properties (Access = private, Transient, NonCopyable)

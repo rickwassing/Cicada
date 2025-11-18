@@ -41,8 +41,6 @@ classdef ReportPage < CicadaComponentContainer
         % Table components
         PatientInfoTable ReportTable
         RecordingInfoTable ReportTable
-        SummaryStatsTable ReportTable
-        SleepWindowStatsTable ReportTable
     end
     % *********************************************************************
     % METHODS
@@ -76,7 +74,7 @@ classdef ReportPage < CicadaComponentContainer
                 'BackgroundColor', [1, 1, 1]);
             Obj.HeaderPanel.Layout.Row = 1;
             Obj.HeaderPanel.Layout.Column = 1;
-            
+            % -------------------------------------------------------------
             Obj.HeaderGridLayout = uigridlayout(Obj.HeaderPanel, ...
                 'ColumnWidth', {'2x', '1x'}, ...
                 'RowHeight', {'1x'}, ...
@@ -181,45 +179,26 @@ classdef ReportPage < CicadaComponentContainer
             % Create tables if they don't exist
             if isempty(Obj.PatientInfoTable) || ~isvalid(Obj.PatientInfoTable)
                 Obj.PatientInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-                Obj.PatientInfoTable.Layout.Row = 1;
-                Obj.PatientInfoTable.Layout.Column = 1;
                 Obj.PatientInfoTable.Title = 'Patient Information';
                 Obj.PatientInfoTable.TableConfig = Obj.hGetPatientInfoConfig();
+                Obj.PatientInfoTable.Layout.Row = 1;
+                Obj.PatientInfoTable.Layout.Column = 1;
                 app_addlisteners([], Obj.PatientInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eInfoChanged'});
             end
             % ---------------------------------------------------------
             if isempty(Obj.RecordingInfoTable) || ~isvalid(Obj.RecordingInfoTable)
                 Obj.RecordingInfoTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-                Obj.RecordingInfoTable.Layout.Row = 2;
-                Obj.RecordingInfoTable.Layout.Column = 1;
                 Obj.RecordingInfoTable.Title = 'Recording Information';
                 Obj.RecordingInfoTable.TableConfig = Obj.hGetRecordingInfoConfig();
+                Obj.RecordingInfoTable.Layout.Row = 2;
+                Obj.RecordingInfoTable.Layout.Column = 1;
                 app_addlisteners([], Obj.RecordingInfoTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
             end
-            % ---------------------------------------------------------
-            if isempty(Obj.SummaryStatsTable) || ~isvalid(Obj.SummaryStatsTable)
-                Obj.SummaryStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-                Obj.SummaryStatsTable.Layout.Row = 3;
-                Obj.SummaryStatsTable.Layout.Column = 1;
-                Obj.SummaryStatsTable.Title = 'Summary Statistics - Entire Recording';
-                Obj.SummaryStatsTable.TableConfig = Obj.hGetSummaryStatsConfig();
-                app_addlisteners([], Obj.SummaryStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
-            end
-            % ---------------------------------------------------------
-            if isempty(Obj.SleepWindowStatsTable) || ~isvalid(Obj.SleepWindowStatsTable)
-                Obj.SleepWindowStatsTable = ReportTable(Obj.BodyGridLayout, 'Verbose', Obj.Verbose);
-                Obj.SleepWindowStatsTable.Layout.Row = 4;
-                Obj.SleepWindowStatsTable.Layout.Column = 1;
-                Obj.SleepWindowStatsTable.Title = 'Summary Statistics - Average Sleep Windows';
-                Obj.SleepWindowStatsTable.TableConfig = Obj.hGetSleepWindowStatsConfig();
-                app_addlisteners([], Obj.SleepWindowStatsTable, {'eStyleChanged', 'eDatasetChanged', 'eDataChanged'});
-            end
+
             % ---------------------------------------------------------
             % Initialize tables with styling and data
             Obj.PatientInfoTable.hInit(app);
             Obj.RecordingInfoTable.hInit(app);
-            Obj.SummaryStatsTable.hInit(app);
-            Obj.SleepWindowStatsTable.hInit(app);
         end
         % =================================================================
         function hCreateOtherContent(Obj, app) %#ok<INUSD>
