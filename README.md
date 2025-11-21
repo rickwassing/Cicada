@@ -22,6 +22,13 @@ We use [semantic versioning](http://semver.org/). Current version is 1.0.0.
 
 ![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png) Cicada Actigraphy Suite © 2023 by Rick Wassing is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
+## Privacy & Terms
+
+- **[Privacy Policy](PRIVACY.md)** - Learn how Cicada handles your data (spoiler: everything stays local on your computer)
+- **[Terms of Use](TERMS_OF_USE.md)** - Important information about using Cicada for clinical and research purposes
+
+By using Cicada, you agree to comply with the Terms of Use and understand the Privacy Policy.
+
 ## Disclaimer
 
 The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
