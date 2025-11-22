@@ -24,7 +24,7 @@ We use [semantic versioning](http://semver.org/). Current version is 1.0.0.
 
 ## Privacy & Terms
 
-- **[Privacy Policy](PRIVACY.md)** - Learn how Cicada handles your data (spoiler: everything stays local on your computer)
+- **[Privacy Policy](PRIVACY.md)** - Learn how Cicada handles your data
 - **[Terms of Use](TERMS_OF_USE.md)** - Important information about using Cicada for clinical and research purposes
 
 By using Cicada, you agree to comply with the Terms of Use and understand the Privacy Policy.
