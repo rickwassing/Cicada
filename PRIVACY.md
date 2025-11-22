@@ -2,49 +2,78 @@
 
 **Last Updated:** November 19, 2025
 
-## Overview
+## 1. Overview
 
 Cicada Actigraphy Suite ("Cicada", "the Software") is an open-source desktop application designed for researchers and clinicians to analyze actigraphy data for sleep-wake pattern assessment. This Privacy Policy explains how your data is handled when using Cicada.
 
-## Data Controller
+## 2. Data Controller
 
 Cicada is developed and maintained by Rick Wassing at the Woolcock Institute of Medical Research, Sydney, Australia.
 
-## Data Processing
+## 3. Data Processing
 
-### What Data Does Cicada Process?
+### 3.1 What Data Does Cicada Process?
 
 Cicada processes the following types of data:
 
-1. **Patient/Research Participant Data:**
+### 3.1.1 Wearable Device Data:###
 
-   - Name, ID, date of birth, and other demographic information you enter
-   - Clinical notes and interpretations
-   - Referring physician information
-
-2. **Wearable Device Data:**
 Including, but not limited to:
-   - Activity measurements from wearable devices (accelerometer data)
-   - Light exposure data
-   - Temperature data
-   - Pulse-rate or heart-rate data
-   - Participant-rated data from questionnaires or diaries
-   - Device metadata (device ID, recording dates, firmware version)
 
-3. **Application Settings:**
-   - User preferences and application configuration
-   - Report templates and styling preferences
-   - Optional user-registration information including name, email address and institution.
-   - Optional telemetry data including application installation, use, error messages [revise this]
+- Activity measurements from wearable devices (accelerometer data)
+- Light exposure data
+- Temperature data
+- Pulse-rate or heart-rate data
+- Participant-rated data from questionnaires or diaries
+- Device metadata (device ID, recording dates, firmware version)
 
-### How Is Data Stored?
+### 3.1.2. Application Settings:###
 
-**Local Storage Only:** Cicada stores ALL data locally on your computer. The Software does NOT:
+- User preferences and application configuration
+- Report templates and styling preferences
 
-- Upload data to cloud servers
-- Transmit data over the internet
-- Share data with third parties
-- Store data on external servers
+### 3.1.3 Patient/Research Participant Data (optional by explicit data entry):###
+
+Cicada allows users to enter personal information, including:
+
+- Name, ID, date of birth, and other personal information
+- Clinical notes and interpretations
+- Referring physician information
+
+### 3.1.4. Telemetry and Usage Data (optional with consent):###
+
+- User registration information (name, email address, institution)
+- Subscription preferences for updates
+- Session tracking data (app start/stop, session IDs)
+- Error messages and diagnostic information (stack traces, error severity)
+- System information (operating system, MATLAB version, Cicada version)
+- Feature usage statistics
+
+**IMPORTANT:** Telemetry data is ONLY collected if you consent during registration or through the registration settings. You can change your consent at any time via the "Edit registration" option in the Help menu.
+
+## 3.2 How Is Data Stored?##
+
+### 3.2.1 Wearable device data, application settings, and patient/research-participant data - Local Storage Only
+
+**ALL data described in 3.1.1, 3.1.2 and 3.1.3 is stored exclusively on your local computer.**
+
+The Software does NOT:
+
+- Upload patient/participant data to cloud servers
+- Transmit device data (actigraphy, light, temperature, etc.) over the internet
+- Share clinical notes or report content with third parties
+- Store any patient/research data on external servers
+
+**Telemetry Data described in 3.1.4 is stored on Microsoft Cloud Storage**
+
+If you consent to share telemetry data, the following applies:
+
+- **What is transmitted:** Only the usage and diagnostic data listed in 3.1.4 above
+- **What is NEVER transmitted:** Patient data, device measurements, clinical notes, report content, or any participant information described in 3.1.1, 3.1.2, and 3.1.3.
+- **Where it's stored:** Microsoft Power Automate (Flow) processes the data and stores it in SharePoint Lists
+- **Who has access:** Only Rick Wassing (rick.wassing@woolcock.org.au)
+- **Security:** Protected by Microsoft's enterprise-grade security with 2-factor authentication
+- **Purpose:** Software improvement, usage statistics, understanding user needs, and grant applications
 
 **Your Responsibility:** As a local application, YOU are responsible for:
 
@@ -53,26 +82,33 @@ Including, but not limited to:
 - Ensuring compliance with local data protection regulations (HIPAA, GDPR, etc.)
 - Properly disposing of data when no longer needed
 
-### Data Formats
+## 4. Data Formats##
 
 Data is stored in:
 
 - MATLAB `.mat` files for datasets
 - JSON files for configuration
 - PDF files for exported reports
-- Original device file formats (e.g., `.gt3x`, `.cwa`, `.bin`)
 
-## Data Sharing and Third Parties
+## 5. Data Sharing and Third Parties
 
-Cicada does NOT share your data with third parties. However:
+### 5.1 Wearable device data, application settings, and patient/research-participant data
 
-1. **User-Initiated Exports:** You may export reports as PDF files, which YOU control and may share at your discretion.
+Cicada does NOT share your patient, clinical, or research data with third parties. Your data remains on your computer.
 
-2. **No Analytics or Telemetry:** Cicada does not collect usage statistics, crash reports, or telemetry data.
+### 5.2 Telemetry Data
 
-3. **No Online Services:** The Software does not connect to online services or APIs.
+If you consent to share telemetry data:
 
-## User Rights
+1. **Data recipient:** Telemetry data is sent to Rick Wassing at Woolcock Institute of Medical Research
+2. **No third-party sharing:** Telemetry data is not shared with or sold to third parties
+3. **No marketing:** Your contact information will not be used for marketing purposes (unless you separately consent to receive updates)
+4. **Aggregated statistics:** Anonymous, aggregated statistics may be used in presentations, publications, or grant applications
+5. **No patient/research-participant data:** Telemetry NEVER includes patient, participant, or clinical information
+
+## 6. User Rights
+
+### 6.1. Wearable device data, application settings, and patient/research-participant data
 
 As Cicada stores data locally on your computer, you have complete control:
 
@@ -81,9 +117,18 @@ As Cicada stores data locally on your computer, you have complete control:
 - **Portability:** Your data files are in standard formats and can be moved/copied
 - **Deletion:** You can delete data files directly from your computer
 
-## Data Security
+### 6.2. Telemetry Data
 
-### Your Responsibility
+If you have consented to share telemetry data:
+
+- **Consent withdrawal:** You can withdraw consent at any time via "Edit registration" in the Help menu
+- **Future data:** Withdrawing consent prevents future telemetry collection
+- **Past data:** Data already collected cannot be deleted from storage (minimum 15-year retention for research integrity)
+- **Access request:** Contact rick.wassing@woolcock.org.au to request information about what telemetry data has been collected
+
+## 7. Data Security
+
+### 7.1. Your Responsibility
 
 Since Cicada is a local application, data security depends on:
 
@@ -105,17 +150,29 @@ Since Cicada is a local application, data security depends on:
    - Secure backup storage appropriately
    - Test backup restoration procedures
 
-### Software Security
+### 7.2. Software Security
 
 We implement security best practices in Cicada's development:
 
 - Regular code reviews
 - Security vulnerability monitoring
 - Timely security updates
+- Open-source code repository to facilitate peer-review
 
-## Compliance with Regulations
+## 8. Compliance with Regulations
 
-### Healthcare Data Regulations
+### 8.1 Research Data
+
+If using Cicada for research:
+
+1. Obtain appropriate ethical approval from your institution
+2. Follow procedures outlined in the approved protocol, participant information and informed consent documents
+3. Follow institutional governace procedures
+4. De-identify data as required by your ethics approval
+5. Store data according to your institution's research data management policy
+6. Retain data for the required period per regulations
+
+### 8.2. Healthcare Data Regulations
 
 If you use Cicada for clinical purposes, you must ensure compliance with applicable regulations:
 
@@ -126,25 +183,22 @@ If you use Cicada for clinical purposes, you must ensure compliance with applica
 
 **Important:** Cicada provides the tool, but YOU are responsible for ensuring compliant use.
 
-## Research Data
+## 9. Data Retention
 
-If using Cicada for research:
+### 9.1. Wearable device data, application settings, and patient/research-participant data
 
-1. Obtain appropriate ethical approval from your institution
-2. Follow informed consent procedures
-3. De-identify data as required by your ethics approval
-4. Store data according to your institution's research data management policy
-5. Retain data for the required period per regulations
+You control retention of all patient/clinical/research data on your computer. Follow your institution's data retention policies.
 
-## Children's Privacy
+### 9.2. Telemetry Data
 
-Cicada may be used to process data from pediatric patients or research participants. When doing so:
+If you consented to share telemetry:
 
-- Obtain appropriate parental/guardian consent
-- Follow additional protections required for minors
-- Comply with applicable regulations (e.g., COPPA in the US)
+- **Retention Period:** Minimum 15 years, no maximum limit
+- **Purpose:** Long-term research on software usage patterns, grant reporting, software improvement
+- **Cannot be deleted:** Due to research integrity requirements, telemetry data cannot be deleted upon request
+- **Withdrawal effect:** Withdrawing consent stops future collection but does not delete historical data
 
-## Changes to This Privacy Policy
+## 10. Changes to this privacy policy
 
 This Privacy Policy may be updated periodically:
 
@@ -152,11 +206,11 @@ This Privacy Policy may be updated periodically:
 - Significant changes will be announced in release notes
 - Continued use of Cicada constitutes acceptance of updates
 
-## Contact Information
+## 11. Contact Information
 
 For privacy-related questions or concerns:
 
-- **Email:** cicada.support@woolcock.org.au (or create GitHub issue)
+- **Email:** cicadaactigraphysuite@gmail.com
 - **Documentation:** https://cicada-actigraphy-suite.readthedocs.io
 - **GitHub Repository:** https://github.com/rickwassing/Cicada
 

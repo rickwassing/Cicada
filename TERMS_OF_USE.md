@@ -17,7 +17,7 @@ Cicada is licensed under the **Creative Commons Attribution-NonCommercial-ShareA
 
 ### Under the following terms:
 
-- **Attribution** — You must give appropriate credit to Rick Wassing, provide a link to the license, and indicate if changes were made
+- **Attribution** — You must give appropriate credit to the authors, provide a link to the license, and indicate if changes were made
 - **NonCommercial** — You may not use the Software for commercial purposes
 - **ShareAlike** — If you remix, transform, or build upon the Software, you must distribute your contributions under the same license
 - **No additional restrictions** — You may not apply legal terms or technological measures that restrict others from doing anything the license permits
@@ -41,7 +41,17 @@ Cicada is designed for:
 
 ## 4. User Responsibilities
 
-### 4.1 Clinical Users
+### 4.1 Research Users
+
+If you use Cicada for research, you must:
+
+- Obtain institutional ethics approval before using participant data
+- Follow informed consent procedures
+- Properly cite the Software in publications
+- Comply with research data management policies
+- De-identify data as required by ethics protocols
+
+### 4.2 Clinical Users
 
 If you use Cicada for clinical purposes, you must:
 
@@ -51,16 +61,6 @@ If you use Cicada for clinical purposes, you must:
 - Obtain appropriate informed consent from patients
 - Comply with all applicable healthcare regulations (HIPAA, GDPR, etc.)
 - Validate results against your clinical judgment and other assessments
-
-### 4.2 Research Users
-
-If you use Cicada for research, you must:
-
-- Obtain institutional ethics approval before using participant data
-- Follow informed consent procedures
-- Properly cite the Software in publications
-- Comply with research data management policies
-- De-identify data as required by ethics protocols
 
 ### 4.3 All Users
 
@@ -119,7 +119,18 @@ This limitation applies regardless of whether such liability arises from contrac
 
 Cicada stores all data locally on your computer. No data is transmitted to external servers or third parties by the Software.
 
-### 8.2 Your Responsibility
+### 8.2 Telemetry Data Collection
+
+Cicada includes an optional telemetry system that collects usage and diagnostic data with your consent:
+
+- **What is collected:** User registration info, session tracking, error messages, system information
+- **What is NEVER collected:** Patient data, device measurements, clinical notes, report content
+- **Purpose:** Software improvement, grant applications, understanding user needs
+- **Consent:** You explicitly provide consent during registration and can change your consent at any time
+- **Storage:** Securely stored in Microsoft SharePoint with restricted access
+- **Retention:** Minimum 15 years for research integrity; cannot be deleted upon request
+
+### 8.3 Your Responsibility
 
 You are solely responsible for:
 
@@ -128,8 +139,9 @@ You are solely responsible for:
 - Backing up your data
 - Ensuring compliance with data protection regulations (HIPAA, GDPR, etc.)
 - Properly disposing of sensitive data when no longer needed
+- Understanding and consenting to telemetry collection (if you choose to opt-in)
 
-See our Privacy Policy (PRIVACY.md) for more details.
+See our Privacy Policy (PRIVACY.md) for complete details about data handling.
 
 ## 9. Prohibited Uses
 
@@ -153,7 +165,7 @@ Cite as: "Wassing, R. (2023). Cicada Actigraphy Suite [Software]. Available from
 
 ### Clinical Reports:
 
-Include in report footer: "Generated using Cicada Actigraphy Suite © 2023 Rick Wassing"
+Include in report footer: "Generated using Cicada Actigraphy Suite © 2023"
 
 ### Modified Versions:
 
@@ -216,7 +228,7 @@ If you found Cicada useful for your research, please consider acknowledging the 
 
 For questions about these Terms of Use:
 
-- **Email:** cicada.support@woolcock.org.au
+- **Email:** cicadaactigraphysuite@gmail.com
 - **Documentation:** https://cicada-actigraphy-suite.readthedocs.io
 - **GitHub Repository:** https://github.com/rickwassing/Cicada
 - **Issues:** Report bugs or request features via GitHub Issues
