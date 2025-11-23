@@ -41,15 +41,15 @@ classdef PageFooterPanel < CicadaComponentContainer
             
             % Page number label
             Obj.Components.PageNumberLabel = uilabel(Obj.Grid);
-            Obj.Components.PageNumberLabel.HorizontalAlignment = 'center';
-            Obj.Components.PageNumberLabel.VerticalAlignment = 'center';
+            Obj.Components.PageNumberLabel.HorizontalAlignment = 'left';
+            Obj.Components.PageNumberLabel.VerticalAlignment = 'bottom';
             Obj.Components.PageNumberLabel.Layout.Row = 1;
             Obj.Components.PageNumberLabel.Layout.Column = 1;
             
             % Footer info label (version, license, docs)
             Obj.Components.FooterInfoLabel = uilabel(Obj.Grid);
-            Obj.Components.FooterInfoLabel.HorizontalAlignment = 'center';
-            Obj.Components.FooterInfoLabel.VerticalAlignment = 'top';
+            Obj.Components.FooterInfoLabel.HorizontalAlignment = 'right';
+            Obj.Components.FooterInfoLabel.VerticalAlignment = 'bottom';
             Obj.Components.FooterInfoLabel.Layout.Row = 1;
             Obj.Components.FooterInfoLabel.Layout.Column = 2;
             
